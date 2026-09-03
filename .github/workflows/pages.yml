@@ -20,22 +20,21 @@ jobs:
       - uses: actions/configure-pages@v5
         with:
           enablement: true
-      - name: 生成根路径跳转首页（仓库中不保留 index.html）
+      - name: 以 demo-a-macos-desktop 作为站点首页（仓库中不保留 index.html）
         run: |
-          cat > index.html <<'EOF'
-          <!DOCTYPE html>
-          <html lang="zh-CN">
-          <head>
-          <meta charset="UTF-8">
-          <title>Xiaofeng — 作品集</title>
-          <meta http-equiv="refresh" content="0; url=portfolio-demos/demo-a-macos-desktop.html">
-          <link rel="canonical" href="portfolio-demos/demo-a-macos-desktop.html">
-          </head>
-          <body>
-          <a href="portfolio-demos/demo-a-macos-desktop.html">进入作品集首页</a>
-          </body>
-          </html>
-          EOF
+          cp portfolio-demos/demo-a-macos-desktop.html index.html
+          sed -i \
+            -e 's|\.\./index-notion\.html|index-notion.html|g' \
+            -e 's|\.\./index-readless\.html|index-readless.html|g' \
+            -e 's|\.\./index%20mindmap\.html|index%20mindmap.html|g' \
+            -e 's|\.\./landing-repaste\.html|landing-repaste.html|g' \
+            -e 's|"embed-readless\.html|"portfolio-demos/embed-readless.html|g' \
+            -e 's|"embed-repaste\.html|"portfolio-demos/embed-repaste.html|g' \
+            -e 's|"embed-wtd\.html|"portfolio-demos/embed-wtd.html|g' \
+            -e 's|"readless-app-icon\.png|"portfolio-demos/readless-app-icon.png|g' \
+            -e 's|"repaste-app-icon\.svg|"portfolio-demos/repaste-app-icon.svg|g' \
+            -e 's|"wtd-app-icon\.png|"portfolio-demos/wtd-app-icon.png|g' \
+            index.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
