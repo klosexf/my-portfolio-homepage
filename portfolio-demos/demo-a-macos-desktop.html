@@ -119,15 +119,29 @@
     background: #30D158; border-color: #30D158;
   }
 
-  /* ============ 桌面 ============ */
-  .desktop {
-    position: relative; height: 100vh; z-index: 3;
-    /* 深靛蓝底 + 暖橙微光 + 冷蓝补光，参考 macOS Sequoia 暖暗调抽象壁纸 */
+  /* ============ 双层壁纸（fixed）：滚动驱动交叉淡化，深夜桌面 → 黄昏桌面 ============ */
+  .wallpaper {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
     background:
       radial-gradient(1100px 760px at 76% 88%, rgba(255, 138, 61, 0.30), rgba(255, 138, 61, 0) 62%),
       radial-gradient(1000px 720px at 10% 6%, rgba(58, 84, 180, 0.40), rgba(58, 84, 180, 0) 60%),
       radial-gradient(780px 560px at 46% 40%, rgba(96, 110, 200, 0.14), rgba(96, 110, 200, 0) 65%),
       linear-gradient(168deg, #070B1A 0%, #0E1530 48%, #131A3C 78%, #17203F 100%);
+  }
+  .wallpaper.dusk {
+    /* 暗陶土晨昏壁纸，呼应 MindMap AI 米白纸面与陶土橙 */
+    background:
+      radial-gradient(1100px 760px at 74% 12%, rgba(200, 85, 46, 0.26), rgba(200, 85, 46, 0) 60%),
+      radial-gradient(900px 700px at 10% 90%, rgba(158, 106, 58, 0.24), rgba(158, 106, 58, 0) 62%),
+      radial-gradient(760px 560px at 50% 50%, rgba(120, 80, 50, 0.10), rgba(120, 80, 50, 0) 65%),
+      linear-gradient(168deg, #150C07 0%, #23120B 48%, #2B150C 78%, #331A0E 100%);
+  }
+  /* JS 用滚动进度写入 --dusk（0→1），透明度曲线经过缓动让过渡更从容 */
+  .wallpaper.dusk { opacity: var(--dusk, 0); }
+
+  /* ============ 桌面 ============ */
+  .desktop {
+    position: relative; height: 100vh; z-index: 3;
   }
 
   .hero { position: absolute; left: 64px; bottom: 148px; max-width: 560px; z-index: 6; }
@@ -169,6 +183,15 @@
   body:not(.booted) .hero { opacity: 0; transform: translateY(10px); }
   body:not(.booted) .stage { opacity: 0 !important; pointer-events: none !important; }
 
+  /* ============ 玻璃镜面高光：跟随鼠标的径向光斑（JS 写入 --mx / --my） ============ */
+  .glass-glow { position: relative; }
+  .glass-glow::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    pointer-events: none; opacity: 0; transition: opacity 0.4s ease;
+    background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0) 70%);
+  }
+  .glass-glow:hover::after { opacity: 1; }
+
   /* ============ 第一屏：底部滚动引导 ============ */
   .scroll-cue {
     position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
@@ -191,12 +214,6 @@
     position: relative; height: 100vh; z-index: 3;
     display: flex; align-items: center; gap: 56px;
     padding: 90px 64px 130px;
-    /* 暗陶土晨昏壁纸，呼应 MindMap AI 米白纸面与陶土橙 */
-    background:
-      radial-gradient(1100px 760px at 74% 12%, rgba(200, 85, 46, 0.26), rgba(200, 85, 46, 0) 60%),
-      radial-gradient(900px 700px at 10% 90%, rgba(158, 106, 58, 0.24), rgba(158, 106, 58, 0) 62%),
-      radial-gradient(760px 560px at 50% 50%, rgba(120, 80, 50, 0.10), rgba(120, 80, 50, 0) 65%),
-      linear-gradient(168deg, #150C07 0%, #23120B 48%, #2B150C 78%, #331A0E 100%);
   }
   .mf-intro {
     width: 360px; flex: none; position: relative; z-index: 6;
@@ -268,12 +285,15 @@
     user-select: none;
   }
   .dock-slot { position: relative; }
-  /* 选中态：图标背后的高亮底衬 */
+  /* 选中态：图标背后的高亮底衬（颜色随 App 主色，图标"自己在发光"） */
+  .dock-slot[data-for="repaste"] { --glow: 255, 138, 61; }   /* 陶土橙 */
+  .dock-slot[data-for="readless"] { --glow: 110, 155, 255; } /* 冷蓝 */
+  .dock-slot[data-for="wtd"] { --glow: 52, 199, 89; }        /* 系统绿 */
   .dock-slot::before {
     content: ""; position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%);
     width: 62px; height: 62px; border-radius: 18px;
-    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.10) 70%, transparent);
-    box-shadow: 0 0 22px rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+    background: radial-gradient(closest-side, rgba(var(--glow, 255, 255, 255), 0.30), rgba(var(--glow, 255, 255, 255), 0.10) 70%, transparent);
+    box-shadow: 0 0 22px rgba(var(--glow, 255, 255, 255), 0.24), inset 0 0 0 1px rgba(var(--glow, 255, 255, 255), 0.28);
     opacity: 0; transition: opacity 0.35s ease; pointer-events: none;
   }
   body[data-app="repaste"] .dock-slot[data-for="repaste"]::before,
@@ -288,8 +308,8 @@
   body[data-app="repaste"] .dock-slot[data-for="repaste"]::after,
   body[data-app="readless"] .dock-slot[data-for="readless"]::after,
   body[data-app="wtd"] .dock-slot[data-for="wtd"]::after {
-    opacity: 1; width: 6px; height: 6px; background: #fff;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 3px rgba(255, 255, 255, 1);
+    opacity: 1; width: 6px; height: 6px; background: rgb(var(--glow, 255, 255, 255));
+    box-shadow: 0 0 10px rgba(var(--glow, 255, 255, 255), 0.9), 0 0 3px rgba(var(--glow, 255, 255, 255), 1);
   }
   .dock-item {
     width: 56px; height: 56px; border-radius: 15px; border: none; cursor: pointer;
@@ -347,6 +367,10 @@
 </style>
 </head>
 <body data-app="repaste" data-space="1">
+
+  <!-- 双层壁纸：fixed 底层，滚动驱动交叉淡化（深夜 → 黄昏） -->
+  <div class="wallpaper" aria-hidden="true"></div>
+  <div class="wallpaper dusk" aria-hidden="true"></div>
 
   <!-- 菜单栏 -->
   <header class="menubar">
@@ -460,12 +484,12 @@
     </div>
 
     <!-- 底部滚动引导：提示还有下一个产品 -->
-    <button class="scroll-cue" id="scroll-cue" aria-label="下滑查看下一个产品">
+    <button class="scroll-cue glass-glow" id="scroll-cue" aria-label="下滑查看下一个产品">
       <span class="ar">↓</span> 下滑查看 MindMap AI
     </button>
 
     <!-- Dock：点击切换当前运行的产品 -->
-    <nav class="dock" aria-label="产品切换">
+    <nav class="dock glass-glow" aria-label="产品切换">
       <div class="dock-slot" data-for="repaste">
         <button class="dock-item" data-app="repaste" aria-label="切换到 Repaste">
           <img src="repaste-app-icon.svg" alt="Repaste">
@@ -489,7 +513,7 @@
 
   <!-- ============ 第二屏：MindMap AI（滚动切换到另一个桌面 Space） ============ -->
   <section class="space2" id="space2">
-    <div class="mf-intro">
+    <div class="mf-intro glass-glow">
       <div class="mf-badge"><i></i>AI 驱动 · 实时生成 · 所见即所得编辑</div>
       <h2>MindMap AI<br>让每一份文档<br>长成一张<em>思维导图</em></h2>
       <p>粘贴文本、上传 PDF、丢进一个链接或微信文章 —— MindMap AI 实时解析内容结构，节点逐个生长成图，生成完毕即可直接编辑、重组、分享。<a href="../index%20mindmap.html" target="_blank" rel="noopener">产品页 ↗</a></p>
@@ -585,6 +609,29 @@
     } else {
       document.getElementById('hero-cap').innerHTML = CAPTIONS.repaste;
     }
+
+    // ---------- 壁纸交叉淡化：滚动进度驱动 --dusk（深夜 → 黄昏，随 Space 切换流转） ----------
+    var duskEl = document.querySelector('.wallpaper.dusk');
+    function updateDusk() {
+      var vh = window.innerHeight;
+      // 第二屏从底部进入视口到完全占据视口，--dusk 从 0 走到 1
+      var p = (vh - space2El.getBoundingClientRect().top) / vh;
+      var eased = Math.min(1, Math.max(0, p));
+      eased = eased * eased * (3 - 2 * eased); // smoothstep：中段快、两端缓
+      duskEl.style.setProperty('--dusk', eased.toFixed(4));
+    }
+    window.addEventListener('scroll', updateDusk, { passive: true });
+    window.addEventListener('resize', updateDusk);
+    updateDusk();
+
+    // ---------- 玻璃镜面高光：把鼠标位置写进各玻璃元素的 --mx / --my ----------
+    document.querySelectorAll('.glass-glow').forEach(function (el) {
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', (e.clientX - r.left).toFixed(1) + 'px');
+        el.style.setProperty('--my', (e.clientY - r.top).toFixed(1) + 'px');
+      });
+    });
   </script>
 </body>
 </html>
