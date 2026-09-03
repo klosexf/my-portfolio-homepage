@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Readless · 可交互演示舞台（嵌入版）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============ 设计变量 ============ */
+:root{
+  --ink:#edf1f8;
+  --ink-dim:#9aa7bd;
+  --ink-faint:#5e6b82;
+  --blue:#4f8cff;
+  --blue-deep:#2e5fd8;
+  --amber:#ffb45e;
+  --amber-soft:rgba(255,178,86,.16);
+  --line:rgba(150,175,215,.13);
+  --serif:"Noto Serif SC","Songti SC",Georgia,serif;
+  --sans:"Noto Sans SC","PingFang SC",-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  width:100%;height:100%;
+  background:transparent;
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+
+/* ============ 舞台（透明嵌入版） ============ */
+.stage-viewport{position:fixed;inset:0;overflow:hidden}
+.scene{
+  width:1080px;height:524px;position:absolute;top:50%;left:50%;
+  transform-origin:center center;
+}
+.screen{
+  position:absolute;inset:0;border-radius:20px;overflow:hidden;
+  background:transparent;   /* 透出宿主桌面背景 */
+  border:none;
+}
+/* 文档窗口 */
+.window{
+  position:absolute;top:40px;left:50%;transform:translateX(-50%);
+  width:872px;height:372px;border-radius:14px;z-index:3;
+  background:rgba(16,21,32,.72);
+  backdrop-filter:blur(30px) saturate(150%);
+  -webkit-backdrop-filter:blur(30px) saturate(150%);
+  border:1px solid rgba(175,200,245,.16);
+  box-shadow:0 28px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.07);
+  overflow:hidden;
+}
+.titlebar{
+  height:42px;display:flex;align-items:center;padding:0 16px;gap:16px;
+  border-bottom:1px solid rgba(150,175,215,.10);
+  background:rgba(10,14,22,.45);position:relative;
+}
+.lights{display:flex;gap:8px}
+.lights i{width:12px;height:12px;border-radius:50%}
+.lights i:nth-child(1){background:#ff5f57}.lights i:nth-child(2){background:#febc2e}.lights i:nth-child(3){background:#28c840}
+.wtitle{
+  position:absolute;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-dim);
+  white-space:nowrap;
+}
+.wtitle .doc-ic{width:15px;height:15px;border-radius:4px;background:linear-gradient(140deg,#5c97ff,#2e5fd8);display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700}
+.wtools{margin-left:auto;display:flex;gap:14px;color:var(--ink-faint);font-size:13px}
+.wtools span{width:16px;text-align:center;opacity:.8}
+/* 文档 */
+.page{padding:18px 48px 0;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;color:#dfe6f2}
+.doc-kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--ink-faint);margin-bottom:7px}
+.doc-title{font-size:22px;font-weight:700;letter-spacing:.01em;margin-bottom:4px;color:#f1f5fc;font-family:Georgia,serif}
+.doc-meta{font-size:12px;color:var(--ink-faint);font-family:var(--sans);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(150,175,215,.10)}
+.ln{white-space:nowrap;font-size:14px;line-height:1.85;display:block}
+.ln-dim{opacity:.34}
+.ln-url{font-family:var(--mono);font-size:12px;color:#7f9ecf}
+.sel{
+  background:linear-gradient(rgba(74,132,255,.40),rgba(74,132,255,.40)) 0 0 / 0% 100% no-repeat;
+  border-radius:3px;transition:background-size .34s ease;
+}
+.ln.on .sel{background-size:var(--sw,100%) 100%}
+.snt{border-radius:3px;transition:background .45s,box-shadow .45s;padding:1px 0;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.snt.speaking{background:var(--amber-soft);box-shadow:0 0 18px rgba(255,178,86,.14)}
+.snt.done{background:rgba(79,140,255,.12)}
+.doc{transition:.4s}
+.doc.cleaned .ln-url{opacity:.26;text-decoration:line-through;text-decoration-color:rgba(255,110,110,.6);text-decoration-thickness:1.5px;transition:.5s}
+.doc .md,.doc .fn{transition:.45s}
+.doc.cleaned .md,.doc.cleaned .fn{opacity:0}
+/* 清洗徽章 */
+.clean-badge{
+  position:absolute;top:56px;right:26px;z-index:8;
+  display:flex;align-items:center;gap:9px;
+  font-family:var(--sans);font-size:12.5px;color:#ffd9a1;
+  padding:8px 15px;border-radius:10px;
+  background:rgba(38,29,16,.72);border:1px solid rgba(255,178,86,.3);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  opacity:0;transform:translateY(-6px);transition:.45s;pointer-events:none;
+}
+.clean-badge.show{opacity:1;transform:translateY(0)}
+.clean-badge .cb-ic{font-family:var(--mono);color:var(--amber)}
+/* 键帽 */
+.kbd-pop{
+  position:absolute;z-index:12;right:110px;top:288px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  opacity:0;transform:translateY(8px) scale(.92);transition:.3s cubic-bezier(.3,1.4,.5,1);
+  pointer-events:none;
+}
+.kbd-pop.show{opacity:1;transform:translateY(0) scale(1)}
+.kbd-label{
+  font-size:12.5px;color:#dbe7ff;padding:4px 13px;border-radius:999px;
+  background:rgba(46,95,216,.32);border:1px solid rgba(120,160,255,.4);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  white-space:nowrap;
+}
+.kbd-keys{display:flex;gap:8px}
+.key{
+  min-width:46px;height:46px;padding:0 14px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:16px;font-weight:700;color:#e8efff;
+  background:linear-gradient(180deg,#333d52,#1c2433);
+  border:1px solid rgba(175,200,245,.3);
+  box-shadow:0 7px 0 rgba(9,12,20,.9), 0 12px 24px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.18);
+  transition:.12s;
+}
+.kbd-pop.esc .key{min-width:64px}
+.key.down{
+  transform:translateY(5px);
+  box-shadow:0 2px 0 rgba(9,12,20,.9), 0 4px 10px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1);
+  background:linear-gradient(180deg,#2e5fd8,#24459f);border-color:rgba(140,180,255,.5);
+}
+/* 播放条 */
+.player{
+  position:absolute;left:50%;bottom:36px;transform:translate(-50%,150%);
+  width:706px;z-index:9;border-radius:14px;
+  background:rgba(82,82,86,.72);
+  backdrop-filter:blur(26px) saturate(140%);
+  -webkit-backdrop-filter:blur(26px) saturate(140%);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 22px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.10);
+  transition:transform .65s cubic-bezier(.22,.9,.24,1),opacity .4s;
+  opacity:0;
+}
+.player.show{transform:translate(-50%,0);opacity:1}
+.player-in{padding:9px 14px}
+.p-prepare{display:flex;align-items:center;gap:12px;font-size:13.5px;color:var(--ink-dim);min-height:40px}
+.spinner{width:15px;height:15px;border-radius:50%;border:2px solid rgba(120,160,255,.25);border-top-color:var(--blue);animation:spin .8s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.p-prepare b{color:var(--ink);font-weight:500}
+.p-prepare .mono{font-family:var(--mono);font-size:11.5px;color:#9fc0ff}
+.p-full{display:none;align-items:center;gap:12px}
+.player.is-playing .p-full{display:flex}
+.player.is-playing .p-prepare{display:none}
+.p-btn{
+  width:38px;height:38px;border-radius:50%;border:none;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;
+  background:rgba(255,255,255,.18);transition:.2s;flex:none;
+}
+.p-btn:hover{background:rgba(255,255,255,.26)}
+.p-btn svg{width:11px;height:11px;fill:currentColor}
+.icon-play{display:block}.icon-pause{display:none}
+.player.playing .icon-play{display:none}
+.player.playing .icon-pause{display:block}
+.p-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.p-top{display:flex;align-items:baseline;gap:10px}
+.p-src{font-size:13px;font-weight:600;color:#fff;white-space:nowrap}
+.p-state{margin-left:auto;font-size:12px;color:rgba(255,255,255,.55);white-space:nowrap}
+.p-track{position:relative;height:5px;border-radius:3px;background:rgba(0,0,0,.35)}
+.p-fill{position:absolute;left:0;top:0;bottom:0;width:0%;border-radius:3px;background:rgba(0,0,0,.5)}
+.p-knob{
+  position:absolute;top:50%;left:0%;width:15px;height:15px;border-radius:50%;
+  background:#fff;transform:translate(-50%,-50%);
+  box-shadow:0 1px 4px rgba(0,0,0,.45);
+}
+.p-right{display:flex;align-items:center;gap:12px;flex:none}
+.p-rate{
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:12.5px;color:#fff;
+  padding:5px 11px;border-radius:8px;background:rgba(0,0,0,.28);
+}
+.p-rate svg{width:9px;height:11px;fill:#fff;opacity:.9}
+.p-collapse{border:none;background:none;cursor:pointer;padding:4px;display:flex;align-items:center}
+.p-collapse svg{width:12px;height:12px;stroke:#fff;stroke-width:2;fill:none;opacity:.85;stroke-linecap:round;stroke-linejoin:round}
+.esc-hint{
+  position:absolute;right:26px;bottom:26px;z-index:8;
+  font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+  padding:5px 11px;border-radius:8px;border:1px solid var(--line);
+  background:rgba(8,12,20,.5);opacity:0;transition:.4s;
+}
+.scene.is-live .esc-hint{opacity:1}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 演示舞台（透明嵌入版） ================= -->
+<div class="stage-viewport" id="viewport">
+  <div class="scene" id="scene">
+
+    <div class="screen">
+      <!-- 「预览」文档窗口 -->
+      <div class="window">
+        <div class="titlebar">
+          <div class="lights"><i></i><i></i><i></i></div>
+          <div class="wtitle"><span class="doc-ic">D</span>设计文档 — 连续聆听.pdf</div>
+          <div class="wtools"><span>⌕</span><span>⇪</span></div>
+        </div>
+        <div class="page">
+          <div class="doc" id="doc">
+            <div class="doc-kicker">HUMAN INTERFACE GUIDELINES · CH.4</div>
+            <h3 class="doc-title">Designing for Continuous Listening</h3>
+            <div class="doc-meta">12 页 · 约 3 分 12 秒朗读 · 英文（美音）</div>
+
+            <span class="ln ln-first" style="--sw:56%"><span class="sel"><span class="snt" data-s="0">Continuous listening turns a long document into a</span></span></span>
+            <span class="ln"><span class="sel"><span class="snt" data-s="0">podcast you can follow while your hands stay busy.</span></span></span>
+            <span class="ln ln-url"><span class="sel">https://developer.apple.com/design/human-interface-guidelines</span></span>
+            <span class="ln"><span class="sel"><span class="snt" data-s="1">Links and footnotes<span class="fn">[12]</span> are skipped, so the voice never</span></span></span>
+            <span class="ln"><span class="sel"><span class="snt" data-s="1">stumbles over symbols like <span class="md">**</span>bold<span class="md">**</span> markers, or the hard</span></span></span>
+            <span class="ln"><span class="sel"><span class="snt" data-s="1">line breaks a PDF loves to drop mid-word.</span> <span class="snt" data-s="2">Switch apps</span></span></span>
+            <span class="ln ln-last" style="--sw:40%"><span class="sel"><span class="snt" data-s="2">freely — the voice follows you.</span></span></span>
+          </div>
+        </div>
+
+        <!-- 清洗徽章 -->
+        <div class="clean-badge" id="cleanBadge">
+          <span class="cb-ic">✦</span>已清洗 · 跳过 1 个链接 · 2 处符号 · 合并硬断行
+        </div>
+      </div>
+
+      <!-- 底部播放条 -->
+      <div class="player" id="player">
+        <div class="player-in">
+          <div class="p-prepare">
+            <span class="spinner"></span>
+            <span>正在准备 · 预计 <b>03:12</b></span>
+            <span class="mono">清洗链接与硬断行…</span>
+          </div>
+          <div class="p-full">
+            <div class="p-btn" id="playBtn">
+              <svg class="icon-play" viewBox="0 0 12 12"><path d="M2.5 1.2v9.6L10.6 6z"/></svg>
+              <svg class="icon-pause" viewBox="0 0 12 12"><path d="M2.5 1.5h2.6v9H2.5zM6.9 1.5h2.6v9H6.9z"/></svg>
+            </div>
+            <div class="p-mid">
+              <div class="p-top">
+                <span class="p-src">来自「预览」</span>
+                <span class="p-state" id="pState">正在朗读</span>
+              </div>
+              <div class="p-track">
+                <div class="p-fill" id="barFill"></div>
+                <div class="p-knob" id="barKnob"></div>
+              </div>
+            </div>
+            <div class="p-right">
+              <span class="p-rate">1.0×
+                <svg viewBox="0 0 9 11"><path d="M4.5 0 8 3.6H1z"/><path d="M4.5 11 1 7.4h7z"/></svg>
+              </span>
+              <button class="p-collapse" aria-label="收起播放条">
+                <svg viewBox="0 0 12 12"><path d="M2.5 7.5 6 4l3.5 3.5"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Esc 角标 -->
+      <div class="esc-hint">esc 停止</div>
+    </div>
+
+    <!-- 快捷键键帽 -->
+    <div class="kbd-pop" id="kbdPop">
+      <div class="kbd-label" id="kbdLabel">朗读</div>
+      <div class="kbd-keys" id="kbdKeys">
+        <div class="key">⌥</div>
+        <div class="key">R</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ================= 动画引擎 ================= */
+(function(){
+  const $  = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const scene   = $('#scene');
+  const doc     = $('#doc');
+  const lines   = $$('#doc .ln:not(.ln-dim)');
+  const snts    = $$('#doc .snt');
+  const player  = $('#player');
+  const kbd     = $('#kbdPop');
+  const kbdLabel= $('#kbdLabel');
+  const badge   = $('#cleanBadge');
+  const barFill = $('#barFill');
+  const barKnob = $('#barKnob');
+  const pState  = $('#pState');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const TOTAL = 192;                       // 03:12
+  const SENTENCES = [
+    { text:'Continuous listening turns a long document into a podcast…', span:[2, 27] },
+    { text:'Links and footnotes are skipped, so the voice never stumbles…', span:[31, 57] },
+    { text:'Switch apps freely — the voice follows you.', span:[62, 85] }
+  ];
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  let progress = 0;
+  function setProgress(sec){
+    progress = sec;
+    const pct = Math.min(100, sec/TOTAL*100) + '%';
+    if (barFill) barFill.style.width = pct;
+    if (barKnob) barKnob.style.left = pct;
+  }
+  function updateSentences(){
+    let active = -1;
+    SENTENCES.forEach((s, i) => {
+      if (progress >= s.span[1]) snts.forEach(el => { if (+el.dataset.s === i) { el.classList.add('done'); el.classList.remove('speaking'); } });
+      else if (progress >= s.span[0]) active = i;
+    });
+    if (active >= 0){
+      snts.forEach(el => {
+        const i = +el.dataset.s;
+        el.classList.toggle('speaking', i === active);
+        if (i < active) { el.classList.add('done'); el.classList.remove('speaking'); }
+      });
+    }
+  }
+
+  async function pressKeys(label, mode){
+    if (!kbd) return;
+    if (kbdLabel) kbdLabel.textContent = label;
+    kbd.classList.remove('esc');
+    const keysBox = $('#kbdKeys');
+    if (!keysBox) return;
+    if (mode === 'esc'){
+      kbd.classList.add('esc');
+      keysBox.innerHTML = '<div class="key">esc</div>';
+    } else {
+      keysBox.innerHTML = '<div class="key">⌥</div><div class="key">R</div>';
+    }
+    kbd.classList.add('show');
+    await sleep(360);
+    $$('#kbdKeys .key').forEach((k,i)=>setTimeout(()=>k.classList.add('down'), i*110));
+    await sleep(330);
+  }
+  function releaseKeys(){ $$('#kbdKeys .key').forEach(k=>k.classList.remove('down')); }
+  function hideKbd(){ if (!kbd) return; releaseKeys(); setTimeout(()=>kbd.classList.remove('show'), 120); }
+
+  function playTo(target, dur){
+    const from = progress, t0 = performance.now();
+    return new Promise(res => {
+      (function tick(now){
+        const t = Math.min(1, (now - t0) / (dur*1000));
+        setProgress(from + (target - from) * t);
+        updateSentences();
+        if (t < 1) requestAnimationFrame(tick); else res();
+      })(t0);
+    });
+  }
+
+  function resetScene(){
+    scene.classList.remove('is-live','is-paused');
+    player.classList.remove('show','is-playing','playing');
+    doc.classList.remove('cleaned');
+    if (badge) badge.classList.remove('show');
+    lines.forEach(l=>l.classList.remove('on'));
+    snts.forEach(s=>s.classList.remove('speaking','done'));
+    setProgress(0);
+    if (pState) pState.textContent = '正在朗读';
+  }
+
+  async function cycle(){
+    resetScene();
+    await sleep(1100);                                          // 待机
+    lines.forEach((l,i)=>setTimeout(()=>l.classList.add('on'), i*150));   // 逐行选中
+    await sleep(lines.length*150 + 620);
+    await pressKeys('朗读');
+    hideKbd();
+    player.classList.add('show');                               // 播放条滑入 · 准备态
+    await sleep(700);
+    doc.classList.add('cleaned');                               // 清洗：URL 划掉、符号淡出
+    if (badge) badge.classList.add('show');
+    await sleep(1500);
+    if (badge) badge.classList.remove('show');
+    await sleep(350);
+    player.classList.add('is-playing','playing');               // 首字出声
+    scene.classList.add('is-live');
+    await playTo(59, 5.4);                                      // 朗读 s0 + s1
+    await pressKeys('暂停 / 继续');
+    scene.classList.add('is-paused');
+    player.classList.remove('playing');
+    if (pState) pState.textContent = '已暂停';
+    hideKbd();
+    await sleep(1250);
+    scene.classList.remove('is-paused');                        // 继续朗读 s2
+    player.classList.add('playing');
+    if (pState) pState.textContent = '正在朗读';
+    await playTo(88, 2.7);
+    await pressKeys('停止', 'esc');
+    scene.classList.remove('is-live');
+    player.classList.remove('show','playing');
+    hideKbd();
+    await sleep(1500);
+  }
+
+  /* 静态兜底：用户开启「减少动态效果」时展示定格画面 */
+  function staticFrame(){
+    lines.forEach(l=>l.classList.add('on'));
+    doc.classList.add('cleaned');
+    player.classList.add('show','is-playing','playing');
+    scene.classList.add('is-live');
+    setProgress(70);
+    snts.forEach(el=>{ if (+el.dataset.s < 2) el.classList.add('done'); });
+    snts.forEach(el=>{ if (+el.dataset.s === 2) el.classList.add('speaking'); });
+  }
+
+  /* 舞台等比缩放：按视口铺满（contain），居中，溢出裁切 */
+  const DESIGN_W = 1080, DESIGN_H = 524;
+  const vp = $('#viewport');
+  function fit(){
+    if (!vp || !scene) return;
+    const w = vp.clientWidth, h = vp.clientHeight;
+    const scale = Math.max(0.1, Math.min(w / DESIGN_W, h / DESIGN_H));
+    scene.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  }
+  addEventListener('resize', fit);
+  fit();
+
+  /* 等字体就绪再启动，避免换行错位 */
+  if (document.fonts && document.fonts.ready){
+    document.fonts.ready.then(start);
+  } else { start(); }
+  function start(){
+    if (reduced){ staticFrame(); return; }
+    (async function loop(){ while(true){ await cycle(); } })();
+  }
+})();
+</script>
+</body>
+</html>

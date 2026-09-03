@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindMap AI — 让每一份文档，长成一张思维导图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F7F2E9;
+    --paper-deep: #EFE7D8;
+    --ink: #2B2118;
+    --ink-soft: #5C4F42;
+    --ink-faint: #9A8C7C;
+    --terra: #C8552E;
+    --terra-deep: #A03F1F;
+    --terra-soft: #E8977A;
+    --sage: #6E7F5A;
+    --ochre: #C99A3C;
+    --line: #D8CCB8;
+    --card: #FFFCF5;
+    --serif: "Noto Serif SC", serif;
+    --sans: "Noto Sans SC", sans-serif;
+    --mono: "JetBrains Mono", monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* ---- 纸张噪点纹理 ---- */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ================= 导航 ================= */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(247, 242, 233, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--terra);
+    display: grid; place-items: center;
+    box-shadow: 0 2px 0 var(--terra-deep);
+  }
+  .logo-mark svg { width: 20px; height: 20px; }
+  .logo-name {
+    font-family: var(--serif); font-weight: 700; font-size: 19px;
+    letter-spacing: 0.02em;
+  }
+  .logo-name em { font-style: normal; color: var(--terra); }
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+  .nav-links a {
+    text-decoration: none; color: var(--ink-soft);
+    font-size: 14.5px; font-weight: 500;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--terra); }
+  .nav-cta {
+    padding: 9px 22px; border-radius: 999px;
+    background: var(--ink); color: var(--paper) !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 0 rgba(43,33,24,.25);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .nav-cta:hover { transform: translateY(-1px); color: var(--paper); }
+
+  /* ================= HERO ================= */
+  .hero {
+    min-height: 100vh;
+    padding: 130px 48px 80px;
+    max-width: 1280px; margin: 0 auto;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 18px; border-radius: 999px;
+    border: 1px solid var(--terra);
+    color: var(--terra-deep);
+    font-size: 13px; font-weight: 500;
+    background: rgba(200, 85, 46, 0.06);
+    margin-bottom: 28px;
+    animation: riseIn .8s .1s both;
+  }
+  .hero-badge .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--terra);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1);} 50% { opacity: .4; transform: scale(.7);} }
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 900;
+    font-size: clamp(38px, 5.4vw, 66px);
+    line-height: 1.22;
+    text-align: center;
+    letter-spacing: 0.01em;
+    animation: riseIn .8s .25s both;
+  }
+  .hero h1 .accent { color: var(--terra); position: relative; white-space: nowrap; }
+  .hero h1 .accent::after {
+    content: "";
+    position: absolute; left: 2%; right: 2%; bottom: 6px;
+    height: 12px;
+    background: rgba(200, 85, 46, .16);
+    z-index: -1;
+    transform: skewX(-8deg);
+  }
+  .hero p.sub {
+    margin-top: 22px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 18px; line-height: 1.8;
+    max-width: 640px;
+    animation: riseIn .8s .4s both;
+  }
+  .hero-actions {
+    margin-top: 34px;
+    display: flex; gap: 16px;
+    animation: riseIn .8s .55s both;
+  }
+  .btn-github {
+    padding: 14px 34px; border-radius: 14px;
+    background: var(--ink); color: #FFF8F0;
+    font-family: var(--sans); font-size: 16px; font-weight: 700;
+    border: none; cursor: pointer;
+    box-shadow: 0 3px 0 rgba(43,33,24,.45);
+    transition: transform .15s, box-shadow .15s;
+    text-decoration: none; display: inline-flex; align-items: center;
+  }
+  .btn-github:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(43,33,24,.45); }
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ================= 产品演示窗口（首屏动画核心） ================= */
+  .demo-stage {
+    margin-top: 64px;
+    width: 100%;
+    animation: riseIn .9s .7s both;
+    position: relative;
+  }
+  .demo-window {
+    background: var(--card);
+    border: 1.5px solid var(--ink);
+    border-radius: 20px;
+    box-shadow: 8px 8px 0 rgba(43, 33, 24, 0.12);
+    overflow: hidden;
+    position: relative;
+  }
+  .demo-titlebar {
+    height: 48px;
+    background: var(--paper-deep);
+    border-bottom: 1.5px solid var(--ink);
+    display: flex; align-items: center;
+    padding: 0 20px; gap: 16px;
+  }
+  .titlebar-dots { display: flex; gap: 8px; }
+  .titlebar-dots span {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 1.5px solid var(--ink);
+  }
+  .titlebar-dots span:nth-child(1) { background: var(--terra); }
+  .titlebar-dots span:nth-child(2) { background: var(--ochre); }
+  .titlebar-dots span:nth-child(3) { background: var(--sage); }
+  .titlebar-title {
+    font-family: var(--mono); font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  .titlebar-pill {
+    margin-left: auto;
+    font-family: var(--mono); font-size: 11.5px;
+    padding: 4px 14px; border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-faint);
+  }
+  .demo-video {
+    width: 100%;
+    background: var(--card);
+    line-height: 0;
+    display: flex;
+    justify-content: center;
+  }
+  .demo-video video {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* 标题栏 48px + hero 上下留白 + 提示文字，保证整个窗口在一屏内完整可见 */
+    max-height: calc(100vh - 210px);
+    object-fit: contain;
+    background: var(--card);
+  }
+  /* 底部提示小字 */
+  .hero-hint {
+    margin-top: 18px;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--ink-faint);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .hero-hint .arrow { animation: bounceY 1.6s infinite; }
+  @keyframes bounceY { 0%,100% { transform: translateY(0);} 50% { transform: translateY(4px);} }
+
+  /* ================= 通用 Section ================= */
+  section { padding: 100px 48px; }
+  .section-inner { max-width: 1120px; margin: 0 auto; }
+  .sec-eyebrow {
+    font-family: var(--mono); font-size: 12.5px;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--terra);
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 18px;
+  }
+  .sec-eyebrow::before {
+    content: ""; width: 32px; height: 2px;
+    background: var(--terra);
+  }
+  .sec-title {
+    font-family: var(--serif); font-weight: 900;
+    font-size: clamp(28px, 3.6vw, 44px);
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+  .sec-desc {
+    color: var(--ink-soft); font-size: 17px; line-height: 1.8;
+    max-width: 600px;
+  }
+
+  /* ================= 功能特性 ================= */
+  .features { background: var(--card); border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); }
+  .feature-grid {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .feature-card {
+    border: 1.5px solid var(--ink);
+    border-radius: 18px;
+    background: var(--paper);
+    padding: 30px 28px;
+    box-shadow: 5px 5px 0 rgba(43,33,24,.1);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .feature-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 rgba(200,85,46,.22);
+    border-color: var(--terra);
+  }
+  .feature-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: grid; place-items: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    border: 1.5px solid var(--ink);
+  }
+  .feature-card:nth-child(1) .feature-icon { background: rgba(200,85,46,.12); }
+  .feature-card:nth-child(2) .feature-icon { background: rgba(110,127,90,.14); }
+  .feature-card:nth-child(3) .feature-icon { background: rgba(201,154,60,.14); }
+  .feature-card:nth-child(4) .feature-icon { background: rgba(93,124,166,.12); }
+  .feature-card:nth-child(5) .feature-icon { background: rgba(178,120,161,.12); }
+  .feature-card:nth-child(6) .feature-icon { background: rgba(200,85,46,.12); }
+  .feature-card h3 {
+    font-family: var(--serif); font-size: 20px;
+    font-weight: 700; margin-bottom: 10px;
+  }
+  .feature-card p {
+    color: var(--ink-soft); font-size: 14.5px; line-height: 1.75;
+  }
+
+  /* ================= Footer ================= */
+  footer {
+    border-top: 1.5px solid var(--ink);
+    background: var(--paper-deep);
+    padding: 40px 48px;
+  }
+  .footer-inner {
+    max-width: 1120px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-inner .copy { font-size: 13.5px; color: var(--ink-faint); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; }
+  .footer-links a:hover { color: var(--terra); }
+
+  /* ================= 响应式 ================= */
+  @media (max-width: 960px) {
+    nav { padding: 14px 24px; }
+    .nav-links a:not(.nav-cta) { display: none; }
+    .hero { padding: 110px 24px 60px; }
+    section { padding: 70px 24px; }
+    .feature-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="5" r="2.4" fill="#FFF8F0"/>
+        <circle cx="5" cy="18" r="2.4" fill="#FFF8F0"/>
+        <circle cx="19" cy="18" r="2.4" fill="#FFF8F0"/>
+        <path d="M12 7.4 L5.8 15.8 M12 7.4 L18.2 15.8" stroke="#FFF8F0" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="logo-name">Mind<em>Map</em> AI</div>
+  </div>
+  <div class="nav-links">
+    <a href="#features">功能</a>
+    <a href="https://github.com/klosexf/mindmap" target="_blank" rel="noopener" class="nav-cta">免费开始</a>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="hero-badge"><span class="dot"></span>AI 驱动 · 实时生成 · 所见即所得编辑</div>
+  <h1>让每一份文档<br>长成一张<span class="accent">思维导图</span></h1>
+  <p class="sub">粘贴文本、上传 PDF、丢进一个链接或微信文章 —— MindMap AI 会实时解析内容结构，节点逐个生长成图，生成完毕即可直接编辑、重组、分享。</p>
+  <div class="hero-actions">
+    <a class="btn-github" href="https://github.com/klosexf/mindmap" target="_blank" rel="noopener">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-3px;margin-right:8px;">
+        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+      在 GitHub 上查看
+    </a>
+  </div>
+
+  <!-- ===== 产品演示动画窗口 ===== -->
+  <div class="demo-stage" id="demo">
+    <div class="demo-window">
+      <div class="demo-titlebar">
+        <div class="titlebar-dots"><span></span><span></span><span></span></div>
+        <div class="titlebar-title">MindMap AI — 产品经理是不公平的岗位.pdf</div>
+        <div class="titlebar-pill">● 实时演示</div>
+      </div>
+      <div class="demo-video">
+        <video id="demoVideo" src="mindmap-demo.mp4" controls autoplay muted loop playsinline preload="metadata"></video>
+      </div>
+    </div>
+    <div class="hero-hint" style="justify-content:center;"><span class="arrow">↓</span> 以上为产品真实录屏演示</div>
+  </div>
+</header>
+
+<!-- ================= 功能特性 ================= -->
+<section class="features" id="features">
+  <div class="section-inner">
+    <div class="sec-eyebrow">Features</div>
+    <h2 class="sec-title">从「一堆文字」到「一张图」<br>中间只差一次点击</h2>
+    <p class="sec-desc">我们把最耗时的结构化阅读工作交给 AI：它负责拆解、提炼、组织，你负责思考、修改、决策。</p>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📥</div>
+        <h3>多源输入，一键转入</h3>
+        <p>长文本、PDF 报告、网页链接、微信公众号文章 —— 四种来源统一入口，粘贴即解析，无需手动整理格式。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>节点逐个实时生长</h3>
+        <p>不是等 30 秒后「啪」地出一张图。AI 边想边画，节点一个个长出来，进度、节点数、耗时全程可见。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✍️</div>
+        <h3>生成即可编辑</h3>
+        <p>双击改文字、拖拽换层级、一键换布局与主题。生成结束的那一刻，就是编辑开始的那一刻。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧱</div>
+        <h3>忠于原文的结构承诺</h3>
+        <p>原文的编号、分点、章节层级都会如实映射到导图中 —— 七个策略就是七个分支，不合并、不遗漏、不改写。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>AI 继续优化你的图</h3>
+        <p>对结果不满意？让 AI 继续展开某个分支、精简冗余节点、或重新组织结构，人工编辑与 AI 操作互不干扰。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📤</div>
+        <h3>多格式导出分享</h3>
+        <p>导出高清图片、SVG、OPML / Markdown 大纲，或生成分享链接 —— 汇报、沉淀、协作一步到位。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<footer>
+  <div class="footer-inner">
+    <div class="copy">© 2026 MindMap AI · 让知识长成形状</div>
+    <div class="footer-links">
+      <a href="#features">功能</a>
+      <a href="#top">回到顶部 ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   首屏演示：产品真实录屏视频
+   —— 进入视口自动播放，离开视口暂停
+   ============================================================ */
+(function () {
+  const video = document.getElementById('demoVideo');
+
+  function playDemo() {
+    if (!video) return;
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  }
+  window.startAnimation = playDemo;
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) playDemo();
+      else video.pause();
+    });
+  }, { threshold: 0.35 });
+  if (video) io.observe(video);
+})();
+</script>
+</body>
+</html>
