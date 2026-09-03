@@ -28,6 +28,7 @@ jobs:
             -e 's|\.\./index-readless\.html|index-readless.html|g' \
             -e 's|\.\./index%20mindmap\.html|index%20mindmap.html|g' \
             -e 's|\.\./landing-repaste\.html|landing-repaste.html|g' \
+            -e 's|\.\./icon_512x512\.png|icon_512x512.png|g' \
             -e 's|"embed-readless\.html|"portfolio-demos/embed-readless.html|g' \
             -e 's|"embed-repaste\.html|"portfolio-demos/embed-repaste.html|g' \
             -e 's|"embed-wtd\.html|"portfolio-demos/embed-wtd.html|g' \

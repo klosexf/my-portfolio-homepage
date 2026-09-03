@@ -303,6 +303,22 @@
   .footer-links a { font-size: 13.5px; color: var(--ink-soft); text-decoration: none; }
   .footer-links a:hover { color: var(--terra); }
 
+  /* ================= 嵌入模式（?embed）：只输出演示窗口，供作品集 iframe 取景 ================= */
+  body.embed-demo { overflow: hidden; }
+  body.embed-demo nav,
+  body.embed-demo .hero-badge,
+  body.embed-demo .hero h1,
+  body.embed-demo .hero .sub,
+  body.embed-demo .hero-actions,
+  body.embed-demo .hero-hint,
+  body.embed-demo .features,
+  body.embed-demo footer { display: none; }
+  body.embed-demo .hero { min-height: 0; padding: 0; max-width: none; margin: 0; }
+  body.embed-demo .demo-stage { margin-top: 0; }
+  body.embed-demo .demo-video video { max-height: none; }
+  /* 硬阴影会被外层裁剪容器切掉，改为由外层提供柔和大投影 */
+  body.embed-demo .demo-window { box-shadow: none; }
+
   /* ================= 响应式 ================= */
   @media (max-width: 960px) {
     nav { padding: 14px 24px; }
@@ -314,6 +330,11 @@
 </style>
 </head>
 <body>
+
+<script>
+  /* 嵌入模式：带 ?embed 参数时只渲染演示窗口（供作品集第二屏 iframe 取景，避免像素坐标硬编码） */
+  if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed-demo');
+</script>
 
 <nav>
   <div class="logo">
@@ -356,7 +377,7 @@
         <div class="titlebar-pill">● 实时演示</div>
       </div>
       <div class="demo-video">
-        <video id="demoVideo" src="录屏2026-09-02%2011.41.11.mov" controls autoplay muted loop playsinline preload="metadata"></video>
+        <video id="demoVideo" src="mindmap-demo.mp4" controls autoplay muted loop playsinline preload="metadata"></video>
       </div>
     </div>
     <div class="hero-hint" style="justify-content:center;"><span class="arrow">↓</span> 以上为产品真实录屏演示</div>
