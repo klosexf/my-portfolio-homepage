@@ -9,3 +9,7 @@ node_modules/
 
 # 大文件（超过 GitHub 100MB 限制）
 录屏2026-09-02 11.41.11.mov
+
+# 开发验证截图（无页面引用，不上传）
+portfolio-demos/demo-*.png
+portfolio-demos/verify-*.png
