@@ -143,11 +143,6 @@
   }
   .hero p a { color: #F6F2EA; text-decoration: none; border-bottom: 1px solid rgba(246, 242, 234, 0.4); padding-bottom: 1px; white-space: nowrap; }
   .hero p a:hover { border-bottom-color: #F6F2EA; }
-  /* 固定身份锚：不随产品切换轮换，先回答"这是谁的桌面" */
-  .hero .hero-anchor {
-    margin-top: 14px; font-size: 13px; letter-spacing: 0.03em;
-    color: rgba(246, 242, 234, 0.55);
-  }
   .hero #hero-cap { margin-top: 10px; }
 
   /* ============ 舞台（真实产品界面，直接铺在桌面右侧区域） ============ */
@@ -321,11 +316,6 @@
   /* 按下瞬间：下沉微缩，形成"按压"闭环 */
   .dock-item:active { transform: translateY(-1px) scale(0.92) !important; transition-duration: 0.08s; }
 
-  /* 分隔线 + 废纸篓（纯装饰，补全 Dock 隐喻） */
-  .dock-divider { width: 1px; margin: 6px; background: rgba(255, 255, 255, 0.22); border-radius: 1px; }
-  .dock-slot.static .dock-item { cursor: default; }
-  .dock-slot.static:hover .dock-item { transform: none; }
-
   /* 首次进入的 Dock 引导弹跳（每个图标各跳一轮，提示可点击切换） */
   @keyframes dockNudge {
     0%, 100% { transform: translateY(0); }
@@ -333,7 +323,7 @@
     55% { transform: translateY(0); }
     75% { transform: translateY(-7px); }
   }
-  body.dock-nudge .dock-slot:not(.static) .dock-item { animation: dockNudge 0.9s cubic-bezier(0.32, 0.72, 0, 1) both; }
+  body.dock-nudge .dock-slot .dock-item { animation: dockNudge 0.9s cubic-bezier(0.32, 0.72, 0, 1) both; }
   body.dock-nudge .dock-slot:nth-child(1) .dock-item { animation-delay: 0.08s; }
   body.dock-nudge .dock-slot:nth-child(2) .dock-item { animation-delay: 0.22s; }
   body.dock-nudge .dock-slot:nth-child(3) .dock-item { animation-delay: 0.36s; }
@@ -451,7 +441,6 @@
   <main class="desktop">
     <section class="hero">
       <h1>Hi, I'm Xiaofeng —<br>我做的macOS工具</h1>
-      <p class="hero-anchor">独立开发者 · 桌面上跑着的，都是我自己写的</p>
       <p id="hero-cap"></p>
     </section>
 
@@ -494,19 +483,6 @@
           <img src="wtd-app-icon.png" alt="WidgetToDo">
           <span class="tip">WidgetToDo · Notion 桌面便签</span>
         </button>
-      </div>
-      <div class="dock-divider" aria-hidden="true"></div>
-      <!-- 废纸篓：纯装饰，补全 Dock 隐喻，不可点击 -->
-      <div class="dock-slot static" aria-hidden="true">
-        <span class="dock-item">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style="display:block">
-            <path d="M5 7h14" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M9.5 7V5.6c0-.6.5-1.1 1.1-1.1h2.8c.6 0 1.1.5 1.1 1.1V7" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M6.5 7l.8 11.4c.05.9.8 1.6 1.7 1.6h6c.9 0 1.65-.7 1.7-1.6L17.5 7" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M10 10.5v6M14 10.5v6" stroke="rgba(255,255,255,0.85)" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
-          <span class="tip">废纸篓 · 空的</span>
-        </span>
       </div>
     </nav>
   </main>
@@ -580,8 +556,7 @@
     }
 
     document.querySelectorAll('.dock-item').forEach(function (btn) {
-      // 废纸篓等装饰位没有 data-app，跳过
-      btn.addEventListener('click', function () { if (btn.dataset.app) switchApp(btn.dataset.app); });
+      btn.addEventListener('click', function () { switchApp(btn.dataset.app); });
     });
 
     document.getElementById('scroll-cue').addEventListener('click', gotoSpace2);
