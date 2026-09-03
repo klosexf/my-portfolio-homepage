@@ -20,6 +20,22 @@ jobs:
       - uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: 生成根路径跳转首页（仓库中不保留 index.html）
+        run: |
+          cat > index.html <<'EOF'
+          <!DOCTYPE html>
+          <html lang="zh-CN">
+          <head>
+          <meta charset="UTF-8">
+          <title>Xiaofeng — 作品集</title>
+          <meta http-equiv="refresh" content="0; url=portfolio-demos/demo-a-macos-desktop.html">
+          <link rel="canonical" href="portfolio-demos/demo-a-macos-desktop.html">
+          </head>
+          <body>
+          <a href="portfolio-demos/demo-a-macos-desktop.html">进入作品集首页</a>
+          </body>
+          </html>
+          EOF
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
