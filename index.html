@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xiaofeng — 桌面即作品集</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #0A0E1E;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(120% 95% at 50% 38%, transparent 55%, rgba(2, 4, 12, 0.55) 100%);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    opacity: 0.05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ============ 菜单栏 ============ */
+  .menubar {
+    position: fixed; top: 0; left: 0; right: 0; height: 32px; z-index: 30;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 12px 0 14px;
+    background: rgba(10, 13, 26, 0.42);
+    -webkit-backdrop-filter: blur(22px) saturate(1.7);
+    backdrop-filter: blur(22px) saturate(1.7);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    font-size: 13px; user-select: none;
+  }
+  .mb-side { display: flex; align-items: center; gap: 2px; }
+  .mb-item {
+    padding: 2px 10px; border-radius: 5px; color: rgba(255, 255, 255, 0.88);
+    cursor: default; line-height: 20px; transition: background 0.15s ease;
+  }
+  .mb-item:hover { background: rgba(255, 255, 255, 0.16); }
+  .mb-app { font-weight: 700; color: #fff; }
+  .mb-apple { display: flex; align-items: center; padding: 0 6px; }
+  .mb-apple svg { width: 14px; height: 14px; fill: #fff; display: block; }
+  .mb-icon { display: flex; align-items: center; padding: 2px 7px; border-radius: 5px; transition: background 0.15s ease; }
+  .mb-icon:hover { background: rgba(255, 255, 255, 0.16); }
+  .mb-time { padding: 2px 4px 2px 8px; color: rgba(255, 255, 255, 0.92); font-variant-numeric: tabular-nums; }
+
+  /* ============ Readless · 菜单栏下拉（hover 彩蛋，保留） ============ */
+  .readless-wrap { position: relative; }
+  .rl-anchor {
+    position: absolute; top: 100%; right: 0; padding-top: 10px;
+    opacity: 0; visibility: hidden; transform: translateY(-5px);
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0s linear 0.22s;
+  }
+  .readless-wrap:hover .rl-anchor {
+    opacity: 1; visibility: visible; transform: translateY(0);
+    transition: opacity 0.28s ease 0.04s, transform 0.28s ease 0.04s, visibility 0s;
+  }
+  .rl-panel {
+    width: 322px; border-radius: 14px; padding: 14px 16px 12px;
+    background: rgba(18, 20, 30, 0.94);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+    backdrop-filter: blur(28px) saturate(1.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .rl-head { display: flex; align-items: center; justify-content: space-between; }
+  .rl-name { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
+  .rl-status { display: flex; align-items: center; gap: 5px; font-size: 11px; color: rgba(255, 255, 255, 0.55); }
+  .rl-status i { width: 6px; height: 6px; border-radius: 50%; background: #30D158; }
+  .rl-sub { margin-top: 3px; font-size: 11px; color: rgba(255, 255, 255, 0.5); }
+  .rl-line {
+    margin-top: 10px; font-size: 12.5px; color: rgba(255, 255, 255, 0.92);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .rl-foot {
+    margin-top: 11px; padding-top: 9px; border-top: 1px solid rgba(255, 255, 255, 0.07);
+    font-size: 10.5px; color: rgba(255, 255, 255, 0.38);
+  }
+  /* 均衡器小动画 */
+  .eq { display: inline-flex; align-items: flex-end; gap: 2.5px; height: 13px; }
+  .eq i {
+    width: 2.5px; border-radius: 2px; background: #D6E4FB; transform-origin: bottom;
+    animation: eq 1.15s ease-in-out infinite;
+  }
+  .eq i:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .eq i:nth-child(2) { height: 90%; animation-delay: 0.18s; }
+  .eq i:nth-child(3) { height: 60%; animation-delay: 0.36s; }
+  .eq i:nth-child(4) { height: 100%; animation-delay: 0.54s; }
+  .eq i:nth-child(5) { height: 45%; animation-delay: 0.72s; }
+  @keyframes eq { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
+
+  /* ============ 桌面 ============ */
+  .desktop {
+    position: relative; height: 100vh; z-index: 3;
+    /* 深靛蓝底 + 暖橙微光 + 冷蓝补光，参考 macOS Sequoia 暖暗调抽象壁纸 */
+    background:
+      radial-gradient(1100px 760px at 76% 88%, rgba(255, 138, 61, 0.30), rgba(255, 138, 61, 0) 62%),
+      radial-gradient(1000px 720px at 10% 6%, rgba(58, 84, 180, 0.40), rgba(58, 84, 180, 0) 60%),
+      radial-gradient(780px 560px at 46% 40%, rgba(96, 110, 200, 0.14), rgba(96, 110, 200, 0) 65%),
+      linear-gradient(168deg, #070B1A 0%, #0E1530 48%, #131A3C 78%, #17203F 100%);
+  }
+
+  .hero { position: absolute; left: 64px; bottom: 148px; max-width: 560px; z-index: 6; }
+  .hero h1 {
+    font-size: 52px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.12;
+    color: #F6F2EA; text-shadow: 0 2px 30px rgba(0, 0, 0, 0.45);
+    text-wrap: balance;
+  }
+  .hero p {
+    margin-top: 16px; font-size: 15px; line-height: 1.65;
+    color: rgba(246, 242, 234, 0.72); text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
+    transition: opacity 0.3s ease;
+  }
+  .hero p a { color: #F6F2EA; text-decoration: none; border-bottom: 1px solid rgba(246, 242, 234, 0.4); padding-bottom: 1px; white-space: nowrap; }
+  .hero p a:hover { border-bottom-color: #F6F2EA; }
+
+  /* ============ 舞台（真实产品界面，直接铺在桌面右侧区域） ============ */
+  .stage {
+    position: absolute; top: 32px; right: 24px; bottom: 108px; left: 640px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  body[data-app="repaste"] #stage-repaste,
+  body[data-app="readless"] #stage-readless,
+  body[data-app="wtd"] #stage-wtd {
+    opacity: 1; pointer-events: auto;
+  }
+  /* 透明嵌入页：产品真实 UI 直接呈现，无窗口外壳 */
+  .stage iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    border: 0; background: transparent; color-scheme: normal;
+  }
+
+  /* ============ 第一屏：底部滚动引导 ============ */
+  .scroll-cue {
+    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 7px 18px; border-radius: 999px;
+    background: rgba(16, 18, 30, 0.45);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(246, 242, 234, 0.78); font-size: 12.5px; font-family: inherit;
+    cursor: pointer; z-index: 6;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .scroll-cue:hover { color: #fff; border-color: rgba(255, 255, 255, 0.3); }
+  .scroll-cue .ar { animation: bob 1.8s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+  /* ============ 第二屏：MindMap AI（另一个桌面 Space） ============ */
+  .space2 {
+    position: relative; height: 100vh; z-index: 3;
+    display: flex; align-items: center; gap: 56px;
+    padding: 90px 64px 130px;
+    /* 暗陶土晨昏壁纸，呼应 MindMap AI 米白纸面与陶土橙 */
+    background:
+      radial-gradient(1100px 760px at 74% 12%, rgba(200, 85, 46, 0.26), rgba(200, 85, 46, 0) 60%),
+      radial-gradient(900px 700px at 10% 90%, rgba(158, 106, 58, 0.24), rgba(158, 106, 58, 0) 62%),
+      radial-gradient(760px 560px at 50% 50%, rgba(120, 80, 50, 0.10), rgba(120, 80, 50, 0) 65%),
+      linear-gradient(168deg, #150C07 0%, #23120B 48%, #2B150C 78%, #331A0E 100%);
+  }
+  .mf-intro { width: 350px; flex: none; position: relative; z-index: 6; }
+  .mf-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 16px; border-radius: 999px;
+    border: 1px solid rgba(214, 116, 71, 0.55);
+    background: rgba(200, 85, 46, 0.14);
+    color: #E8976F; font-size: 12.5px; font-weight: 500;
+  }
+  .mf-badge i { width: 6px; height: 6px; border-radius: 50%; background: #D67447; }
+  .mf-intro h2 {
+    margin-top: 18px;
+    font-size: 38px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.18;
+    color: #F8F1E7; text-shadow: 0 2px 30px rgba(0, 0, 0, 0.45);
+  }
+  .mf-intro h2 em { font-style: normal; color: #E8976F; }
+  .mf-intro p {
+    margin-top: 16px; font-size: 15px; line-height: 1.7;
+    color: rgba(248, 241, 231, 0.72); text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
+  }
+  .mf-intro p a { color: #F8F1E7; text-decoration: none; border-bottom: 1px solid rgba(248, 241, 231, 0.4); padding-bottom: 1px; white-space: nowrap; }
+  .mf-intro p a:hover { border-bottom-color: #F8F1E7; }
+  .mf-stage { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; }
+  /* iframe 裁剪窗口：MindMap AI 落地页的 .demo-window 舞台（含 8px 硬阴影） */
+  .mf-clip { position: relative; overflow: hidden; flex: none; }
+  .mf-clip iframe { position: absolute; border: 0; transform-origin: top left; }
+  @media (max-width: 1100px) {
+    .space2 { flex-direction: column; align-items: flex-start; gap: 28px; padding: 90px 28px 140px; }
+    .mf-intro { width: 100%; }
+    .mf-stage { width: 100%; }
+  }
+
+  /* ============ Dock（只属于第一屏，随页面滚走） ============ */
+  .dock {
+    position: absolute; left: 50%; bottom: 58px; transform: translateX(-50%); z-index: 20;
+    display: flex; gap: 12px; padding: 9px 12px; border-radius: 24px;
+    background: rgba(16, 18, 30, 0.5);
+    -webkit-backdrop-filter: blur(26px) saturate(1.6);
+    backdrop-filter: blur(26px) saturate(1.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    user-select: none;
+  }
+  .dock-slot { position: relative; }
+  /* 选中态：图标背后的高亮底衬 */
+  .dock-slot::before {
+    content: ""; position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%);
+    width: 62px; height: 62px; border-radius: 18px;
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.10) 70%, transparent);
+    box-shadow: 0 0 22px rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+    opacity: 0; transition: opacity 0.35s ease; pointer-events: none;
+  }
+  body[data-app="repaste"] .dock-slot[data-for="repaste"]::before,
+  body[data-app="readless"] .dock-slot[data-for="readless"]::before,
+  body[data-app="wtd"] .dock-slot[data-for="wtd"]::before { opacity: 1; }
+  /* 运行指示点（选中时更大更亮并带光晕） */
+  .dock-slot::after {
+    content: ""; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
+    width: 4px; height: 4px; border-radius: 50%; background: rgba(255, 255, 255, 0.55);
+    opacity: 0; transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease;
+  }
+  body[data-app="repaste"] .dock-slot[data-for="repaste"]::after,
+  body[data-app="readless"] .dock-slot[data-for="readless"]::after,
+  body[data-app="wtd"] .dock-slot[data-for="wtd"]::after {
+    opacity: 1; width: 6px; height: 6px; background: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 3px rgba(255, 255, 255, 1);
+  }
+  .dock-item {
+    width: 56px; height: 56px; border-radius: 15px; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; position: relative; font: inherit;
+    background: transparent;
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .dock-item img {
+    width: 56px; height: 56px; border-radius: 15px; display: block;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    transition: box-shadow 0.35s ease;
+  }
+  /* 选中图标：轻微放大抬起 + 更亮的轮廓光 */
+  body[data-app="repaste"] .dock-slot[data-for="repaste"] .dock-item,
+  body[data-app="readless"] .dock-slot[data-for="readless"] .dock-item,
+  body[data-app="wtd"] .dock-slot[data-for="wtd"] .dock-item { transform: translateY(-4px) scale(1.08); }
+  body[data-app="repaste"] .dock-slot[data-for="repaste"] .dock-item img,
+  body[data-app="readless"] .dock-slot[data-for="readless"] .dock-item img,
+  body[data-app="wtd"] .dock-slot[data-for="wtd"] .dock-item img {
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.55), 0 0 24px rgba(255, 255, 255, 0.35);
+  }
+  .dock-slot:hover .dock-item { transform: translateY(-12px) scale(1.16); }
+  .dock-item .tip {
+    position: absolute; bottom: calc(100% + 16px); left: 50%;
+    transform: translate(-50%, 6px);
+    background: rgba(18, 18, 22, 0.92); color: #fff;
+    font-size: 12px; padding: 4px 12px; border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    white-space: nowrap; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .dock-slot:hover .tip { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 1100px) {
+    .hero { left: 28px; max-width: 40vw; }
+    .hero h1 { font-size: 38px; }
+    .stage { left: 50%; right: 16px; }
+  }
+</style>
+</head>
+<body data-app="repaste" data-space="1">
+
+  <!-- 菜单栏 -->
+  <header class="menubar">
+    <div class="mb-side">
+      <span class="mb-apple" aria-label="Apple">
+        <svg viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+      </span>
+      <span class="mb-item mb-app" id="mb-app">Repaste</span>
+    </div>
+    <div class="mb-side">
+      <!-- Readless：菜单栏听读助手 -->
+      <div class="readless-wrap">
+        <span class="mb-icon" aria-label="Readless">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="#fff">
+            <rect x="1" y="5" width="2.2" height="5" rx="1.1"/>
+            <rect x="4.6" y="2" width="2.2" height="10" rx="1.1"/>
+            <rect x="8.2" y="3.5" width="2.2" height="7" rx="1.1"/>
+            <rect x="11.8" y="6" width="1.8" height="3.5" rx="0.9"/>
+          </svg>
+        </span>
+        <div class="rl-anchor">
+          <div class="rl-panel">
+            <div class="rl-head">
+              <span class="rl-name">
+                <span class="eq"><i></i><i></i><i></i><i></i><i></i></span>
+                Readless
+              </span>
+              <span class="rl-status"><i></i>朗读中</span>
+            </div>
+            <div class="rl-sub">选中文字 ⌥R 即朗读</div>
+            <div class="rl-line">「链接、脚注、硬断行自动清洗，跨 App 不断播，把长文当播客听完。」</div>
+            <div class="rl-foot">开源 · 无遥测 · 凭证只存钥匙串</div>
+          </div>
+        </div>
+      </div>
+      <!-- Wi-Fi -->
+      <span class="mb-icon" aria-label="Wi-Fi">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+          <path d="M2 6.2C5.6 2.9 10.4 2.9 14 6.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M4.4 9C6.9 6.7 9.1 6.7 11.6 9" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="8" cy="11.8" r="1.3" fill="#fff"/>
+        </svg>
+      </span>
+      <!-- 电池 -->
+      <span class="mb-icon" aria-label="Battery">
+        <svg width="23" height="12" viewBox="0 0 25 12">
+          <rect x="0.5" y="0.5" width="20" height="11" rx="3.5" stroke="rgba(255,255,255,0.5)" fill="none"/>
+          <rect x="2" y="2" width="14" height="8" rx="2" fill="#fff"/>
+          <path d="M23 4v4c1.2-.3 2-1 2-2s-.8-1.7-2-2z" fill="rgba(255,255,255,0.5)"/>
+        </svg>
+      </span>
+      <span class="mb-time" id="mb-time">周二 9:41</span>
+    </div>
+  </header>
+
+  <!-- 桌面 -->
+  <main class="desktop">
+    <section class="hero">
+      <h1>Hi, I'm Xiaofeng —<br>我做的macOS工具</h1>
+      <p id="hero-cap"></p>
+    </section>
+
+    <!-- 舞台 1：Repaste（真实界面，透明嵌入直接铺在桌面上） -->
+    <div class="stage" id="stage-repaste">
+      <iframe src="portfolio-demos/embed-repaste.html" title="Repaste 刘海剪贴板"></iframe>
+    </div>
+
+    <!-- 舞台 2：Readless（真实界面，透明嵌入直接铺在桌面上） -->
+    <div class="stage" id="stage-readless">
+      <iframe src="portfolio-demos/embed-readless.html" title="Readless 桌面听读助手"></iframe>
+    </div>
+
+    <!-- 舞台 3：WidgetToDo（真实界面，透明嵌入直接铺在桌面上） -->
+    <div class="stage" id="stage-wtd">
+      <iframe src="portfolio-demos/embed-wtd.html" title="WidgetToDo 桌面便签"></iframe>
+    </div>
+
+    <!-- 底部滚动引导：提示还有下一个产品 -->
+    <button class="scroll-cue" id="scroll-cue" aria-label="下滑查看下一个产品">
+      <span class="ar">↓</span> 下滑查看 MindMap AI
+    </button>
+
+    <!-- Dock：点击切换当前运行的产品 -->
+    <nav class="dock" aria-label="产品切换">
+      <div class="dock-slot" data-for="repaste">
+        <button class="dock-item" data-app="repaste" aria-label="切换到 Repaste">
+          <img src="portfolio-demos/repaste-app-icon.svg" alt="Repaste">
+          <span class="tip">Repaste · 刘海剪贴板</span>
+        </button>
+      </div>
+      <div class="dock-slot" data-for="readless">
+        <button class="dock-item" data-app="readless" aria-label="切换到 Readless">
+          <img src="portfolio-demos/readless-app-icon.png" alt="Readless">
+          <span class="tip">Readless · 桌面听读助手</span>
+        </button>
+      </div>
+      <div class="dock-slot" data-for="wtd">
+        <button class="dock-item" data-app="wtd" aria-label="切换到 WidgetToDo">
+          <img src="portfolio-demos/wtd-app-icon.png" alt="WidgetToDo">
+          <span class="tip">WidgetToDo · Notion 桌面便签</span>
+        </button>
+      </div>
+    </nav>
+  </main>
+
+  <!-- ============ 第二屏：MindMap AI（滚动切换到另一个桌面 Space） ============ -->
+  <section class="space2" id="space2">
+    <div class="mf-intro">
+      <div class="mf-badge"><i></i>AI 驱动 · 实时生成 · 所见即所得编辑</div>
+      <h2>MindMap AI<br>让每一份文档<br>长成一张<em>思维导图</em></h2>
+      <p>粘贴文本、上传 PDF、丢进一个链接或微信文章 —— MindMap AI 实时解析内容结构，节点逐个生长成图，生成完毕即可直接编辑、重组、分享。<a href="index-mindmap.html" target="_blank" rel="noopener">产品页 ↗</a></p>
+    </div>
+    <div class="mf-stage">
+      <!-- 视频演示窗口 x128 y592 w1184 h640（含阴影四周扩 12px），scale 0.728；偏移需按 scale 换算 -->
+      <!-- scrolling=no：锁定内页滚动，只展示演示窗口本身；滚轮会穿透到外层页面 -->
+      <div class="mf-clip" style="width:880px;height:483px">
+        <iframe src="index-mindmap.html" loading="lazy" scrolling="no" title="MindMap AI 产品演示"
+          style="width:1440px;height:1200px;left:-84px;top:-423px;transform:scale(0.728)"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // ---------- 菜单栏时钟 ----------
+    (function tick() {
+      var d = new Date();
+      var w = '日一二三四五六'[d.getDay()];
+      var hh = String(d.getHours()).padStart(2, '0');
+      var mm = String(d.getMinutes()).padStart(2, '0');
+      document.getElementById('mb-time').textContent = '周' + w + ' ' + hh + ':' + mm;
+      setTimeout(tick, 10000);
+    })();
+
+    // ---------- 产品切换 ----------
+    var body = document.body;
+
+    var CAPTIONS = {
+      repaste: 'Repaste · 刘海剪贴板 —— 鼠标滑到刘海停留 0.1 秒，剪贴板历史应声展开。<a href="landing-repaste.html" target="_blank" rel="noopener">产品页 ↗</a>',
+      readless: 'Readless · 桌面听读助手 —— 任何 App 选中文字按 ⌥R，1.5 秒开始朗读，把长文当播客听完。<a href="index-readless.html" target="_blank" rel="noopener">产品页 ↗</a>',
+      wtd: 'WidgetToDo —— 把 Notion 今日待办与日记钉在桌面上，勾选即同步。<a href="index-notion.html" target="_blank" rel="noopener">产品页 ↗</a>'
+    };
+    var APP_NAMES = { repaste: 'Repaste', readless: 'Readless', wtd: 'WidgetToDo' };
+    var MF_NAME = 'MindMap AI';
+    var space2El = document.getElementById('space2');
+
+    function updateMbApp() {
+      document.getElementById('mb-app').textContent =
+        (body.dataset.space === '2') ? MF_NAME : APP_NAMES[body.dataset.app];
+    }
+
+    function switchApp(name) {
+      var changed = body.dataset.app !== name;
+      if (changed) body.dataset.app = name;
+      if (body.dataset.space === '2') {
+        // 从第二屏返回：滚回第一屏并恢复菜单栏应用名
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      if (!changed) return;
+      updateMbApp();
+      var cap = document.getElementById('hero-cap');
+      cap.style.opacity = 0;
+      setTimeout(function () { cap.innerHTML = CAPTIONS[name]; cap.style.opacity = 1; }, 180);
+    }
+
+    function gotoSpace2() {
+      space2El.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.dock-item').forEach(function (btn) {
+      btn.addEventListener('click', function () { switchApp(btn.dataset.app); });
+    });
+
+    document.getElementById('scroll-cue').addEventListener('click', gotoSpace2);
+
+    // 键盘 1/2/3 切第一屏产品，4 进入第二屏
+    window.addEventListener('keydown', function (e) {
+      var map = { '1': 'repaste', '2': 'readless', '3': 'wtd' };
+      if (map[e.key]) switchApp(map[e.key]);
+      else if (e.key === '4') gotoSpace2();
+    });
+
+    // 滚动进入第二屏：菜单栏应用名切换（macOS 切换 Space 的感觉）
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        body.dataset.space = entry.isIntersecting ? '2' : '1';
+        updateMbApp();
+      });
+    }, { threshold: 0.5 }).observe(space2El);
+
+    // 深链：#repaste / #readless / #wtd
+    var hash = (location.hash || '').replace('#', '');
+    if (CAPTIONS[hash]) {
+      body.dataset.app = hash;
+      updateMbApp();
+      document.getElementById('hero-cap').innerHTML = CAPTIONS[hash];
+    } else {
+      document.getElementById('hero-cap').innerHTML = CAPTIONS.repaste;
+    }
+  </script>
+</body>
+</html>
