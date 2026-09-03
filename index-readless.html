@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Readless · 桌面听读助手 — 选中即朗读的 macOS 菜单栏应用</title>
+<meta name="description" content="在任何应用里选中文字，按下 ⌥R，1.5 秒内开始朗读。链接、脚注、硬断行自动清洗，跨 App 不断播，把长文当播客听完。开源、无遥测、凭证只存钥匙串。">
+<link rel="icon" href="readless-app-icon-blue-background-transparent-outside.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============ 设计变量 ============ */
+:root{
+  --bg0:#06080c;
+  --ink:#edf1f8;
+  --ink-dim:#9aa7bd;
+  --ink-faint:#5e6b82;
+  --blue:#4f8cff;
+  --blue-deep:#2e5fd8;
+  --amber:#ffb45e;
+  --amber-soft:rgba(255,178,86,.16);
+  --glass:rgba(20,26,38,.58);
+  --line:rgba(150,175,215,.13);
+  --serif:"Noto Serif SC","Songti SC",Georgia,serif;
+  --sans:"Noto Sans SC","PingFang SC",-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg0);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(900px 520px at 50% -12%, rgba(63,120,255,.16), transparent 62%),
+    radial-gradient(720px 480px at 88% 8%, rgba(79,140,255,.07), transparent 60%),
+    radial-gradient(900px 620px at 8% 30%, rgba(255,178,86,.045), transparent 62%),
+    linear-gradient(180deg,#080b11 0%, var(--bg0) 46%, #05070a 100%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+}
+::selection{background:rgba(79,140,255,.35)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+
+/* ============ 导航 ============ */
+.nav{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  background:rgba(6,9,14,.62);
+  border-bottom:1px solid var(--line);
+}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;letter-spacing:.02em}
+.brand img{width:28px;height:28px;border-radius:7px;box-shadow:0 4px 14px rgba(40,90,220,.35)}
+.brand .en{font-family:var(--mono);font-size:15px;font-weight:700}
+.brand .zh{font-size:13px;color:var(--ink-dim);border-left:1px solid var(--line);padding-left:11px}
+.nav-links{display:flex;align-items:center;gap:26px;font-size:14px}
+.nav-links a{color:var(--ink-dim);transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 18px;border-radius:10px;font-size:14px;font-weight:500;
+  border:1px solid var(--line);color:var(--ink);
+  transition:.22s;cursor:pointer;background:transparent;
+}
+.btn:hover{border-color:rgba(150,175,215,.32);transform:translateY(-1px)}
+.btn svg{width:17px;height:17px;flex:none}
+.btn-primary{
+  background:linear-gradient(180deg,#5c97ff,#3670e8);
+  border-color:transparent;color:#fff;font-weight:600;
+  box-shadow:0 8px 24px rgba(58,115,235,.35), inset 0 1px 0 rgba(255,255,255,.28);
+}
+.btn-primary:hover{filter:brightness(1.07);box-shadow:0 10px 30px rgba(58,115,235,.45)}
+@media (max-width:760px){.nav-links a.hide-m{display:none}.brand .zh{display:none}}
+
+/* ============ Hero ============ */
+.hero{padding:38px 0 14px;text-align:center}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.22em;
+  color:#8fb4ff;text-transform:uppercase;
+  padding:7px 16px;border:1px solid rgba(100,145,255,.28);border-radius:999px;
+  background:rgba(52,95,205,.10);
+}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);box-shadow:0 0 10px var(--blue);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+h1{
+  font-family:var(--serif);font-weight:900;
+  font-size:clamp(32px,4.6vw,56px);line-height:1.2;
+  letter-spacing:.01em;margin:16px 0 10px;
+  text-shadow:0 0 60px rgba(70,120,255,.22);
+}
+h1 .lit{
+  color:var(--amber);
+  background:linear-gradient(transparent 68%, rgba(255,178,86,.22) 68%);
+  padding:0 .06em;
+}
+h1 kbd{
+  font-family:var(--mono);font-size:.58em;font-weight:700;
+  padding:.1em .42em;margin:0 .08em;vertical-align:.08em;
+  border-radius:.28em;color:#dbe7ff;
+  background:linear-gradient(180deg,#2c3547,#1b2230);
+  border:1px solid rgba(170,195,240,.32);
+  box-shadow:0 4px 14px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.16);
+}
+.hero-sub{max-width:620px;margin:0 auto;color:var(--ink-dim);font-size:15.5px;line-height:1.8}
+.hero-sub b{color:var(--ink);font-weight:500}
+.hero-cta{display:flex;gap:14px;justify-content:center;margin:20px 0 12px;flex-wrap:wrap}
+.hero-cta .btn{padding:11px 24px;font-size:14.5px;border-radius:12px}
+.hero-notes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.chip{
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);
+  padding:4px 12px;border:1px solid var(--line);border-radius:999px;
+}
+
+/* ============ 舞台（首屏动画） ============ */
+.stage{padding:18px 0 6px}
+.stage-viewport{position:relative;overflow:clip;margin:0 auto;max-width:1120px}
+.scene{
+  width:1080px;height:524px;position:absolute;top:0;left:50%;
+  transform-origin:top left;
+  filter:drop-shadow(0 42px 80px rgba(0,0,0,.55));
+}
+.screen{
+  position:absolute;inset:0;border-radius:20px;overflow:hidden;
+  border:1px solid rgba(165,195,255,.16);
+  background:
+    radial-gradient(1200px 500px at 18% -18%, rgba(66,110,220,.24), transparent 58%),
+    radial-gradient(900px 480px at 96% 108%, rgba(255,150,80,.07), transparent 55%),
+    radial-gradient(700px 400px at 55% 118%, rgba(70,120,255,.10), transparent 60%),
+    linear-gradient(160deg,#101623 0%,#0b0f18 55%,#0d1220 100%);
+}
+.screen::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg, rgba(255,255,255,.05) 0%, transparent 24%);
+}
+/* 菜单栏 */
+.menubar{
+  position:absolute;top:0;left:0;right:0;height:32px;z-index:6;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;font-size:12.5px;color:#c6d2e6;
+  background:rgba(8,12,20,.55);
+  backdrop-filter:blur(20px) saturate(170%);
+  -webkit-backdrop-filter:blur(20px) saturate(170%);
+  border-bottom:1px solid rgba(150,175,215,.10);
+}
+.mb-l,.mb-r{display:flex;align-items:center;gap:20px}
+.mb-app{font-weight:700}
+.mb-item{opacity:.72}
+.mb-status{display:flex;align-items:center;gap:8px;opacity:.85}
+.mb-batt{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px}
+.mb-batt .bshape{width:20px;height:10px;border:1px solid rgba(200,215,240,.7);border-radius:3px;position:relative;padding:1.5px}
+.mb-batt .bshape::after{content:"";position:absolute;right:-3.5px;top:2.5px;width:1.6px;height:3.4px;background:rgba(200,215,240,.7);border-radius:0 1px 1px 0}
+.mb-batt .bfill{display:block;height:100%;width:78%;background:#a9e6b2;border-radius:1.5px}
+.mb-wave{display:flex;align-items:center;gap:5px;opacity:0;transition:opacity .5s}
+.mb-wave .wv-label{font-size:11px;color:#9fc0ff}
+.mb-wave .bars{display:flex;align-items:flex-end;gap:2.5px;height:13px}
+.mb-wave .bars i{width:2.5px;height:4px;border-radius:2px;background:var(--blue);transition:.3s}
+.scene.is-live .mb-wave{opacity:1}
+.scene.is-live .mb-wave .bars i{animation:wv 1s ease-in-out infinite}
+.scene.is-live.is-paused .mb-wave .bars i{animation-play-state:paused}
+.mb-wave .bars i:nth-child(1){animation-delay:0s}
+.mb-wave .bars i:nth-child(2){animation-delay:.18s}
+.mb-wave .bars i:nth-child(3){animation-delay:.36s}
+.mb-wave .bars i:nth-child(4){animation-delay:.09s}
+@keyframes wv{0%,100%{height:4px}50%{height:13px}}
+/* 文档窗口 */
+.window{
+  position:absolute;top:40px;left:50%;transform:translateX(-50%);
+  width:872px;height:372px;border-radius:14px;z-index:3;
+  background:rgba(16,21,32,.72);
+  backdrop-filter:blur(30px) saturate(150%);
+  -webkit-backdrop-filter:blur(30px) saturate(150%);
+  border:1px solid rgba(175,200,245,.16);
+  box-shadow:0 28px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.07);
+  overflow:hidden;
+}
+.titlebar{
+  height:42px;display:flex;align-items:center;padding:0 16px;gap:16px;
+  border-bottom:1px solid rgba(150,175,215,.10);
+  background:rgba(10,14,22,.45);position:relative;
+}
+.lights{display:flex;gap:8px}
+.lights i{width:12px;height:12px;border-radius:50%}
+.lights i:nth-child(1){background:#ff5f57}.lights i:nth-child(2){background:#febc2e}.lights i:nth-child(3){background:#28c840}
+.wtitle{
+  position:absolute;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-dim);
+  white-space:nowrap;
+}
+.wtitle .doc-ic{width:15px;height:15px;border-radius:4px;background:linear-gradient(140deg,#5c97ff,#2e5fd8);display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700}
+.wtools{margin-left:auto;display:flex;gap:14px;color:var(--ink-faint);font-size:13px}
+.wtools span{width:16px;text-align:center;opacity:.8}
+/* 文档 */
+.page{padding:18px 48px 0;font-family:Georgia,"Iowan Old Style","Times New Roman",serif;color:#dfe6f2}
+.doc-kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--ink-faint);margin-bottom:7px}
+.doc-title{font-size:22px;font-weight:700;letter-spacing:.01em;margin-bottom:4px;color:#f1f5fc;font-family:Georgia,serif}
+.doc-meta{font-size:12px;color:var(--ink-faint);font-family:var(--sans);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(150,175,215,.10)}
+.ln{white-space:nowrap;font-size:14px;line-height:1.85;display:block}
+.ln-dim{opacity:.34}
+.ln-url{font-family:var(--mono);font-size:12px;color:#7f9ecf}
+.sel{
+  background:linear-gradient(rgba(74,132,255,.40),rgba(74,132,255,.40)) 0 0 / 0% 100% no-repeat;
+  border-radius:3px;transition:background-size .34s ease;
+}
+.ln.on .sel{background-size:var(--sw,100%) 100%}
+.snt{border-radius:3px;transition:background .45s,box-shadow .45s;padding:1px 0;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.snt.speaking{background:var(--amber-soft);box-shadow:0 0 18px rgba(255,178,86,.14)}
+.snt.done{background:rgba(79,140,255,.12)}
+.doc{transition:.4s}
+.doc.cleaned .ln-url{opacity:.26;text-decoration:line-through;text-decoration-color:rgba(255,110,110,.6);text-decoration-thickness:1.5px;transition:.5s}
+.doc .md,.doc .fn{transition:.45s}
+.doc.cleaned .md,.doc.cleaned .fn{opacity:0}
+/* 清洗徽章 */
+.clean-badge{
+  position:absolute;top:56px;right:26px;z-index:8;
+  display:flex;align-items:center;gap:9px;
+  font-family:var(--sans);font-size:12.5px;color:#ffd9a1;
+  padding:8px 15px;border-radius:10px;
+  background:rgba(38,29,16,.72);border:1px solid rgba(255,178,86,.3);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  opacity:0;transform:translateY(-6px);transition:.45s;pointer-events:none;
+}
+.clean-badge.show{opacity:1;transform:translateY(0)}
+.clean-badge .cb-ic{font-family:var(--mono);color:var(--amber)}
+/* 键帽 */
+.kbd-pop{
+  position:absolute;z-index:12;right:110px;top:288px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  opacity:0;transform:translateY(8px) scale(.92);transition:.3s cubic-bezier(.3,1.4,.5,1);
+  pointer-events:none;
+}
+.kbd-pop.show{opacity:1;transform:translateY(0) scale(1)}
+.kbd-label{
+  font-size:12.5px;color:#dbe7ff;padding:4px 13px;border-radius:999px;
+  background:rgba(46,95,216,.32);border:1px solid rgba(120,160,255,.4);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  white-space:nowrap;
+}
+.kbd-keys{display:flex;gap:8px}
+.key{
+  min-width:46px;height:46px;padding:0 14px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:16px;font-weight:700;color:#e8efff;
+  background:linear-gradient(180deg,#333d52,#1c2433);
+  border:1px solid rgba(175,200,245,.3);
+  box-shadow:0 7px 0 rgba(9,12,20,.9), 0 12px 24px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.18);
+  transition:.12s;
+}
+.kbd-pop.esc .key{min-width:64px}
+.key.down{
+  transform:translateY(5px);
+  box-shadow:0 2px 0 rgba(9,12,20,.9), 0 4px 10px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1);
+  background:linear-gradient(180deg,#2e5fd8,#24459f);border-color:rgba(140,180,255,.5);
+}
+/* 播放条 */
+.player{
+  position:absolute;left:50%;bottom:36px;transform:translate(-50%,150%);
+  width:706px;z-index:9;border-radius:14px;
+  background:rgba(82,82,86,.72);
+  backdrop-filter:blur(26px) saturate(140%);
+  -webkit-backdrop-filter:blur(26px) saturate(140%);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 22px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.10);
+  transition:transform .65s cubic-bezier(.22,.9,.24,1),opacity .4s;
+  opacity:0;
+}
+.player.show{transform:translate(-50%,0);opacity:1}
+.player-in{padding:9px 14px}
+.p-prepare{display:flex;align-items:center;gap:12px;font-size:13.5px;color:var(--ink-dim);min-height:40px}
+.spinner{width:15px;height:15px;border-radius:50%;border:2px solid rgba(120,160,255,.25);border-top-color:var(--blue);animation:spin .8s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.p-prepare b{color:var(--ink);font-weight:500}
+.p-prepare .mono{font-family:var(--mono);font-size:11.5px;color:#9fc0ff}
+.p-full{display:none;align-items:center;gap:12px}
+.player.is-playing .p-full{display:flex}
+.player.is-playing .p-prepare{display:none}
+.p-btn{
+  width:38px;height:38px;border-radius:50%;border:none;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;
+  background:rgba(255,255,255,.18);transition:.2s;flex:none;
+}
+.p-btn:hover{background:rgba(255,255,255,.26)}
+.p-btn svg{width:11px;height:11px;fill:currentColor}
+.icon-play{display:block}.icon-pause{display:none}
+.player.playing .icon-play{display:none}
+.player.playing .icon-pause{display:block}
+.p-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.p-top{display:flex;align-items:baseline;gap:10px}
+.p-src{font-size:13px;font-weight:600;color:#fff;white-space:nowrap}
+.p-state{margin-left:auto;font-size:12px;color:rgba(255,255,255,.55);white-space:nowrap}
+.p-track{position:relative;height:5px;border-radius:3px;background:rgba(0,0,0,.35)}
+.p-fill{position:absolute;left:0;top:0;bottom:0;width:0%;border-radius:3px;background:rgba(0,0,0,.5)}
+.p-knob{
+  position:absolute;top:50%;left:0%;width:15px;height:15px;border-radius:50%;
+  background:#fff;transform:translate(-50%,-50%);
+  box-shadow:0 1px 4px rgba(0,0,0,.45);
+}
+.p-right{display:flex;align-items:center;gap:12px;flex:none}
+.p-rate{
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:12.5px;color:#fff;
+  padding:5px 11px;border-radius:8px;background:rgba(0,0,0,.28);
+}
+.p-rate svg{width:9px;height:11px;fill:#fff;opacity:.9}
+.p-collapse{border:none;background:none;cursor:pointer;padding:4px;display:flex;align-items:center}
+.p-collapse svg{width:12px;height:12px;stroke:#fff;stroke-width:2;fill:none;opacity:.85;stroke-linecap:round;stroke-linejoin:round}
+.esc-hint{
+  position:absolute;right:26px;bottom:26px;z-index:8;
+  font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+  padding:5px 11px;border-radius:8px;border:1px solid var(--line);
+  background:rgba(8,12,20,.5);opacity:0;transition:.4s;
+}
+.scene.is-live .esc-hint{opacity:1}
+
+/* 步骤指示 */
+.steps{display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;margin:24px auto 0;max-width:1000px}
+.step{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--ink-faint);
+  padding:7px 15px;border-radius:999px;border:1px solid transparent;
+  transition:.35s;white-space:nowrap;
+}
+.step .n{font-family:var(--mono);font-size:10.5px;opacity:.7}
+.step.on{color:#dbe7ff;border-color:rgba(100,145,255,.4);background:rgba(52,95,206,.14)}
+.step-arrow{color:var(--ink-faint);opacity:.5;font-size:12px}
+@media (max-width:900px){.step-arrow{display:none}.steps{gap:4px}}
+
+/* ============ 通用区块 ============ */
+section{padding:96px 0 0}
+.sec-head{text-align:center;margin-bottom:48px}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.26em;color:#8fb4ff;text-transform:uppercase}
+h2{
+  font-family:var(--serif);font-weight:900;
+  font-size:clamp(28px,4vw,42px);line-height:1.3;margin:14px 0 14px;
+}
+.sec-sub{color:var(--ink-dim);max-width:620px;margin:0 auto;font-size:16px}
+
+/* 三步流程 */
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.flow-card{
+  position:relative;padding:30px 28px 28px;border-radius:18px;
+  background:linear-gradient(180deg,rgba(22,28,42,.5),rgba(14,18,28,.5));
+  border:1px solid var(--line);overflow:hidden;
+}
+.flow-card::before{
+  content:attr(data-n);position:absolute;top:8px;right:16px;
+  font-family:var(--mono);font-size:64px;font-weight:700;
+  color:rgba(120,160,255,.09);
+}
+.flow-card .fk{
+  font-family:var(--mono);font-size:11.5px;color:#9fc0ff;letter-spacing:.14em;
+  display:flex;align-items:center;gap:9px;margin-bottom:14px;
+}
+.flow-card .fk .kbd-mini{
+  padding:2px 8px;border-radius:6px;font-size:11px;color:#dbe7ff;
+  background:linear-gradient(180deg,#2c3547,#1b2230);
+  border:1px solid rgba(170,195,240,.3);
+}
+.flow-card h3{font-family:var(--serif);font-size:21px;font-weight:700;margin-bottom:10px}
+.flow-card p{color:var(--ink-dim);font-size:14.5px}
+@media (max-width:860px){.flow{grid-template-columns:1fr}}
+
+/* 功能网格 */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{
+  padding:28px 26px;border-radius:18px;
+  background:linear-gradient(180deg,rgba(22,28,42,.45),rgba(13,17,26,.45));
+  border:1px solid var(--line);
+  transition:.3s;
+}
+.card:hover{transform:translateY(-4px);border-color:rgba(120,160,255,.3);box-shadow:0 18px 44px rgba(0,0,0,.35)}
+.card .ic{
+  width:42px;height:42px;border-radius:12px;margin-bottom:18px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(79,140,255,.12);border:1px solid rgba(100,145,255,.25);
+}
+.card .ic svg{width:20px;height:20px;stroke:#8fb4ff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-size:17px;font-weight:700;margin-bottom:9px}
+.card p{color:var(--ink-dim);font-size:14px}
+.card p b{color:var(--ink);font-weight:500}
+@media (max-width:960px){.grid{grid-template-columns:1fr 1fr}}
+@media (max-width:620px){.grid{grid-template-columns:1fr}}
+
+/* 隐私 */
+.privacy{
+  position:relative;border-radius:24px;padding:58px 48px;text-align:center;
+  background:
+    radial-gradient(700px 300px at 50% -30%, rgba(79,140,255,.10), transparent 70%),
+    linear-gradient(180deg,rgba(20,26,40,.6),rgba(12,16,25,.6));
+  border:1px solid rgba(120,160,255,.18);overflow:hidden;
+}
+.privacy .shield{
+  width:52px;height:52px;margin:0 auto 24px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(79,140,255,.12);border:1px solid rgba(100,145,255,.3);
+}
+.privacy .shield svg{width:24px;height:24px;stroke:#8fb4ff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.privacy blockquote{
+  font-family:var(--serif);font-weight:700;font-size:clamp(19px,2.6vw,27px);
+  line-height:1.85;max-width:780px;margin:0 auto 30px;color:#eef3fb;
+}
+.privacy blockquote em{font-style:normal;color:var(--amber)}
+.privacy blockquote .k{font-family:var(--mono);font-size:.7em;color:#9fc0ff;border:1px solid rgba(100,145,255,.3);border-radius:8px;padding:2px 9px;vertical-align:middle;margin:0 2px}
+.pv-badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.pv-badge{
+  display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-dim);
+  padding:8px 17px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.02);
+}
+.pv-badge i{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px rgba(74,222,128,.7)}
+.providers{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.pv{
+  font-family:var(--mono);font-size:12.5px;color:var(--ink-dim);
+  padding:7px 16px;border-radius:10px;border:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.02);
+}
+.pv i{width:8px;height:8px;border-radius:50%}
+
+/* 下载 CTA */
+.cta{padding:110px 0 96px;text-align:center}
+.cta h2{font-size:clamp(30px,4.6vw,50px)}
+.cta .sec-sub{margin-bottom:36px}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.cta-btns .btn{padding:15px 30px;font-size:16px;border-radius:14px}
+.sys-req{font-family:var(--mono);font-size:12px;color:var(--ink-faint);letter-spacing:.06em}
+
+/* Footer */
+footer{border-top:1px solid var(--line);padding:38px 0 44px}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.foot-brand{display:flex;align-items:center;gap:11px;color:var(--ink-dim);font-size:14px}
+.foot-brand img{width:26px;height:26px;border-radius:7px}
+.foot-links{display:flex;gap:22px;font-size:13.5px;color:var(--ink-faint)}
+.foot-links a:hover{color:var(--ink)}
+.foot-note{width:100%;text-align:center;font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-top:10px;opacity:.75}
+
+/* 滚动进场 */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 导航 ================= -->
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top">
+      <img src="readless-app-icon-blue-background-transparent-outside.png" alt="Readless 图标">
+      <span class="en">Readless</span>
+      <span class="zh">桌面听读助手</span>
+    </a>
+    <div class="nav-links">
+      <a class="hide-m" href="#how">工作方式</a>
+      <a class="hide-m" href="#features">功能</a>
+      <a class="hide-m" href="#privacy">隐私</a>
+      <a href="https://github.com/klosexf/readless" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn btn-primary" href="https://github.com/klosexf/readless/releases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>免费下载</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= Hero ================= -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span>macOS · 菜单栏听读助手 · 开源</div>
+    <h1>眼睛忙的时候，让<span class="lit">耳朵</span>来读。<kbd>⌥</kbd><kbd>R</kbd></h1>
+    <p class="hero-sub">在任何应用里选中文字，按下 <b>⌥R</b>，<b>1.5 秒内</b>开始朗读。链接、脚注、硬断行自动清洗，切换窗口声音不断——像听一期播客那样，把长文顺畅听完。</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="https://github.com/klosexf/readless/releases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>免费下载</a>
+      <a class="btn" href="https://github.com/klosexf/readless" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.71 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.44-2.71 5.42-5.28 5.7.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/></svg>GitHub 源码</a>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 首屏动画舞台 ================= -->
+<div class="stage wrap">
+  <div class="stage-viewport" id="viewport">
+    <div class="scene" id="scene">
+
+      <div class="screen">
+        <!-- 菜单栏 -->
+        <div class="menubar">
+          <div class="mb-l">
+            <span class="mb-app">预览</span>
+            <span class="mb-item">文件</span>
+            <span class="mb-item">编辑</span>
+            <span class="mb-item">显示</span>
+            <span class="mb-item">窗口</span>
+          </div>
+          <div class="mb-r">
+            <span class="mb-wave">
+              <span class="bars"><i></i><i></i><i></i><i></i></span>
+              <span class="wv-label">Readless</span>
+            </span>
+            <span class="mb-status">
+              <span class="mb-batt"><span class="bshape"><span class="bfill"></span></span>86%</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- 「预览」文档窗口 -->
+        <div class="window">
+          <div class="titlebar">
+            <div class="lights"><i></i><i></i><i></i></div>
+            <div class="wtitle"><span class="doc-ic">D</span>设计文档 — 连续聆听.pdf</div>
+            <div class="wtools"><span>⌕</span><span>⇪</span></div>
+          </div>
+          <div class="page">
+            <div class="doc" id="doc">
+              <div class="doc-kicker">HUMAN INTERFACE GUIDELINES · CH.4</div>
+              <h3 class="doc-title">Designing for Continuous Listening</h3>
+              <div class="doc-meta">12 页 · 约 3 分 12 秒朗读 · 英文（美音）</div>
+
+              <span class="ln ln-first" style="--sw:56%"><span class="sel"><span class="snt" data-s="0">Continuous listening turns a long document into a</span></span></span>
+              <span class="ln"><span class="sel"><span class="snt" data-s="0">podcast you can follow while your hands stay busy.</span></span></span>
+              <span class="ln ln-url"><span class="sel">https://developer.apple.com/design/human-interface-guidelines</span></span>
+              <span class="ln"><span class="sel"><span class="snt" data-s="1">Links and footnotes<span class="fn">[12]</span> are skipped, so the voice never</span></span></span>
+              <span class="ln"><span class="sel"><span class="snt" data-s="1">stumbles over symbols like <span class="md">**</span>bold<span class="md">**</span> markers, or the hard</span></span></span>
+              <span class="ln"><span class="sel"><span class="snt" data-s="1">line breaks a PDF loves to drop mid-word.</span> <span class="snt" data-s="2">Switch apps</span></span></span>
+              <span class="ln ln-last" style="--sw:40%"><span class="sel"><span class="snt" data-s="2">freely — the voice follows you.</span></span></span>
+            </div>
+          </div>
+
+          <!-- 清洗徽章 -->
+          <div class="clean-badge" id="cleanBadge">
+            <span class="cb-ic">✦</span>已清洗 · 跳过 1 个链接 · 2 处符号 · 合并硬断行
+          </div>
+        </div>
+
+        <!-- 底部播放条 -->
+        <div class="player" id="player">
+          <div class="player-in">
+            <div class="p-prepare">
+              <span class="spinner"></span>
+              <span>正在准备 · 预计 <b>03:12</b></span>
+              <span class="mono">清洗链接与硬断行…</span>
+            </div>
+            <div class="p-full">
+              <div class="p-btn" id="playBtn">
+                <svg class="icon-play" viewBox="0 0 12 12"><path d="M2.5 1.2v9.6L10.6 6z"/></svg>
+                <svg class="icon-pause" viewBox="0 0 12 12"><path d="M2.5 1.5h2.6v9H2.5zM6.9 1.5h2.6v9H6.9z"/></svg>
+              </div>
+              <div class="p-mid">
+                <div class="p-top">
+                  <span class="p-src">来自「预览」</span>
+                  <span class="p-state" id="pState">正在朗读</span>
+                </div>
+                <div class="p-track">
+                  <div class="p-fill" id="barFill"></div>
+                  <div class="p-knob" id="barKnob"></div>
+                </div>
+              </div>
+              <div class="p-right">
+                <span class="p-rate">1.0×
+                  <svg viewBox="0 0 9 11"><path d="M4.5 0 8 3.6H1z"/><path d="M4.5 11 1 7.4h7z"/></svg>
+                </span>
+                <button class="p-collapse" aria-label="收起播放条">
+                  <svg viewBox="0 0 12 12"><path d="M2.5 7.5 6 4l3.5 3.5"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Esc 角标 -->
+        <div class="esc-hint">esc 停止</div>
+      </div>
+
+      <!-- 快捷键键帽 -->
+      <div class="kbd-pop" id="kbdPop">
+        <div class="kbd-label" id="kbdLabel">朗读</div>
+        <div class="kbd-keys" id="kbdKeys">
+          <div class="key">⌥</div>
+          <div class="key">R</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 步骤指示 -->
+  <div class="steps" id="steps">
+    <span class="step on"><span class="n">01</span>选中文字</span>
+    <span class="step-arrow">→</span>
+    <span class="step"><span class="n">02</span>按下 ⌥R</span>
+    <span class="step-arrow">→</span>
+    <span class="step"><span class="n">03</span>清洗 · 准备</span>
+    <span class="step-arrow">→</span>
+    <span class="step"><span class="n">04</span>朗读中</span>
+    <span class="step-arrow">→</span>
+    <span class="step"><span class="n">05</span>⌥R 暂停 / 继续</span>
+    <span class="step-arrow">→</span>
+    <span class="step"><span class="n">06</span>esc 收起</span>
+  </div>
+</div>
+
+<!-- ================= 工作方式 ================= -->
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker">How it works</div>
+      <h2>三步，从「看」切到「听」</h2>
+      <p class="sec-sub">不需要复制粘贴，不需要切换窗口。快捷键只在你按下的一瞬间读取当前选区，从不后台监听。</p>
+    </div>
+    <div class="flow">
+      <div class="flow-card rv" data-n="01">
+        <div class="fk"><span>STEP</span><span class="kbd-mini">选中</span></div>
+        <h3>在任何地方选中文字</h3>
+        <p>Safari、PDF、备忘录、微信读书、代码编辑器……只要能选中，就能读。选多长都行，超长文本自动分段流式合成。</p>
+      </div>
+      <div class="flow-card rv" data-n="02">
+        <div class="fk"><span>STEP</span><span class="kbd-mini">⌥ R</span></div>
+        <h3>按下全局快捷键</h3>
+        <p>⌥R 读取当前选区并立刻开始合成，首字出声最快 1.5 秒内。快捷键冲突时可自定义修改。</p>
+      </div>
+      <div class="flow-card rv" data-n="03">
+        <div class="fk"><span>STEP</span><span class="kbd-mini">听</span></div>
+        <h3>底部播放条浮现</h3>
+        <p>不抢焦点、不打断当前工作。倍速、按句跳转、AirPods 与媒体键控制，Esc 一键收起。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 功能 ================= -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker">Features</div>
+      <h2>为「连续听完一篇」而设计</h2>
+      <p class="sec-sub">macOS 自带的朗读入口深、控制少，链接和硬断行还会毁掉听感。Readless 把朗读做成一个真正的播放器。</p>
+    </div>
+    <div class="grid">
+      <div class="card rv">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h7"/><path d="M17 15l2 2 4-4" transform="translate(-2 -1)"/></svg></div>
+        <h3>播客级听感 · 自动清洗</h3>
+        <p><b>URL 不念、脚注跳过</b>、Markdown 符号过滤、PDF 硬断行自动合并，标题处智能停顿。听到的是文章本来的意思。</p>
+      </div>
+      <div class="card rv">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="9" height="14" rx="2"/><rect x="13" y="5" width="9" height="14" rx="2"/></svg></div>
+        <h3>跨 App 不断播</h3>
+        <p>朗读开始后，从 Safari 切到编辑器、打开新窗口，<b>声音照常继续</b>。会话不依赖任何单一窗口，随时接着听。</p>
+      </div>
+      <div class="card rv">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M7 4h10v16H7z"/><path d="M7 8h10M4 9v6M20 9v6"/></svg></div>
+        <h3>Now Playing 接管</h3>
+        <p><b>AirPods、媒体键、锁屏控件</b>都能控制朗读；与音乐自动互斥，朗读时不打架，结束后不抢着恢复。</p>
+      </div>
+      <div class="card rv">
+        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><circle cx="16" cy="12" r="4"/><path d="M8 12h.01M16 12h.01"/></svg></div>
+        <h3>你的语音，你的钥匙</h3>
+        <p>OpenAI、豆包、阿里百炼与 OpenAI 兼容接口任选，自带连通性自检。<b>API 凭证只存 macOS 钥匙串</b>，不进配置文件。</p>
+      </div>
+      <div class="card rv">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M10 3v4h4V3"/><rect x="9.5" y="9" width="5" height="7" rx="1"/></svg></div>
+        <h3>显式剪贴板兜底</h3>
+        <p>个别应用取不到选区时，<b>绝不偷偷读你的剪贴板</b>；提示你复制后，由你亲手点「朗读剪贴板」。失败原因分门别类说人话。</p>
+      </div>
+      <div class="card rv">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg></div>
+        <h3>菜单栏常驻 · 本地最近</h3>
+        <p>左键开主窗口、右键快捷菜单。「最近朗读」<b>只存标题摘要，不存全文</b>，纯本地保存，随时清空或关闭。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 隐私 ================= -->
+<section id="privacy">
+  <div class="wrap">
+    <div class="privacy rv">
+      <div class="shield"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="kicker">Privacy</div>
+      <h2>隐私边界，写在明处</h2>
+      <blockquote>「不上传到本项目服务器；你选择朗读的文字，<br>会发送给<em>你配置的语音服务商</em>。<br>凭证只保存在 <span class="k">macOS 钥匙串</span>。」</blockquote>
+      <div class="pv-badges">
+        <span class="pv-badge"><i></i>无遥测</span>
+        <span class="pv-badge"><i></i>无账号体系</span>
+        <span class="pv-badge"><i></i>无云端阅读历史</span>
+        <span class="pv-badge"><i></i>选区只在触发瞬间读取</span>
+      </div>
+      <div class="providers">
+        <span class="pv"><i style="background:#10a37f"></i>OpenAI</span>
+        <span class="pv"><i style="background:#325ab4"></i>豆包 · 火山引擎</span>
+        <span class="pv"><i style="background:#ff6a00"></i>阿里百炼</span>
+        <span class="pv"><i style="background:#8fb4ff"></i>OpenAI-compatible</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 下载 ================= -->
+<section class="cta" id="download">
+  <div class="wrap">
+    <div class="kicker">Download</div>
+    <h2>让下一篇长文，用耳朵来读</h2>
+    <p class="sec-sub">开源免费，安装包不到 15MB，不含任何模型。解压拖入「应用程序」，授予辅助功能权限即可开始。</p>
+    <div class="cta-btns">
+      <a class="btn btn-primary" href="https://github.com/klosexf/readless/releases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>免费下载</a>
+      <a class="btn" href="https://github.com/klosexf/readless" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.71 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.44-2.71 5.42-5.28 5.7.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/></svg>GitHub 给个 Star</a>
+    </div>
+    <p class="sys-req">macOS 15 或更高 · Apple Silicon · 开源免费</p>
+  </div>
+</section>
+
+<!-- ================= Footer ================= -->
+<footer>
+  <div class="wrap foot">
+    <div class="foot-brand">
+      <img src="readless-app-icon-blue-background-transparent-outside.png" alt="Readless">
+      <span>Readless · 桌面听读助手</span>
+    </div>
+    <div class="foot-links">
+      <a href="https://github.com/klosexf/readless" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/klosexf/readless/releases">免费下载</a>
+      <a href="#privacy">隐私</a>
+    </div>
+    <div class="foot-note">仅支持 Mac · 不上传到本项目服务器 · 凭证只存 macOS 钥匙串</div>
+  </div>
+</footer>
+
+<script>
+/* ================= 动画引擎 ================= */
+(function(){
+  const $  = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const scene   = $('#scene');
+  const doc     = $('#doc');
+  const lines   = $$('#doc .ln:not(.ln-dim)');
+  const snts    = $$('#doc .snt');
+  const player  = $('#player');
+  const kbd     = $('#kbdPop');
+  const kbdLabel= $('#kbdLabel');
+  const badge   = $('#cleanBadge');
+  const barFill = $('#barFill');
+  const barKnob = $('#barKnob');
+  const pState  = $('#pState');
+  const steps   = $$('#steps .step');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const TOTAL = 192;                       // 03:12
+  const SENTENCES = [
+    { text:'Continuous listening turns a long document into a podcast…', span:[2, 27] },
+    { text:'Links and footnotes are skipped, so the voice never stumbles…', span:[31, 57] },
+    { text:'Switch apps freely — the voice follows you.', span:[62, 85] }
+  ];
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  let progress = 0;
+  function setProgress(sec){
+    progress = sec;
+    const pct = Math.min(100, sec/TOTAL*100) + '%';
+    barFill.style.width = pct;
+    barKnob.style.left = pct;
+  }
+  function updateSentences(){
+    let active = -1;
+    SENTENCES.forEach((s, i) => {
+      if (progress >= s.span[1]) snts.forEach(el => { if (+el.dataset.s === i) { el.classList.add('done'); el.classList.remove('speaking'); } });
+      else if (progress >= s.span[0]) active = i;
+    });
+    if (active >= 0){
+      snts.forEach(el => {
+        const i = +el.dataset.s;
+        el.classList.toggle('speaking', i === active);
+        if (i < active) { el.classList.add('done'); el.classList.remove('speaking'); }
+      });
+    }
+  }
+
+  function setStep(n){ steps.forEach((el,i)=>el.classList.toggle('on', i===n)); }
+
+  async function pressKeys(label, mode){
+    kbdLabel.textContent = label;
+    kbd.classList.remove('esc');
+    if (mode === 'esc'){
+      kbd.classList.add('esc');
+      $('#kbdKeys').innerHTML = '<div class="key">esc</div>';
+    } else {
+      $('#kbdKeys').innerHTML = '<div class="key">⌥</div><div class="key">R</div>';
+    }
+    kbd.classList.add('show');
+    await sleep(360);
+    $$('#kbdKeys .key').forEach((k,i)=>setTimeout(()=>k.classList.add('down'), i*110));
+    await sleep(330);
+  }
+  function releaseKeys(){ $$('#kbdKeys .key').forEach(k=>k.classList.remove('down')); }
+  function hideKbd(){ releaseKeys(); setTimeout(()=>kbd.classList.remove('show'), 120); }
+
+  function playTo(target, dur){
+    const from = progress, t0 = performance.now();
+    return new Promise(res => {
+      (function tick(now){
+        const t = Math.min(1, (now - t0) / (dur*1000));
+        setProgress(from + (target - from) * t);
+        updateSentences();
+        if (t < 1) requestAnimationFrame(tick); else res();
+      })(t0);
+    });
+  }
+
+  function resetScene(){
+    scene.classList.remove('is-live','is-paused');
+    player.classList.remove('show','is-playing','playing');
+    doc.classList.remove('cleaned');
+    badge.classList.remove('show');
+    lines.forEach(l=>l.classList.remove('on'));
+    snts.forEach(s=>s.classList.remove('speaking','done'));
+    setProgress(0);
+    pState.textContent = '正在朗读';
+    setStep(0);
+  }
+
+  async function cycle(){
+    resetScene();
+    await sleep(1100);                                          // 待机
+    setStep(0);
+    lines.forEach((l,i)=>setTimeout(()=>l.classList.add('on'), i*150));   // 逐行选中
+    await sleep(lines.length*150 + 620);
+    setStep(1);
+    await pressKeys('朗读');
+    hideKbd();
+    setStep(2);
+    player.classList.add('show');                               // 播放条滑入 · 准备态
+    await sleep(700);
+    doc.classList.add('cleaned');                               // 清洗：URL 划掉、符号淡出
+    badge.classList.add('show');
+    await sleep(1500);
+    badge.classList.remove('show');
+    await sleep(350);
+    setStep(3);
+    player.classList.add('is-playing','playing');               // 首字出声
+    scene.classList.add('is-live');
+    await playTo(59, 5.4);                                      // 朗读 s0 + s1
+    setStep(4);
+    await pressKeys('暂停 / 继续');
+    scene.classList.add('is-paused');
+    player.classList.remove('playing');
+    pState.textContent = '已暂停';
+    hideKbd();
+    await sleep(1250);
+    scene.classList.remove('is-paused');                        // 继续朗读 s2
+    player.classList.add('playing');
+    pState.textContent = '正在朗读';
+    await playTo(88, 2.7);
+    await pressKeys('停止', 'esc');
+    scene.classList.remove('is-live');
+    player.classList.remove('show','playing');
+    hideKbd();
+    setStep(5);
+    await sleep(1500);
+  }
+
+  /* 静态兜底：用户开启「减少动态效果」时展示定格画面 */
+  function staticFrame(){
+    lines.forEach(l=>l.classList.add('on'));
+    doc.classList.add('cleaned');
+    player.classList.add('show','is-playing','playing');
+    scene.classList.add('is-live');
+    setProgress(70);
+    snts.forEach(el=>{ if (+el.dataset.s < 2) el.classList.add('done'); });
+    snts.forEach(el=>{ if (+el.dataset.s === 2) el.classList.add('speaking'); });
+    setStep(3);
+  }
+
+  /* 舞台自适应缩放 */
+  const vp = $('#viewport');
+  function fit(){
+    const w = vp.clientWidth;
+    const scale = Math.min(1, w / 1080);
+    scene.style.transform = `translateX(-50%) scale(${scale})`;
+    vp.style.height = (524 * scale) + 'px';
+  }
+  addEventListener('resize', fit);
+  fit();
+
+  /* 等字体就绪再启动，避免换行错位 */
+  if (document.fonts && document.fonts.ready){
+    document.fonts.ready.then(start);
+  } else { start(); }
+  function start(){
+    if (reduced){ staticFrame(); return; }
+    (async function loop(){ while(true){ await cycle(); } })();
+  }
+
+  /* 滚动进场 */
+  const io = new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:.12});
+  $$('.rv').forEach(el=>io.observe(el));
+})();
+</script>
+</body>
+</html>

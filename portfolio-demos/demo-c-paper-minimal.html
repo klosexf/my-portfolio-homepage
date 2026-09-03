@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>陈晓峰 · 作品集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F1E8;
+    --paper-lift: #FBF8F1;
+    --ink: #2A2723;
+    --caramel: #9C7350;
+    --gray: #8A8378;
+    --hairline: #DDD5C5;
+    --warm-shadow: rgba(90, 70, 40, 0.08);
+    --serif-zh: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+    --serif-en: "EB Garamond", Georgia, serif;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection { background: rgba(156, 115, 80, 0.18); }
+
+  a { color: inherit; text-decoration: none; }
+
+  .en { font-family: var(--serif-en); }
+
+  /* ---------- 加载淡入：极缓，4px 浮起 ---------- */
+  .fade {
+    opacity: 0;
+    transform: translateY(4px);
+    animation: rise 1.2s ease-out forwards;
+  }
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- 下划线：自左侧生长 ---------- */
+  .u-grow {
+    position: relative;
+    padding-bottom: 4px;
+  }
+  .u-grow::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.5s var(--ease-out);
+  }
+  .u-grow:hover::after { transform: scaleX(1); }
+
+  /* 常驻细线 + hover 墨色生长线（用于「查看作品」） */
+  .u-line::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--hairline);
+  }
+
+  /* ---------- 右侧竖排签名 ---------- */
+  .side-mark {
+    position: fixed;
+    right: 26px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    z-index: 10;
+    pointer-events: none;
+  }
+  .side-mark i {
+    width: 1px;
+    height: 56px;
+    background: var(--hairline);
+  }
+  .side-mark span {
+    writing-mode: vertical-rl;
+    font-size: 11px;
+    letter-spacing: 0.42em;
+    color: #A89E8D;
+  }
+
+  /* ---------- 页面骨架：大边距 ---------- */
+  .page { padding: 0 9vw; }
+
+  /* ---------- 导航 ---------- */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 38px 0 26px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .brand {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+  }
+  .nav-links { display: flex; gap: 40px; }
+  .nav-links a {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--gray);
+    transition: color 0.4s ease;
+  }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 19vh 0 15vh; }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.38em;
+    color: var(--gray);
+    margin-bottom: 52px;
+  }
+  .eyebrow .en {
+    font-style: italic;
+    letter-spacing: 0.12em;
+    color: var(--caramel);
+    margin-right: 0.5em;
+  }
+
+  .hero-lines {
+    font-weight: 300;
+    font-size: clamp(46px, 5vw, 72px);
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+  }
+  .hero-lines .line { display: block; }
+  .hero-lines em { font-style: normal; }
+  .kw { color: var(--caramel); }
+  .gloss {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 0.3em;
+    letter-spacing: 0.1em;
+    color: var(--caramel);
+    margin: 0 0.5em 0 0.35em;
+    white-space: nowrap;
+  }
+
+  .intro {
+    margin-top: 52px;
+    font-size: 15px;
+    line-height: 2;
+    letter-spacing: 0.06em;
+    color: var(--gray);
+  }
+
+  .cta {
+    display: inline-block;
+    margin-top: 60px;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    color: var(--ink);
+    transition: color 0.4s ease;
+  }
+  .cta:hover { color: var(--caramel); }
+  .cta .en { margin-left: 0.35em; }
+
+  /* ---------- 作品：杂志目录式条带 ---------- */
+  .works { border-bottom: 1px solid var(--hairline); }
+
+  .project {
+    display: grid;
+    grid-template-columns: 72px 1fr 220px;
+    column-gap: 48px;
+    padding: 76px 0;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .p-num {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding-top: 10px;
+  }
+  .p-num span {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--caramel);
+    letter-spacing: 0.1em;
+  }
+  .p-num i {
+    width: 1px;
+    height: 44px;
+    background: var(--hairline);
+  }
+
+  .p-head {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .p-name {
+    font-family: var(--serif-en);
+    font-weight: 500;
+    font-size: clamp(30px, 2.6vw, 38px);
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+  }
+  .p-name .zh {
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    font-size: 0.62em;
+    letter-spacing: 0.08em;
+    margin-left: 0.45em;
+  }
+  .p-cat {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    color: var(--gray);
+  }
+  .p-desc {
+    margin-top: 22px;
+    max-width: 36em;
+    font-size: 15px;
+    line-height: 2;
+    letter-spacing: 0.04em;
+    color: var(--gray);
+  }
+
+  .p-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 30px;
+  }
+  .p-visual {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 64px;
+    transition: transform 0.7s var(--ease-out);
+  }
+  .project:hover .p-visual { transform: translateY(-4px); }
+
+  .p-link {
+    font-family: var(--serif-en);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--caramel);
+  }
+  .project:hover .p-link::after { transform: scaleX(1); }
+
+  /* —— Repaste：黑色小刘海 —— */
+  .v-notch {
+    width: 92px;
+    height: 26px;
+    background: var(--ink);
+    border-radius: 0 0 14px 14px;
+    position: relative;
+  }
+  .v-notch::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(245, 241, 232, 0.28);
+  }
+  /* —— Readless：三条声波细线 —— */
+  .v-waves {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .v-waves i { width: 1.5px; background: var(--ink); }
+  .v-waves i:nth-child(1) { height: 20px; }
+  .v-waves i:nth-child(2) { height: 36px; }
+  .v-waves i:nth-child(3) { height: 26px; }
+  /* —— WidgetToDo：纸感小方块带勾选 —— */
+  .v-todo {
+    width: 46px;
+    height: 46px;
+    background: var(--paper-lift);
+    border: 1px solid var(--hairline);
+    box-shadow: 0 8px 18px var(--warm-shadow);
+    position: relative;
+  }
+  .v-todo .check {
+    position: absolute;
+    left: 8px;
+    top: 13px;
+    width: 11px;
+    height: 6px;
+    border-left: 1.5px solid var(--caramel);
+    border-bottom: 1.5px solid var(--caramel);
+    transform: rotate(-45deg);
+  }
+  .v-todo .row {
+    position: absolute;
+    left: 25px;
+    height: 1px;
+    background: #D8CFBD;
+  }
+  .v-todo .row.r1 { top: 15px; width: 13px; }
+  .v-todo .row.r2 { top: 30px; width: 13px; }
+  .v-todo .box {
+    position: absolute;
+    left: 8px;
+    top: 26px;
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--hairline);
+  }
+
+  /* ---------- 引言 ---------- */
+  .quote { padding: 24vh 0 20vh; }
+  .q-rule {
+    width: 40px;
+    height: 1px;
+    background: var(--caramel);
+    margin-bottom: 44px;
+  }
+  .q-text {
+    font-weight: 300;
+    font-size: clamp(24px, 2.4vw, 34px);
+    line-height: 1.9;
+    letter-spacing: 0.04em;
+    max-width: 30em;
+  }
+
+  /* ---------- 联系 ---------- */
+  .contact {
+    border-top: 1px solid var(--hairline);
+    padding: 84px 0 100px;
+  }
+  .c-label {
+    font-size: 12px;
+    letter-spacing: 0.34em;
+    color: var(--gray);
+    margin-bottom: 48px;
+  }
+  .c-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: baseline;
+    padding: 16px 0;
+  }
+  .c-key {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    color: var(--gray);
+  }
+  .c-val {
+    justify-self: start;
+    font-family: var(--serif-en);
+    font-size: 20px;
+    letter-spacing: 0.03em;
+    color: var(--ink);
+    transition: color 0.4s ease;
+  }
+  .c-val:hover { color: var(--caramel); }
+
+  /* ---------- 页脚 ---------- */
+  .foot {
+    border-top: 1px solid var(--hairline);
+    padding: 30px 0 46px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--gray);
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 900px) {
+    .side-mark { display: none; }
+    .page { padding: 0 7vw; }
+    .project {
+      grid-template-columns: 1fr;
+      row-gap: 28px;
+      padding: 60px 0;
+    }
+    .p-num {
+      flex-direction: row;
+      gap: 16px;
+      padding-top: 0;
+    }
+    .p-num i { width: 44px; height: 1px; }
+    .p-side {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .c-row { grid-template-columns: 1fr; row-gap: 8px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .fade { animation: none; opacity: 1; transform: none; }
+    .u-grow::after, .p-visual { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+  <aside class="side-mark fade" style="animation-delay: 1.3s" aria-hidden="true">
+    <i></i>
+    <span>作品集　二〇二六</span>
+  </aside>
+
+  <div class="page">
+
+    <header class="nav fade" style="animation-delay: 0.05s">
+      <div class="brand">陈晓峰</div>
+      <nav class="nav-links">
+        <a class="u-grow" href="#works">作品</a>
+        <a class="u-grow" href="#contact">联系</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow fade" style="animation-delay: 0.2s"><span class="en">macOS</span>独立开发者</p>
+      <h1 class="hero-lines">
+        <span class="line fade" style="animation-delay: 0.35s">做<em class="kw">安静</em><span class="gloss">quietly</span>地待在</span>
+        <span class="line fade" style="animation-delay: 0.5s">系统角落里的</span>
+        <span class="line fade" style="animation-delay: 0.65s">原生工具。</span>
+      </h1>
+      <p class="intro fade" style="animation-delay: 0.85s">三个小工具，各居其位——刘海、菜单栏、与桌面一隅。</p>
+      <a class="cta u-grow u-line fade" style="animation-delay: 1s" href="#works">查看作品<span class="en">→</span></a>
+    </section>
+
+    <main class="works" id="works">
+
+      <article class="project fade" style="animation-delay: 0.15s">
+        <div class="p-num"><span>一</span><i></i></div>
+        <div class="p-main">
+          <div class="p-head">
+            <h3 class="p-name">Repaste<span class="zh">刘海剪贴板</span></h3>
+            <span class="p-cat">刘海 · 剪贴板历史</span>
+          </div>
+          <p class="p-desc">鼠标滑到刘海停留 0.1 秒，剪贴板历史应声展开。来源 App 一眼可见、模板组沉淀、链接一键直开；数据只存本机，零系统权限。</p>
+        </div>
+        <div class="p-side">
+          <div class="p-visual"><div class="v-notch"></div></div>
+          <a class="p-link u-grow" href="https://github.com/klosexf/Repaste">GitHub ↗</a>
+        </div>
+      </article>
+
+      <article class="project fade" style="animation-delay: 0.25s">
+        <div class="p-num"><span>二</span><i></i></div>
+        <div class="p-main">
+          <div class="p-head">
+            <h3 class="p-name">Readless<span class="zh">桌面听读助手</span></h3>
+            <span class="p-cat">选中即读 · 文字转语音</span>
+          </div>
+          <p class="p-desc">在任何 App 里选中文字，按下 ⌥R，1.5 秒内开始朗读。链接、脚注、硬断行自动清洗，把长文当播客听完。开源、无遥测。</p>
+        </div>
+        <div class="p-side">
+          <div class="p-visual"><div class="v-waves"><i></i><i></i><i></i></div></div>
+          <a class="p-link u-grow" href="https://github.com/klosexf/readless">GitHub ↗</a>
+        </div>
+      </article>
+
+      <article class="project fade" style="animation-delay: 0.35s">
+        <div class="p-num"><span>三</span><i></i></div>
+        <div class="p-main">
+          <div class="p-head">
+            <h3 class="p-name">WidgetToDo</h3>
+            <span class="p-cat">桌面 · Notion 浮窗</span>
+          </div>
+          <p class="p-desc">常驻桌面的 Notion 浮窗：今日待办、勾选完成、当日日记，改动实时同步回 Notion。</p>
+        </div>
+        <div class="p-side">
+          <div class="p-visual">
+            <div class="v-todo">
+              <span class="check"></span>
+              <span class="row r1"></span>
+              <span class="box"></span>
+              <span class="row r2"></span>
+            </div>
+          </div>
+          <a class="p-link u-grow" href="https://github.com/klosexf/WidgetToDo">GitHub ↗</a>
+        </div>
+      </article>
+
+    </main>
+
+    <section class="quote">
+      <div class="q-rule fade" style="animation-delay: 0.1s"></div>
+      <p class="q-text fade" style="animation-delay: 0.25s">工具应当如空气——在需要时出现，其余时间隐去。</p>
+    </section>
+
+    <section class="contact" id="contact">
+      <p class="c-label fade" style="animation-delay: 0.1s">联系我</p>
+      <div class="c-row fade" style="animation-delay: 0.2s">
+        <span class="c-key">GitHub</span>
+        <a class="c-val u-grow" href="https://github.com/klosexf">github.com/klosexf</a>
+      </div>
+      <div class="c-row fade" style="animation-delay: 0.3s">
+        <span class="c-key">邮箱</span>
+        <a class="c-val u-grow" href="mailto:hello@xiaofeng.dev">hello@xiaofeng.dev</a>
+      </div>
+    </section>
+
+    <footer class="foot fade" style="animation-delay: 0.4s">
+      <span>© 二〇二六 陈晓峰</span>
+    </footer>
+
+  </div>
+
+</body>
+</html>

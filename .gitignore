@@ -1,0 +1,11 @@
+# 不上传到 GitHub 的文件（仅根目录）
+/index.html
+
+# 系统文件
+.DS_Store
+
+# 依赖目录
+node_modules/
+
+# 大文件（超过 GitHub 100MB 限制）
+录屏2026-09-02 11.41.11.mov

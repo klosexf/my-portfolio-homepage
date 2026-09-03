@@ -1,0 +1,1453 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repaste · 刘海剪贴板 — 把剪贴板藏进刘海</title>
+<meta name="description" content="Repaste（刘海剪贴板）是一款 macOS 原生剪贴板管理器：鼠标滑到刘海停留 0.1 秒，剪贴板历史应声展开。来源 App 一眼可见、模板组沉淀、链接一键直开；数据只存本机，零系统权限。">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="%238B6BFF"/><path d="M24 4h16v8a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6z" fill="%23050508"/><rect x="18" y="30" width="28" height="18" rx="4" fill="white" opacity=".95"/><rect x="23" y="35" width="16" height="3" rx="1.5" fill="%237450EA"/><rect x="23" y="41" width="10" height="3" rx="1.5" fill="%237450EA" opacity=".55"/></svg>'>
+<style>
+/* ============================================================
+   Repaste · 官网落地页
+   设计语言与 App DesignTokens 一致：哑光纯黑 + 品牌紫
+   ============================================================ */
+*{ box-sizing:border-box; margin:0; padding:0; }
+:root{
+  --bg:#050508;
+  --panel:#0A0A0A; --s2:#0E0E0E; --s3:#141414; --btn:#1A1A1A;
+  --fg:#D6E4FB; --fgs:#EEF3FF; --mut:#9AA3B8; --mut2:#8D95AB;
+  --acc:#8B6BFF; --accB:#A38BFF; --accBtn:#7450EA;
+  --k-text:#8FD0F4; --k-image:#F0A3C0; --k-link:#4FD47F; --k-file:#FFA856;
+  --stroke:rgba(255,255,255,.10); --stroke2:rgba(255,255,255,.16);
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Noto Sans SC",sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK SC",monospace;
+  --spring:cubic-bezier(.24,1.18,.32,1);
+}
+html{ scroll-behavior:smooth; }
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--fg);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+::selection{ background:rgba(139,107,255,.35); color:#fff; }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; border:0; background:none; color:inherit; cursor:pointer; }
+
+/* 哑光颗粒 */
+body::after{
+  content:''; position:fixed; inset:0; z-index:2000; pointer-events:none; opacity:.05;
+  background-image:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="160" height="160" filter="url(%23n)" opacity=".6"/></svg>');
+}
+
+.wrap{ max-width:1140px; margin:0 auto; padding:0 28px; }
+
+/* ---------- 导航 ---------- */
+.nav{
+  position:sticky; top:0; z-index:100; height:64px;
+  background:rgba(5,5,8,.94); border-bottom:1px solid var(--stroke);
+}
+.nav .wrap{ height:100%; display:flex; align-items:center; gap:28px; }
+.brand{ display:flex; align-items:center; gap:11px; }
+.brand .mark{
+  width:30px; height:30px; border-radius:8px; position:relative; flex:0 0 auto;
+  background:linear-gradient(150deg,#b39cff,#8a63f0 52%,#5f37c4);
+}
+.brand .mark::before{ /* 刘海 */
+  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:16px; height:7px; background:var(--bg);
+  border-radius:0 0 5px 5px;
+}
+.brand .mark i{ position:absolute; top:2.5px; left:50%; width:2.5px; height:2.5px; border-radius:50%;
+  transform:translateX(-50%); background:#46D17E; }
+.brand .mark::after{ /* 白卡 */
+  content:''; position:absolute; left:7px; right:7px; bottom:5px; height:12px; border-radius:3px;
+  background:rgba(255,255,255,.95);
+  box-shadow:inset 0 3px 0 -1px #7450EA, inset 0 -3px 0 -1px rgba(116,80,234,.5);
+}
+.brand b{ font-size:16.5px; font-weight:750; color:var(--fgs); letter-spacing:.2px; }
+.brand span{ font-family:var(--mono); font-size:11px; color:var(--mut2); margin-left:2px; letter-spacing:1px; }
+.nav-links{ display:flex; gap:24px; margin-left:auto; }
+.nav-links a{ font-size:13.5px; color:var(--mut); transition:color .15s; }
+.nav-links a:hover{ color:var(--fgs); }
+.nav-cta{ margin-left:8px; }
+
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:14px; font-weight:600; letter-spacing:.2px;
+  padding:10px 20px; border-radius:11px; transition:all .16s ease;
+  white-space:nowrap;
+}
+.btn:active{ transform:translateY(1px); }
+.btn-pri{ background:var(--accBtn); color:#fff; box-shadow:inset 0 1px 0 rgba(255,255,255,.14); }
+.btn-pri:hover{ background:var(--acc); }
+.btn-sec{ color:var(--fg); border:1px solid var(--stroke2); }
+.btn-sec:hover{ background:rgba(255,255,255,.05); color:var(--fgs); }
+.btn-sm{ padding:7px 14px; font-size:13px; border-radius:9px; }
+
+/* ---------- Hero ---------- */
+.hero{ padding:88px 0 30px; text-align:center; position:relative; }
+.hero::before{ /* 顶部氛围 */
+  content:''; position:absolute; top:-200px; left:50%; transform:translateX(-50%);
+  width:1100px; height:560px; pointer-events:none;
+  background:radial-gradient(closest-side, rgba(139,107,255,.10), transparent);
+}
+h1{
+  position:relative; margin-top:0;
+  font-size:clamp(34px,5.4vw,58px); font-weight:750; color:var(--fgs);
+  letter-spacing:.5px; line-height:1.45;
+}
+/* 「刘海」二字装进真·刘海（方案 C · 品牌紫界） */
+.notch-word{
+  display:inline-block; position:relative;
+  font-size:.86em; font-weight:700; color:var(--fgs);
+  background:linear-gradient(180deg,#05040a,#010103);
+  border:1px solid rgba(139,107,255,.42); border-top-color:rgba(139,107,255,.10);
+  border-radius:0 0 22px 22px;
+  padding:15px 26px 11px; margin:0 12px;
+  white-space:nowrap;
+  box-shadow:
+    0 12px 30px -10px rgba(139,107,255,.35),
+    0 4px 14px rgba(0,0,0,.7),
+    inset 0 0 18px rgba(139,107,255,.10);
+}
+/* 顶部紫色光带（从刘海沿渗出） */
+.notch-word::before{
+  content:''; position:absolute; top:-1px; left:16%; right:16%; height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--accB),transparent);
+  filter:blur(.4px);
+}
+/* 呼吸灯：暗示「正在监听剪贴板」 */
+.notch-word::after{
+  content:''; position:absolute; top:6px; left:50%; transform:translateX(-50%);
+  width:5px; height:5px; border-radius:50%; background:var(--accB);
+  animation:notchBreathe 2.4s ease-in-out infinite;
+}
+@keyframes notchBreathe{
+  0%,100%{ opacity:.45; box-shadow:0 0 0 0 rgba(163,139,255,.5); }
+  50%    { opacity:1;   box-shadow:0 0 0 4px rgba(163,139,255,.10); }
+}
+.hero-sub{
+  position:relative; margin:22px auto 0; max-width:680px;
+  font-size:16.5px; line-height:1.85; color:var(--mut);
+}
+.hero-sub b{ color:var(--fg); font-weight:600; }
+.hero-cta{ position:relative; margin-top:34px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+.hero-note{
+  position:relative; margin-top:18px; font-family:var(--mono);
+  font-size:11.5px; color:var(--mut2); letter-spacing:.8px;
+}
+
+/* ---------- 演示舞台（首屏动画核心） ---------- */
+.stage-wrap{ position:relative; margin:52px auto 0; width:100%;
+  display:flex; justify-content:center; }   /* flex 居中：子级超宽时两侧对称溢出，配合缩放保持视觉居中 */
+.stage-scale{ flex:0 0 auto; width:980px; height:640px; transform-origin:top center; }
+.screen{
+  position:relative; width:980px; height:640px; overflow:hidden;
+  border-radius:20px; border:1px solid rgba(255,255,255,.11);
+  background:#0a0a10;
+  box-shadow:0 50px 130px rgba(0,0,0,.7), 0 10px 40px rgba(0,0,0,.5), inset 0 0 120px rgba(0,0,0,.35);
+  user-select:none; cursor:none;
+  font-family:var(--sans);
+}
+/* 壁纸 */
+.wallpaper{
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(620px 320px at 50% -60px, rgba(139,107,255,.14), transparent 70%),
+    radial-gradient(760px 520px at 88% 112%, rgba(64,50,124,.13), transparent 70%),
+    radial-gradient(500px 400px at 4% 96%, rgba(38,52,110,.10), transparent 70%),
+    linear-gradient(180deg,#111118 0%, #0b0b11 45%, #08080d 100%);
+}
+/* 桌面窗口 */
+.win{
+  position:absolute; background:#0D0D13; border-radius:12px;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 18px 44px rgba(0,0,0,.45);
+  transition:opacity .4s ease, filter .4s ease; z-index:5;
+}
+.screen.dims .win{ opacity:.45; }
+.win-tb{ height:30px; display:flex; align-items:center; gap:7px; padding:0 12px;
+  border-bottom:1px solid rgba(255,255,255,.06); }
+.win-tb i{ width:9px; height:9px; border-radius:50%; }
+.win-tb i:nth-child(1){ background:#FF5F57; } .win-tb i:nth-child(2){ background:#FEBC2E; }
+.win-tb i:nth-child(3){ background:#28C840; }
+.win-tb span{ flex:1; text-align:center; font-size:11px; color:var(--mut2); letter-spacing:.3px; }
+.win-editor{ left:26px; top:150px; width:302px; height:232px; }
+.win-chat{ left:702px; top:132px; width:252px; height:216px; }
+/* 编辑器 */
+.ed{ padding:12px 14px; font-family:var(--mono); font-size:12px; line-height:1.95; color:var(--mut); }
+.ed-line{ display:flex; gap:12px; white-space:nowrap; }
+.ed-line .ln{ width:10px; text-align:right; color:#4c5470; flex:0 0 auto; }
+.ed-line .tx{ overflow:hidden; text-overflow:ellipsis; }
+.ed-line.new{ visibility:hidden; color:var(--fg); }
+.ed-line.new.on{ visibility:visible; }
+.ed-caret{ display:inline-block; width:7px; height:13px; margin-left:1px; vertical-align:-2px;
+  background:var(--accB); animation:blink 1s steps(1) infinite; border-radius:1px; }
+@keyframes blink{ 50%{ opacity:0; } }
+/* 聊天 */
+.chat-body{ padding:12px 12px 0; }
+.chat-sys{ text-align:center; font-size:10px; color:#5c637a; margin-bottom:10px; }
+.chat-msg{ display:flex; gap:8px; }
+.chat-ava{ width:26px; height:26px; border-radius:7px; background:#1296DB; color:#fff;
+  font-size:11px; display:grid; place-items:center; flex:0 0 auto; margin-top:2px; }
+.chat-col{ min-width:0; }
+.chat-name{ font-size:10px; color:var(--mut2); margin-bottom:4px; }
+.bubble{
+  display:inline-block; font-size:12px; line-height:1.7; color:var(--fg);
+  background:#16161d; border:1px solid rgba(255,255,255,.07);
+  padding:7px 10px; border-radius:4px 10px 10px 10px; max-width:186px;
+  transition:box-shadow .3s;
+}
+.bubble.flash{ box-shadow:0 0 0 1.5px rgba(139,107,255,.55); }
+
+/* 菜单栏 */
+.menubar{
+  position:absolute; top:0; left:0; right:0; height:32px; z-index:30;
+  background:rgba(13,13,19,.88); border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex; align-items:center; padding:0 16px; pointer-events:none;
+}
+.mb-left{ display:flex; gap:18px; font-size:12.5px; color:var(--mut); }
+.mb-left b{ color:var(--fg); font-weight:600; }
+.mb-right{ margin-left:auto; display:flex; align-items:center; gap:10px; color:var(--mut); }
+.mb-clock{ font-family:var(--mono); font-size:11.5px; }
+.mb-right svg{ display:block; }
+/* 刘海 */
+.notch{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:172px; height:32px; background:#030308; z-index:32;
+  border-radius:0 0 14px 14px; pointer-events:none;
+}
+.cam{
+  position:absolute; top:12px; left:50%; transform:translateX(-50%);
+  width:5px; height:5px; border-radius:50%; background:#46D17E; opacity:.9;
+  transition:transform .25s;
+}
+.notch.glint .cam{ transform:translateX(-50%) scale(1.5); }
+
+/* 刘海热区（可交互） */
+.notch-zone{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:260px; height:44px; z-index:44;
+}
+
+/* ---------- 剪贴板面板（复刻 App UI） ---------- */
+.panel{
+  position:absolute; top:32px; left:240px; width:500px; z-index:20;
+  background:var(--panel); border-radius:0 0 28px 28px;
+  border:1px solid rgba(255,255,255,.13); border-top:0;
+  box-shadow:0 32px 80px rgba(0,0,0,.6);
+  transform:translateY(-103%);
+  transition:transform .4s cubic-bezier(.3,.7,.3,1);
+  overflow:hidden;
+}
+.panel.open{ transform:translateY(0); transition:transform .55s var(--spring); }
+.panel.instant{ transition:none; }
+/* 头部：搜索 + 设置/退出 */
+.p-head{ display:flex; gap:9px; padding:12px 12px 8px; align-items:center; }
+.searchbox{
+  flex:1; display:flex; align-items:center; gap:8px; height:34px; padding:0 11px;
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.12);
+  border-radius:12px; cursor:text;
+}
+.searchbox svg{ flex:0 0 auto; }
+.searchbox input{
+  flex:1; min-width:0; border:0; outline:0; background:none;
+  font-family:var(--sans); font-size:13px; color:var(--fg); caret-color:var(--accB);
+}
+.searchbox input::placeholder{ color:var(--mut2); }
+.sclear{
+  width:18px; height:18px; border-radius:50%; background:var(--s3);
+  display:none; place-items:center; flex:0 0 auto; color:var(--mut);
+}
+.sclear.show{ display:grid; }
+.sclear svg{ display:block; }
+.ibtn{
+  width:28px; height:28px; border-radius:8px; background:var(--btn);
+  display:grid; place-items:center; color:var(--fg); transition:opacity .1s;
+}
+.ibtn:active{ opacity:.55; }
+/* 标签页 */
+.p-tabs{ display:flex; gap:6px; padding:0 14px 9px; align-items:center; }
+.pill{
+  font-family:var(--mono); font-size:12px; color:var(--fg);
+  padding:5px 13px; border-radius:99px; transition:background .15s, color .15s;
+}
+.pill:hover{ background:rgba(255,255,255,.07); }
+.pill.sel{ background:#fff; color:var(--panel); font-weight:600; }
+.pill.sel:hover{ background:#fff; }
+.pill.ghost{ color:var(--mut); }
+.pill.add{ color:var(--acc); font-weight:700; padding:5px 10px; }
+.pill.add:hover{ color:var(--accB); }
+/* 来源条 */
+.p-sources{ display:flex; gap:6px; padding:0 14px 9px; align-items:center; }
+.schip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11.5px; color:var(--fg); background:var(--s3);
+  padding:4px 10px; border-radius:99px; transition:background .15s, color .15s;
+}
+.schip b{ font-family:var(--mono); font-size:10px; color:var(--mut2); font-weight:500; }
+.schip:hover{ background:#1b1b1b; }
+.schip.sel{ background:#fff; color:var(--panel); }
+.schip.sel b{ color:#7d75a8; }
+.schip .dots{ width:3px; height:3px; border-radius:50%; background:var(--mut2); }
+/* 列表 */
+.p-list{ padding:8px 14px 10px; height:auto; min-height:170px; max-height:380px; overflow:hidden; }
+.card{
+  max-height:0; opacity:0; margin-bottom:0;
+  transition:max-height .34s ease, opacity .26s ease, margin-bottom .34s ease, transform .26s ease;
+  transform:translateY(-6px);
+}
+.card.in{ max-height:96px; opacity:1; margin-bottom:6px; transform:none; }
+.card.in.off{ max-height:0; opacity:0; margin-bottom:0; transform:scale(.98); }
+.card-in{
+  display:flex; gap:10px; align-items:flex-start;
+  padding:10px 14px; border-radius:12px;
+  transition:background .15s;
+}
+.screen.manual .card.in{ cursor:pointer; }
+.screen.manual .card.in:hover .card-in{ background:var(--s2); }
+.card.sel .card-in{ background:var(--s3); }
+.card.used .card-in{
+  background:rgba(139,107,255,.16);
+  box-shadow:inset 0 0 0 1px rgba(139,107,255,.45);
+}
+.card.fresh .card-in{ animation:fresh 1.9s ease-out .25s both; }
+@keyframes fresh{
+  0%{ box-shadow:inset 0 0 0 1.5px rgba(139,107,255,.65); background:rgba(139,107,255,.12); }
+  100%{ box-shadow:inset 0 0 0 1.5px rgba(139,107,255,0); background:rgba(139,107,255,0); }
+}
+.kind{ font-size:11px; font-weight:600; width:30px; flex:0 0 auto; padding-top:2px; }
+.cbody{ flex:1; min-width:0; }
+.cl{ font-size:13px; color:var(--fg); line-height:1.5;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.cl .host{ font-weight:700; color:var(--fgs); }
+.cl .path{ color:var(--mut2); }
+.cl mark, mark.hm{ background:none; color:var(--accB); }
+.lrow{ display:flex; align-items:center; gap:6px; }
+.licon{ flex:0 0 auto; }
+.meta{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--mut); margin-top:5px;
+  white-space:nowrap; overflow:hidden; }
+.meta .dot{ width:3px; height:3px; border-radius:50%; background:rgba(141,149,171,.55); flex:0 0 auto; }
+.src{ display:inline-flex; align-items:center; gap:5px; }
+.appic{
+  width:12px; height:12px; border-radius:3.5px; display:inline-grid; place-items:center;
+  color:#fff; font-size:7.5px; font-weight:700; font-family:var(--sans); flex:0 0 auto;
+}
+.appic.saf{ background:#1E9BF0; } .appic.ding{ background:#1296DB; }
+.appic.fei{ background:#3370FF; } .appic.note{ background:#F2B33D; color:#5b3d00; }
+.appic.xcode{ background:#4a6fd4; } .appic.wx{ background:#07C160; }
+.openlink{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:500;
+  color:var(--acc); transition:color .12s; }
+.screen.manual .openlink:hover{ color:var(--accB); }
+.more{
+  width:28px; height:28px; border-radius:8px; background:var(--btn);
+  display:grid; place-items:center; flex:0 0 auto; margin-top:2px;
+}
+.thumb{
+  width:40px; height:40px; border-radius:8px; overflow:hidden; flex:0 0 auto; margin-top:1px;
+  border:1px solid rgba(255,255,255,.08);
+}
+/* toast */
+.p-toast{
+  position:absolute; top:50px; left:50%; z-index:6;
+  display:flex; align-items:center; gap:6px;
+  background:rgba(16,16,22,.94); border:1px solid rgba(139,107,255,.45);
+  border-radius:10px; padding:8px 16px;
+  box-shadow:0 20px 40px rgba(139,107,255,.22), 0 12px 40px rgba(0,0,0,.55);
+  transform:translate(-50%,-10px); opacity:0; pointer-events:none;
+  transition:all .26s ease; white-space:nowrap;
+}
+.p-toast.show{ transform:translate(-50%,0); opacity:1; }
+.p-toast i{ font-style:normal; font-size:14px; font-weight:600; color:var(--k-link); }
+.p-toast b{ font-size:14px; font-weight:600; color:var(--fgs); }
+.p-toast span{ font-size:13px; color:var(--mut); }
+
+/* 停留进度环 */
+.dwell{
+  position:absolute; left:490px; top:16px; z-index:40; width:52px; height:52px;
+  transform:translate(-50%,-50%); opacity:0; transition:opacity .2s; pointer-events:none;
+}
+.dwell.show{ opacity:1; }
+.dwell svg{ display:block; }
+.dwell .lbl{
+  position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:5px;
+  font-family:var(--mono); font-size:10px; color:var(--accB); letter-spacing:1px; white-space:nowrap;
+}
+/* 浮动按键提示 */
+.keycap{
+  position:absolute; z-index:46; transform:translate(-50%,-50%) scale(.7); opacity:0;
+  font-family:var(--mono); font-size:13.5px; color:var(--fg);
+  background:var(--btn); border:1px solid rgba(255,255,255,.16);
+  border-radius:9px; padding:6px 11px;
+  box-shadow:0 8px 22px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+  transition:opacity .18s ease, transform .18s ease; pointer-events:none; white-space:nowrap;
+}
+.keycap.show{
+  opacity:1; transform:translate(-50%,-50%) scale(1);
+  transition:opacity .16s ease, transform .26s cubic-bezier(.2,1.5,.4,1);
+}
+/* 光标 */
+.cursor{
+  position:absolute; left:0; top:0; z-index:50; pointer-events:none;
+  opacity:0; transition:opacity .35s ease; will-change:transform;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.5));
+}
+.cursor.show{ opacity:1; } .cursor.dim{ opacity:.28; }
+#liveCursor{ z-index:52; display:none; }
+.screen.manual #liveCursor{ display:block; opacity:1; }
+
+.stage-note{
+  margin-top:22px; text-align:center; font-family:var(--mono);
+  font-size:12px; color:var(--mut2); letter-spacing:.6px;
+}
+.stage-note .nd{ color:var(--accB); animation:npulse 2.2s ease-in-out infinite; }
+@keyframes npulse{ 0%,100%{ opacity:1; } 50%{ opacity:.25; } }
+
+/* ---------- 通用区块 ---------- */
+section{ padding:104px 0 0; }
+.sec-head{ margin-bottom:44px; }
+.sec-eyebrow{
+  font-family:var(--mono); font-size:12px; color:var(--accB);
+  letter-spacing:3px; margin-bottom:14px;
+}
+h2{ font-size:clamp(26px,3.4vw,38px); font-weight:720; color:var(--fgs); letter-spacing:.5px; }
+.sec-sub{ margin-top:14px; font-size:15.5px; line-height:1.8; color:var(--mut); max-width:620px; }
+.rv{ opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
+.rv.on{ opacity:1; transform:none; }
+
+/* 功能 bento */
+.bento{ display:grid; grid-template-columns:repeat(12,1fr); gap:14px; }
+.bcard{
+  background:#0A0A10; border:1px solid rgba(255,255,255,.07); border-radius:18px;
+  padding:26px; transition:border-color .2s, transform .2s;
+}
+.bcard:hover{ border-color:rgba(139,107,255,.35); transform:translateY(-2px); }
+.bcard h3{ font-size:16.5px; font-weight:650; color:var(--fgs); margin-bottom:10px; letter-spacing:.3px; }
+.bcard p{ font-size:13.5px; line-height:1.8; color:var(--mut); }
+.bcard .tag{
+  display:inline-block; margin-bottom:14px; font-family:var(--mono); font-size:10.5px;
+  color:var(--accB); border:1px solid rgba(139,107,255,.3); border-radius:99px;
+  padding:3px 10px; letter-spacing:1px;
+}
+.b7{ grid-column:span 7; } .b5{ grid-column:span 5; } .b3{ grid-column:span 3; }
+.bflex{ display:flex; gap:26px; align-items:center; }
+.bflex > div:first-child{ flex:1; }
+.fic{ width:38px; height:38px; border-radius:11px; background:rgba(139,107,255,.12);
+  border:1px solid rgba(139,107,255,.22); display:grid; place-items:center; margin-bottom:16px; }
+/* 功能卡内小图 */
+.dg{
+  flex:0 0 auto; background:#07070c; border:1px solid rgba(255,255,255,.08);
+  border-radius:12px; padding:14px; position:relative;
+}
+.dg-notch{ width:220px; }
+.dg-bar{ height:22px; background:#14141b; border-radius:6px 6px 3px 3px; position:relative; }
+.dg-bar i{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:56px; height:9px; background:#030308; border-radius:0 0 6px 6px;
+}
+.dg-bar i::after{ content:''; position:absolute; top:2.5px; left:50%; transform:translateX(-50%);
+  width:3px; height:3px; border-radius:50%; background:#46D17E; }
+.dg-zone{
+  position:absolute; top:-4px; left:50%; transform:translateX(-50%);
+  width:84px; height:32px; border:1.5px dashed rgba(163,139,255,.55); border-radius:10px;
+}
+.dg-flow{ display:flex; flex-direction:column; align-items:center; gap:3px; margin-top:6px; }
+.dg-arrow{ color:var(--accB); font-family:var(--mono); font-size:11px; line-height:1.2; }
+.dg-panel{ width:120px; height:44px; background:#101017; border:1px solid rgba(255,255,255,.14);
+  border-radius:0 0 10px 10px; position:relative; overflow:hidden; }
+.dg-panel::before{ content:''; position:absolute; top:8px; left:10px; right:44px; height:7px;
+  border-radius:4px; background:rgba(255,255,255,.10); }
+.dg-panel::after{ content:''; position:absolute; top:19px; left:10px; right:64px; height:7px;
+  border-radius:4px; background:rgba(255,255,255,.06); }
+.dg-panel i{ position:absolute; top:30px; left:10px; width:36px; height:6px; border-radius:4px;
+  background:rgba(139,107,255,.5); }
+.minirows{ flex:0 0 auto; display:flex; flex-direction:column; gap:8px; }
+.mrow{
+  display:flex; align-items:center; gap:9px; background:#07070c;
+  border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:9px 12px; min-width:190px;
+}
+.mrow .appic{ width:16px; height:16px; border-radius:4.5px; font-size:9px; }
+.mrow b{ display:block; font-size:12px; font-weight:600; color:var(--fg); }
+.mrow span{ display:block; font-size:10.5px; color:var(--mut2); margin-top:2px; }
+
+/* 呼出方式 */
+.summons{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.sucard{
+  background:#0A0A10; border:1px solid rgba(255,255,255,.07); border-radius:18px;
+  padding:26px; transition:border-color .2s, transform .2s;
+}
+.sucard:hover{ border-color:rgba(139,107,255,.35); transform:translateY(-2px); }
+.sucard h3{ font-size:17px; font-weight:650; color:var(--fgs); }
+.sucard .where{ font-family:var(--mono); font-size:11px; color:var(--mut2); letter-spacing:1px; margin:6px 0 18px; }
+.suvis{
+  height:110px; background:#07070c; border:1px solid rgba(255,255,255,.08);
+  border-radius:12px; margin-bottom:18px; position:relative; overflow:hidden;
+  display:grid; place-items:center;
+}
+.suvis .topedge{ position:absolute; top:0; left:0; right:0; height:26px; background:#14141b; }
+.suvis .topedge i{ position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:64px; height:10px; background:#030308; border-radius:0 0 7px 7px; }
+.keys{ display:flex; gap:6px; align-items:center; }
+.key{
+  font-family:var(--mono); font-size:17px; color:var(--fg);
+  background:var(--btn); border:1px solid rgba(255,255,255,.16); border-radius:9px;
+  min-width:40px; height:40px; display:grid; place-items:center; padding:0 12px;
+  box-shadow:0 3px 0 rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.caps{ display:inline-flex; align-items:center; gap:7px; font-size:12.5px; color:var(--fg);
+  background:#101017; border:1px solid rgba(255,255,255,.14); border-radius:99px; padding:7px 15px; }
+.caps i{ width:5px; height:5px; border-radius:50%; background:var(--acc); }
+.sucard p{ font-size:13.5px; line-height:1.8; color:var(--mut); }
+.su-params{
+  margin-top:18px; display:flex; flex-wrap:wrap; gap:10px;
+  font-family:var(--mono); font-size:11.5px; color:var(--mut2);
+}
+.su-params span{ border:1px solid var(--stroke); border-radius:99px; padding:5px 13px; letter-spacing:.5px; }
+.su-params b{ color:var(--accB); font-weight:500; }
+
+/* 隐私 */
+.priv{ display:grid; grid-template-columns:1.05fr .95fr; gap:60px; align-items:center; }
+.priv p{ font-size:15px; line-height:2; color:var(--mut); margin-top:18px; }
+.priv p b{ color:var(--fg); font-weight:600; }
+.stats{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.stat{
+  background:#0A0A10; border:1px solid rgba(255,255,255,.07); border-radius:16px;
+  padding:24px 26px; transition:border-color .2s;
+}
+.stat:hover{ border-color:rgba(139,107,255,.35); }
+.stat b{ display:block; font-family:var(--mono); font-size:30px; font-weight:600; color:var(--accB); letter-spacing:1px; }
+.stat span{ display:block; margin-top:8px; font-size:12.5px; color:var(--mut2); letter-spacing:.5px; }
+
+/* 下载 */
+.dl{ text-align:center; }
+.dl .sec-head{ margin-bottom:36px; }
+.dl .sec-sub{ margin-left:auto; margin-right:auto; }
+.dl-cta{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
+.code-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:44px; text-align:left; }
+.codecard{ background:#0A0A10; border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:20px 22px; }
+.codecard h4{ font-size:13.5px; font-weight:600; color:var(--fg); margin-bottom:4px; }
+.codecard .cd{ font-size:11.5px; color:var(--mut2); margin-bottom:14px; }
+.codecard pre{
+  font-family:var(--mono); font-size:12px; line-height:1.9; color:var(--mut);
+  background:#060609; border:1px solid rgba(255,255,255,.06); border-radius:10px;
+  padding:14px 16px; overflow-x:auto; position:relative;
+}
+.codecard pre .c{ color:#5c637a; }
+.codecard pre .p{ color:var(--accB); }
+.copybtn{
+  margin-top:12px; font-family:var(--mono); font-size:11.5px; color:var(--mut);
+  border:1px solid var(--stroke); border-radius:8px; padding:6px 13px;
+  transition:all .15s; letter-spacing:.5px;
+}
+.copybtn:hover{ color:var(--fgs); border-color:var(--stroke2); }
+.copybtn.ok{ color:var(--k-link); border-color:rgba(79,212,127,.4); }
+
+/* 页脚 */
+footer{ margin-top:110px; border-top:1px solid var(--stroke); padding:34px 0 44px; }
+footer .wrap{ display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
+footer .fbrand{ display:flex; align-items:center; gap:10px; }
+footer .fbrand b{ font-size:14px; color:var(--fg); }
+footer .fbrand span{ font-family:var(--mono); font-size:11px; color:var(--mut2); }
+footer nav{ margin-left:auto; display:flex; gap:20px; flex-wrap:wrap; }
+footer nav a{ font-size:12.5px; color:var(--mut2); transition:color .15s; }
+footer nav a:hover{ color:var(--fgs); }
+footer .mit{ width:100%; font-family:var(--mono); font-size:11px; color:#5c637a; margin-top:4px; letter-spacing:.5px; }
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 960px){
+  .b7,.b5{ grid-column:span 12; }
+  .b3{ grid-column:span 6; }
+  .summons{ grid-template-columns:1fr; }
+  .priv{ grid-template-columns:1fr; gap:36px; }
+  .code-grid{ grid-template-columns:1fr; }
+  .nav-links{ display:none; }
+}
+@media (max-width: 620px){
+  .b3{ grid-column:span 12; }
+  .bflex{ flex-direction:column; align-items:flex-start; }
+  .stats{ grid-template-columns:1fr 1fr; }
+  .hero{ padding-top:64px; }
+  section{ padding-top:80px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .rv{ opacity:1; transform:none; transition:none; }
+  .ed-caret{ animation:none; }
+  .notch-word::after{ animation:none; opacity:.9; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 导航 ============ -->
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Repaste 首页">
+      <span class="mark"><i></i></span>
+      <b>Repaste</b><span>刘海剪贴板</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">功能</a>
+      <a href="#summon">呼出方式</a>
+      <a href="#privacy">隐私</a>
+      <a href="#download">下载</a>
+    </nav>
+    <a class="btn btn-pri btn-sm nav-cta" href="https://github.com/klosexf/Repaste/releases">免费下载</a>
+  </div>
+</header>
+
+<!-- ============ Hero ============ -->
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <h1>把剪贴板，藏进<span class="notch-word">刘海</span></h1>
+    <p class="hero-sub">
+      鼠标滑到刘海停留 <b>0.1 秒</b>，剪贴板历史应声展开——每条内容来自哪个 App、是文本还是链接，一眼可见。
+      <b>⌥⇧V</b> 随时居中呼出，常用内容沉淀为模板组。数据只存本机，<b>零系统权限</b>。
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-pri" href="https://github.com/klosexf/Repaste/releases">免费下载</a>
+      <a class="btn btn-sec" href="https://github.com/klosexf/Repaste" target="_blank" rel="noopener">GitHub 仓库 →</a>
+    </div>
+    <p class="hero-note">macOS 15.0 及以上 · 无需任何系统权限 · 零第三方依赖</p>
+
+    <!-- 首屏动画舞台 -->
+    <div class="stage-wrap" id="stageWrap">
+      <div class="stage-scale" id="stageScale">
+        <div class="screen" id="screen">
+          <div class="wallpaper"></div>
+
+          <!-- 桌面窗口：编辑器 -->
+          <div class="win win-editor">
+            <div class="win-tb"><i></i><i></i><i></i><span>release-notes.md</span></div>
+            <div class="ed">
+              <div class="ed-line"><span class="ln">1</span><span class="tx"># V0.2 发布清单</span></div>
+              <div class="ed-line"><span class="ln">2</span><span class="tx">- DMG 挂到 README 顶部</span></div>
+              <div class="ed-line"><span class="ln">3</span><span class="tx">- 更新截图与徽章</span></div>
+              <div class="ed-line new" id="edLine"><span class="ln">4</span><span class="tx" id="edTx"></span><span class="ed-caret"></span></div>
+            </div>
+          </div>
+
+          <!-- 桌面窗口：聊天 -->
+          <div class="win win-chat">
+            <div class="win-tb"><i></i><i></i><i></i><span>钉钉 · 运维群</span></div>
+            <div class="chat-body">
+              <div class="chat-sys">张工 10:24</div>
+              <div class="chat-msg">
+                <span class="chat-ava">张</span>
+                <div class="chat-col">
+                  <span class="bubble" id="chatBubble">部署脚本已推送到 staging，等 CI 跑完通知我</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 菜单栏 -->
+          <div class="menubar">
+            <div class="mb-left"><b>Repaste</b><span>文件</span><span>编辑</span><span>显示</span></div>
+            <div class="mb-right">
+              <svg width="15" height="11" viewBox="0 0 15 11" fill="none" stroke="#9AA3B8" stroke-width="1.3"><path d="M1.5 9.5v-3M4.5 9.5V4M7.5 9.5V1.5M10.5 9.5V5.5M13.5 9.5V3.5"/></svg>
+              <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".8" y="1" width="17" height="9" rx="2.6" stroke="#9AA3B8" stroke-width="1.1"/><rect x="2.4" y="2.6" width="11" height="5.8" rx="1.4" fill="#9AA3B8"/><path d="M19.6 4v3c.9-.3 1.4-.8 1.4-1.5s-.5-1.2-1.4-1.5z" fill="#9AA3B8"/></svg>
+              <span class="mb-clock">周三 21:14</span>
+            </div>
+          </div>
+
+          <!-- 刘海 -->
+          <div class="notch" id="notch"><i class="cam"></i></div>
+          <div class="notch-zone" id="notchZone" aria-hidden="true"></div>
+
+          <!-- 剪贴板面板（复刻 App） -->
+          <div class="panel" id="panel">
+            <div class="p-head">
+              <label class="searchbox" id="searchbox">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="#8D95AB" stroke-width="1.6"><circle cx="6" cy="6" r="4.4"/><path d="M9.4 9.4 12.6 12.6"/></svg>
+                <input id="searchInput" placeholder="搜索…" autocomplete="off" spellcheck="false" aria-label="搜索剪贴板历史">
+                <button class="sclear" id="searchClear" aria-label="清空搜索">
+                  <svg width="8" height="8" viewBox="0 0 8 8" stroke="#9AA3B8" stroke-width="1.5"><path d="M1 1l6 6M7 1L1 7"/></svg>
+                </button>
+              </label>
+              <button class="ibtn" aria-label="设置" tabindex="-1">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6E4FB" stroke-width="1.4"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.6v2M8 12.4v2M1.6 8h2M12.4 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M12.5 3.5l-1.4 1.4M4.9 11.1l-1.4 1.4"/></svg>
+              </button>
+              <button class="ibtn" aria-label="退出" tabindex="-1">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6E4FB" stroke-width="1.5"><path d="M8 2v6"/><path d="M4.8 4.2a4.6 4.6 0 1 0 6.4 0"/></svg>
+              </button>
+            </div>
+            <div class="p-tabs" id="pTabs">
+              <button class="pill sel" data-kind="all">全部</button>
+              <button class="pill" data-kind="text">文本</button>
+              <button class="pill" data-kind="image">图片</button>
+              <button class="pill" data-kind="link">链接</button>
+              <span class="pill ghost">部署模板</span>
+              <span class="pill add">＋</span>
+            </div>
+            <div class="p-sources" id="pSources">
+              <button class="schip sel" data-src=""><i class="dots"></i>全部来源<b>6</b></button>
+              <button class="schip" data-src="钉钉"><i class="appic ding">钉</i>钉钉<b>1</b></button>
+              <button class="schip" data-src="Safari"><i class="appic saf">S</i>Safari<b>1</b></button>
+              <button class="schip" data-src="飞书"><i class="appic fei">飞</i>飞书<b>1</b></button>
+              <button class="schip" data-src="Xcode"><i class="appic xcode">X</i>Xcode<b>1</b></button>
+            </div>
+            <div class="p-list" id="clipList">
+
+              <div class="card" data-kind="text" data-src="钉钉"
+                   data-search="部署脚本已推送到 staging 等 ci 跑完通知我 钉钉 文本"
+                   data-paste="部署脚本已推送到 staging，等 CI 跑完通知我">
+                <div class="card-in">
+                  <span class="kind" style="color:var(--k-text)">文本</span>
+                  <div class="cbody">
+                    <div class="cl hl">部署脚本已推送到 staging，等 CI 跑完通知我</div>
+                    <div class="meta"><span class="src"><i class="appic ding">钉</i>钉钉</span><i class="dot"></i><span>刚刚</span><i class="dot"></i><span>19 字</span></div>
+                  </div>
+                  <span class="more"><svg width="4" height="14" viewBox="0 0 4 14" fill="#D6E4FB"><circle cx="2" cy="2" r="1.7"/><circle cx="2" cy="7" r="1.7"/><circle cx="2" cy="12" r="1.7"/></svg></span>
+                </div>
+              </div>
+
+              <div class="card" data-kind="link" data-src="Safari"
+                   data-search="github.com/klosexf/repaste 仓库 safari 链接"
+                   data-paste="https://github.com/klosexf/Repaste">
+                <div class="card-in">
+                  <span class="kind" style="color:var(--k-link)">链接</span>
+                  <div class="cbody">
+                    <div class="cl lrow">
+                      <svg class="licon" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#4FD47F" stroke-width="1.5"><path d="M5 2h4.5a1.5 1.5 0 0 1 1.5 1.5V8a1.5 1.5 0 0 1-1.5 1.5H5"/><path d="M7.5 6H1"/><path d="M3.8 3.5 1.3 6l2.5 2.5"/></svg>
+                      <b class="host hl">github.com</b><span class="path">/klosexf/Repaste</span>
+                    </div>
+                    <div class="meta"><span class="src"><i class="appic saf">S</i>Safari</span><i class="dot"></i><span>5 分钟前</span><i class="dot"></i><span class="openlink">打开链接 <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 7.5 7.5 2.5M3.5 2.5h4v4"/></svg></span></div>
+                  </div>
+                  <span class="more"><svg width="4" height="14" viewBox="0 0 4 14" fill="#D6E4FB"><circle cx="2" cy="2" r="1.7"/><circle cx="2" cy="7" r="1.7"/><circle cx="2" cy="12" r="1.7"/></svg></span>
+                </div>
+              </div>
+
+              <div class="card" data-kind="image" data-src="飞书"
+                   data-search="屏幕快照 screenshot png 飞书 图片"
+                   data-paste="屏幕快照 2026-08-31 18.42.png">
+                <div class="card-in">
+                  <span class="kind" style="color:var(--k-image)">图片</span>
+                  <span class="thumb">
+                    <svg width="40" height="40" viewBox="0 0 40 40">
+                      <defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stop-color="#2b2b45"/><stop offset="1" stop-color="#191926"/>
+                      </linearGradient></defs>
+                      <rect width="40" height="40" fill="url(#tg)"/>
+                      <circle cx="30" cy="10" r="4" fill="#F0A3C0" opacity=".85"/>
+                      <path d="M0 32l11-12 8 9 6-6 15 14v3H0z" fill="#8B6BFF" opacity=".45"/>
+                      <path d="M0 36l9-7 7 6 5-4 19 9H0z" fill="#0d0d16"/>
+                    </svg>
+                  </span>
+                  <div class="cbody">
+                    <div class="cl hl">屏幕快照 2026-08-31 18.42.png</div>
+                    <div class="meta"><span class="src"><i class="appic fei">飞</i>飞书</span><i class="dot"></i><span>8 分钟前</span><i class="dot"></i><span>1280×800 · PNG</span></div>
+                  </div>
+                  <span class="more"><svg width="4" height="14" viewBox="0 0 4 14" fill="#D6E4FB"><circle cx="2" cy="2" r="1.7"/><circle cx="2" cy="7" r="1.7"/><circle cx="2" cy="12" r="1.7"/></svg></span>
+                </div>
+              </div>
+
+              <div class="card" data-kind="text" data-src="备忘录"
+                   data-search="把鼠标滑到刘海 试一试 备忘录 文本"
+                   data-paste="把鼠标滑到刘海，试一试。">
+                <div class="card-in">
+                  <span class="kind" style="color:var(--k-text)">文本</span>
+                  <div class="cbody">
+                    <div class="cl hl">把鼠标滑到刘海，试一试。</div>
+                    <div class="meta"><span class="src"><i class="appic note">备</i>备忘录</span><i class="dot"></i><span>12 分钟前</span><i class="dot"></i><span>11 字</span></div>
+                  </div>
+                  <span class="more"><svg width="4" height="14" viewBox="0 0 4 14" fill="#D6E4FB"><circle cx="2" cy="2" r="1.7"/><circle cx="2" cy="7" r="1.7"/><circle cx="2" cy="12" r="1.7"/></svg></span>
+                </div>
+              </div>
+
+              <div class="card" data-kind="link" data-src="Xcode"
+                   data-search="developer.apple.com/documentation/swiftui xcode 链接"
+                   data-paste="https://developer.apple.com/documentation/swiftui">
+                <div class="card-in">
+                  <span class="kind" style="color:var(--k-link)">链接</span>
+                  <div class="cbody">
+                    <div class="cl lrow">
+                      <svg class="licon" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#4FD47F" stroke-width="1.5"><path d="M5 2h4.5a1.5 1.5 0 0 1 1.5 1.5V8a1.5 1.5 0 0 1-1.5 1.5H5"/><path d="M7.5 6H1"/><path d="M3.8 3.5 1.3 6l2.5 2.5"/></svg>
+                      <b class="host hl">developer.apple.com</b><span class="path">/documentation/swiftui</span>
+                    </div>
+                    <div class="meta"><span class="src"><i class="appic xcode">X</i>Xcode</span><i class="dot"></i><span>25 分钟前</span><i class="dot"></i><span class="openlink">打开链接 <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 7.5 7.5 2.5M3.5 2.5h4v4"/></svg></span></div>
+                  </div>
+                  <span class="more"><svg width="4" height="14" viewBox="0 0 4 14" fill="#D6E4FB"><circle cx="2" cy="2" r="1.7"/><circle cx="2" cy="7" r="1.7"/><circle cx="2" cy="12" r="1.7"/></svg></span>
+                </div>
+              </div>
+
+              <div class="card" data-kind="text" data-src="微信"
+                   data-search="⌥⇧v 也可以随时呼出面板 两个入口共用同一列表 微信 文本"
+                   data-paste="⌥⇧V 也可以随时呼出面板，两个入口共用同一列表">
+                <div class="card-in">
+                  <span class="kind" style="color:var(--k-text)">文本</span>
+                  <div class="cbody">
+                    <div class="cl hl">⌥⇧V 也可以随时呼出面板，两个入口共用同一列表</div>
+                    <div class="meta"><span class="src"><i class="appic wx">微</i>微信</span><i class="dot"></i><span>1 小时前</span><i class="dot"></i><span>22 字</span></div>
+                  </div>
+                  <span class="more"><svg width="4" height="14" viewBox="0 0 4 14" fill="#D6E4FB"><circle cx="2" cy="2" r="1.7"/><circle cx="2" cy="7" r="1.7"/><circle cx="2" cy="12" r="1.7"/></svg></span>
+                </div>
+              </div>
+
+            </div>
+            <!-- toast -->
+            <div class="p-toast" id="toast"><i>✓</i><b id="toastTitle">已写回剪贴板</b><span id="toastSub"></span></div>
+          </div>
+
+          <!-- 停留进度环 -->
+          <div class="dwell" id="dwell">
+            <svg width="52" height="52" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="21" fill="none" stroke="rgba(163,139,255,.2)" stroke-width="2"/>
+              <circle id="dwellArc" cx="26" cy="26" r="21" fill="none" stroke="#A38BFF" stroke-width="2"
+                stroke-linecap="round" stroke-dasharray="131.9" stroke-dashoffset="131.9"
+                transform="rotate(-90 26 26)"/>
+            </svg>
+            <span class="lbl">停留 0.1s</span>
+          </div>
+
+          <!-- 浮动按键提示 -->
+          <div class="keycap" id="keycap"></div>
+
+          <!-- 演示光标（自动播放） -->
+          <div class="cursor" id="cursor">
+            <svg width="20" height="26" viewBox="0 0 20 26">
+              <path d="M1 1 L1 18.2 L5.6 14 L8.2 20.6 L10.9 19.4 L8.3 13 L13.9 13 Z"
+                fill="#fff" stroke="#0a0a0a" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <!-- 实时光标（手动模式跟随鼠标） -->
+          <div class="cursor" id="liveCursor">
+            <svg width="20" height="26" viewBox="0 0 20 26">
+              <path d="M1 1 L1 18.2 L5.6 14 L8.2 20.6 L10.9 19.4 L8.3 13 L13.9 13 Z"
+                fill="#fff" stroke="#0a0a0a" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <p class="stage-note" id="stageNote"><span class="nd">●</span>&nbsp; 循环演示 · 这块屏幕可以真的交互：把鼠标滑到刘海，或点开面板里的卡片</p>
+  </div>
+</section>
+
+<!-- ============ 功能 ============ -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-eyebrow">01 — 功能</div>
+      <h2>每一条历史，都带着来路</h2>
+      <p class="sec-sub">Repaste 不只是记住你复制了什么——它还记住内容来自哪个 App、是什么类型、该去哪里。</p>
+    </div>
+    <div class="bento">
+      <div class="bcard b7 bflex rv">
+        <div>
+          <span class="tag">0.1s / ⌥⇧V</span>
+          <h3>双入口呼出，同一份列表</h3>
+          <p>鼠标滑到刘海停留 0.1 秒，历史面板从刘海向下展开；也可以随时按 ⌥⇧V 从屏幕居中呼出。两个入口共用同一列表与模板组，体验完全一致。</p>
+        </div>
+        <div class="dg dg-notch">
+          <div class="dg-bar"><i></i></div>
+          <span class="dg-zone"></span>
+          <div class="dg-flow">
+            <span class="dg-arrow">↓</span>
+            <div class="dg-panel"><i></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="bcard b5 bflex rv">
+        <div>
+          <span class="tag">来源筛选</span>
+          <h3>来源 App 一眼可见</h3>
+          <p>每条历史都标注来源应用与类型，点击来源即筛选，还能与搜索、类型标签叠加过滤。</p>
+        </div>
+        <div class="minirows">
+          <div class="mrow"><i class="appic saf">S</i><div><b>github.com</b><span>Safari · 5 分钟前</span></div></div>
+          <div class="mrow"><i class="appic ding">钉</i><div><b>部署脚本已推送到 staging…</b><span>钉钉 · 刚刚</span></div></div>
+        </div>
+      </div>
+      <div class="bcard b3 rv">
+        <div class="fic"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="#A38BFF" stroke-width="1.5"><path d="M2.5 16V6.5l5-3 5 3V16"/><path d="M12.5 8.5l5-2.5V16l-5 2.5"/></svg></div>
+        <h3>模板组沉淀</h3>
+        <p>⌘G 把任意历史一键存为模板。每个模板组是面板顶部一个标签页，可建任意多个，不参与淘汰。</p>
+      </div>
+      <div class="bcard b3 rv">
+        <div class="fic"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="#A38BFF" stroke-width="1.5"><path d="M11 3h6v6M17 3l-8 8"/><path d="M15 11.5V16a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 16V6.5A1.5 1.5 0 0 1 4 5h4.5"/></svg></div>
+        <h3>链接一键直开</h3>
+        <p>域名加粗突出，防钓鱼设计；点「跳转」直达浏览器，按住 ⌥ 可临时选择用哪个浏览器打开。</p>
+      </div>
+      <div class="bcard b3 rv">
+        <div class="fic"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="#A38BFF" stroke-width="1.5"><rect x="4" y="8.5" width="12" height="8" rx="2"/><path d="M7 8.5V6a3 3 0 0 1 6 0v2.5"/></svg></div>
+        <h3>零权限 · 纯本地</h3>
+        <p>不登录、不上传、不同步；从密码管理器复制的密码类内容自动跳过，完全不入库。</p>
+      </div>
+      <div class="bcard b3 rv">
+        <div class="fic"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="#A38BFF" stroke-width="1.5"><path d="M10 2 4 4.5v4c0 4 2.5 7.2 6 9 3.5-1.8 6-5 6-9v-4z"/><path d="M7 10.2l2 2 4-4.2"/></svg></div>
+        <h3>防误触三段状态机</h3>
+        <p>停留阈值、离开延迟、冷却期三段防护；全屏应用默认抑制，屏幕顶部左右角永不触发。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 呼出方式 ============ -->
+<section id="summon">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-eyebrow">02 — 呼出方式</div>
+      <h2>三种入口，同一块面板</h2>
+      <p class="sec-sub">有刘海的 MacBook 用刘海，没有刘海的 Mac 与外接屏也各有归处。</p>
+    </div>
+    <div class="summons">
+      <div class="sucard rv">
+        <h3>刘海悬停</h3>
+        <div class="where">NOTCH · 从刘海向下展开</div>
+        <div class="suvis">
+          <div class="topedge"><i></i></div>
+          <span class="dg-zone" style="top:2px"></span>
+          <div class="dg-panel" style="margin-top:64px"><i></i></div>
+        </div>
+        <p>鼠标滑入刘海热区，停留 <b style="color:var(--fg)">100ms</b> 即展开；移开 400ms 自动收起，绝不拦截菜单栏点击。</p>
+      </div>
+      <div class="sucard rv">
+        <h3>全局快捷键</h3>
+        <div class="where">HOTKEY · 屏幕居中呼出</div>
+        <div class="suvis">
+          <div class="keys"><span class="key">⌥</span><span class="key">⇧</span><span class="key">V</span></div>
+        </div>
+        <p>任意位置按下 <b style="color:var(--fg)">⌥⇧V</b> 居中呼出，默认不与 Maccy / Raycast 冲突；再按一次即收起。</p>
+      </div>
+      <div class="sucard rv">
+        <h3>顶部胶囊</h3>
+        <div class="where">CAPSULE · 无刘海屏兜底</div>
+        <div class="suvis">
+          <div class="topedge"></div>
+          <span class="caps" style="margin-top:64px"><i></i>剪贴板</span>
+        </div>
+        <p>非刘海 Mac 与外接显示器自动切换为顶部悬浮胶囊，鼠标靠近顶边即浮现；多屏只在鼠标所在屏展开。</p>
+      </div>
+    </div>
+    <div class="su-params rv">
+      <span>停留阈值 <b>100ms</b>（三档灵敏度）</span>
+      <span>离开延迟 <b>400ms</b></span>
+      <span>冷却期 <b>800ms</b></span>
+      <span>全屏抑制 + 左右上角 <b>120pt</b> 永不触发</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 隐私 ============ -->
+<section id="privacy">
+  <div class="wrap priv">
+    <div class="rv">
+      <div class="sec-eyebrow">03 — 隐私</div>
+      <h2>你的剪贴板，<br>只属于你</h2>
+      <p>剪贴板是最私密的数据流之一。Repaste <b>不登录、不上传、不同步</b>——历史与图片全部存在本机；从 1Password、钥匙串等复制的<b>密码类内容自动跳过</b>，完全不入库。默认模式下零系统权限即可使用，图片 7 天自动清理，随时可一键清空。</p>
+    </div>
+    <div class="stats rv">
+      <div class="stat"><b>0</b><span>系统权限（默认模式）</span></div>
+      <div class="stat"><b>0</b><span>上传 / 同步 / 账号</span></div>
+      <div class="stat"><b>200</b><span>条历史上限 · 自动淘汰</span></div>
+      <div class="stat"><b>7 天</b><span>图片 TTL 自动清理</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 下载 ============ -->
+<section id="download" class="dl">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-eyebrow">04 — 下载</div>
+      <h2>把鼠标滑到刘海，试一试。</h2>
+      <p class="sec-sub">V0.2 · macOS 15.0+ · 约 2 MB · MIT 开源。下载后拖入「应用程序」即可。</p>
+      <div class="dl-cta">
+        <a class="btn btn-pri" href="https://github.com/klosexf/Repaste/releases">免费下载</a>
+        <a class="btn btn-sec" href="https://github.com/klosexf/Repaste/releases" target="_blank" rel="noopener">全部版本 →</a>
+      </div>
+    </div>
+    <div class="code-grid rv">
+      <div class="codecard">
+        <h4>首次打开被拦截？</h4>
+        <div class="cd">当前面向开发者分发、未做付费签名，Gatekeeper 拦截属正常现象</div>
+        <pre><span class="c"># 系统设置 → 隐私与安全性 → 仍要打开；或右键打开；或：</span>
+xattr -cr <span class="p">/Applications/Repaste.app</span></pre>
+        <button class="copybtn" data-copy="xattr -cr /Applications/Repaste.app">复制命令</button>
+      </div>
+      <div class="codecard">
+        <h4>从源码构建</h4>
+        <div class="cd">Xcode 16+ · 零第三方依赖，无需解析 Swift Package</div>
+        <pre>git clone <span class="p">https://github.com/klosexf/Repaste.git</span>
+cd Repaste && open Repaste/Repaste.xcodeproj</pre>
+        <button class="copybtn" data-copy="git clone https://github.com/klosexf/Repaste.git && cd Repaste && open Repaste/Repaste.xcodeproj">复制命令</button>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ 页脚 ============ -->
+<footer>
+  <div class="wrap">
+    <div class="fbrand">
+      <span class="brand"><span class="mark"><i></i></span></span>
+      <b>Repaste</b><span>刘海剪贴板</span>
+    </div>
+    <nav>
+      <a href="https://github.com/klosexf/Repaste" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/klosexf/Repaste/blob/main/README.md" target="_blank" rel="noopener">中文 README</a>
+      <a href="https://github.com/klosexf/Repaste/blob/main/README.en.md" target="_blank" rel="noopener">English README</a>
+      <a href="https://github.com/klosexf/Repaste/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+    </nav>
+    <div class="mit">MIT © 2026 陈晓峰 · 把鼠标滑到刘海，试一试。</div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   首屏动画引擎：自动循环演示 + 可交互手动模式
+   ============================================================ */
+(function(){
+  'use strict';
+
+  const $  = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+
+  const screenEl  = $('#screen'),  stageWrap = $('#stageWrap'), stageScale = $('#stageScale');
+  const panel     = $('#panel'),   cursorEl  = $('#cursor'),   liveCursor = $('#liveCursor');
+  const searchInput = $('#searchInput'), searchClear = $('#searchClear');
+  const toast = $('#toast'), toastSub = $('#toastSub');
+  const cards = $$('#clipList .card');
+  const dwell = $('#dwell'), dwellArc = $('#dwellArc'), notch = $('#notch'), notchZone = $('#notchZone');
+  const keycap = $('#keycap');
+  const bubble = $('#chatBubble');
+  const edLine = $('#edLine'), edTx = $('#edTx');
+  const stageNote = $('#stageNote');
+
+  const FINE = matchMedia('(pointer:fine)').matches;
+  const RM   = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ARC  = 131.9;
+
+  /* ---------- 舞台自适应缩放 ---------- */
+  let S = 1;
+  function fit(){
+    const w = stageWrap.clientWidth;
+    S = Math.min(1, w / 980, (window.innerHeight * .62) / 640);
+    if (S < .18) S = .18;
+    stageScale.style.transform = 'scale(' + S + ')';
+    stageWrap.style.height = (640 * S) + 'px';
+  }
+  new ResizeObserver(fit).observe(stageWrap);
+  window.addEventListener('resize', fit);
+  fit();
+
+  /* ---------- 计时器与代际（暂停即取消） ---------- */
+  let gen = 0;            // 自动播放代际：+1 即取消整个循环
+  let pending = [];
+  function sleep(ms){
+    return new Promise(res => pending.push({ t: setTimeout(res, ms), res }));
+  }
+  function flushTimers(){
+    pending.forEach(p => { clearTimeout(p.t); p.res(); });
+    pending = [];
+  }
+
+  /* ---------- 光标 ---------- */
+  let cx = 880, cy = 596;
+  function placeCursor(x, y){
+    cx = x; cy = y;
+    cursorEl.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+  }
+  function moveCursor(x, y, dur, ease){
+    const fx = cx, fy = cy; cx = x; cy = y;
+    const a = cursorEl.animate(
+      [{ transform:'translate(' + fx + 'px,' + fy + 'px)' },
+       { transform:'translate(' + x + 'px,' + y + 'px)' }],
+      { duration: dur || 700, easing: ease || 'cubic-bezier(.3,.75,.3,1)', fill:'forwards' });
+    return a.finished.catch(()=>{});
+  }
+  function cursorShow(){ cursorEl.classList.add('show'); cursorEl.classList.remove('dim'); }
+  function cursorDim(){ cursorEl.classList.add('dim'); cursorEl.classList.add('show'); }
+  function cursorFade(){ cursorEl.classList.remove('show','dim'); }
+
+  /* ---------- 停留进度环 ---------- */
+  function playRing(ms){
+    dwell.classList.add('show');
+    dwellArc.style.transition = 'none';
+    dwellArc.style.strokeDashoffset = ARC;
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{
+      dwellArc.style.transition = 'stroke-dashoffset ' + ms + 'ms linear';
+      dwellArc.style.strokeDashoffset = '0';
+    });});
+  }
+  function hideRing(){
+    dwell.classList.remove('show');
+    dwellArc.style.transition = 'none';
+    dwellArc.style.strokeDashoffset = ARC;
+  }
+  function camGlint(){ notch.classList.add('glint'); setTimeout(()=>notch.classList.remove('glint'), 500); }
+
+  /* ---------- 按键提示 ---------- */
+  async function showKey(text, x, y, hold, g){
+    keycap.textContent = text;
+    keycap.style.left = x + 'px';
+    keycap.style.top  = y + 'px';
+    keycap.classList.remove('show'); void keycap.offsetWidth;
+    keycap.classList.add('show');
+    await sleep(hold || 800); if (g !== undefined && g !== gen) return;
+    keycap.classList.remove('show');
+    await sleep(200);
+  }
+  function hideKey(){ keycap.classList.remove('show'); }
+
+  /* ---------- 面板 ---------- */
+  let panelOpen = false;
+  function openPanel(){
+    panel.classList.remove('instant');
+    panel.classList.add('open');
+    panelOpen = true;
+    screenEl.classList.add('dims');
+  }
+  function closePanel(instant){
+    if (instant) panel.classList.add('instant');
+    panel.classList.remove('open');
+    panelOpen = false;
+    screenEl.classList.remove('dims');
+  }
+  async function staggerIn(g){
+    cards.forEach(c => c.classList.remove('in'));
+    for (const c of cards){
+      c.classList.add('in');
+      await sleep(48); if (g !== gen) return;
+    }
+  }
+
+  /* ---------- 搜索 / 过滤 / 高亮（复刻「输入即搜」） ---------- */
+  let kindFilter = 'all', srcFilter = null;
+  function setHighlight(q){
+    cards.forEach(card => {
+      card.querySelectorAll('.hl').forEach(el => {
+        if (el.dataset.plain === undefined) el.dataset.plain = el.textContent;
+        const plain = el.dataset.plain;
+        if (q && plain.toLowerCase().indexOf(q) !== -1){
+          const i = plain.toLowerCase().indexOf(q);
+          el.textContent = '';
+          el.appendChild(document.createTextNode(plain.slice(0, i)));
+          const m = document.createElement('mark'); m.textContent = plain.slice(i, i + q.length);
+          el.appendChild(m);
+          el.appendChild(document.createTextNode(plain.slice(i + q.length)));
+        } else {
+          el.textContent = plain;
+        }
+      });
+    });
+  }
+  function applyFilter(){
+    const q = searchInput.value.trim().toLowerCase();
+    cards.forEach(c => {
+      const okQ = !q || c.dataset.search.indexOf(q) !== -1;
+      const okK = kindFilter === 'all' || c.dataset.kind === kindFilter;
+      const okS = !srcFilter || c.dataset.src === srcFilter;
+      c.classList.toggle('off', c.classList.contains('in') && !(okQ && okK && okS));
+    });
+    searchClear.classList.toggle('show', !!searchInput.value);
+    setHighlight(q);
+  }
+
+  /* ---------- 选中 / 使用 ---------- */
+  function visibleCards(){ return cards.filter(c => c.classList.contains('in') && !c.classList.contains('off')); }
+  function selectCard(c){ cards.forEach(x => x.classList.remove('sel')); if (c) c.classList.add('sel'); }
+  let toastTimer = null;
+  function showToast(card){
+    const t = (card.querySelector('.hl') ? card.querySelector('.hl').dataset.plain : '') || '';
+    toastSub.textContent = '· ' + (t.length > 14 ? t.slice(0, 14) + '…' : t);
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 2200);
+  }
+  function hideToast(){ toast.classList.remove('show'); }
+
+  /* ---------- 编辑器粘贴 ---------- */
+  let edGen = 0;
+  async function pasteEditor(text){
+    const g = ++edGen;
+    edLine.classList.add('on');
+    edTx.textContent = '';
+    for (const ch of text){
+      if (g !== edGen) return;
+      edTx.textContent += ch;
+      await sleep(24);
+    }
+  }
+  function clearEditor(){ edGen++; edLine.classList.remove('on'); edTx.textContent = ''; }
+
+  /* ---------- 使用一张卡片（自动 / 手动共用） ---------- */
+  function useCard(card, delayToast){
+    selectCard(card);
+    card.classList.add('used');
+    if (FINE && manual) searchInput.blur();
+    setTimeout(()=> showToast(card), delayToast || 0);
+  }
+
+  /* ---------- 复位 ---------- */
+  function resetDemo(){
+    hideKey(); hideRing(); hideToast();
+    if (document.activeElement === searchInput) searchInput.blur();
+    searchInput.value = '';
+    kindFilter = 'all'; srcFilter = null;
+    $$('#pTabs .pill').forEach(p => p.classList.toggle('sel', p.dataset.kind === 'all'));
+    $$('#pSources .schip').forEach(c => c.classList.toggle('sel', c.dataset.src === ''));
+    applyFilter();
+    cards.forEach(c => c.classList.remove('sel','used','fresh'));
+    closePanel(true);
+    clearEditor();
+    cursorFade();
+  }
+
+  /* ============================================================
+     自动播放剧本
+     ① 钉钉里 ⌘C 复制 → ② 滑到刘海停留 0.1s → ③ 面板落下
+     ④ 输入即搜 → ⑤ 清空 → ⑥ ↓ ⏎ 写回剪贴板 → ⑦ 收起
+     ⑧ 编辑器 ⌘V 粘贴 → 循环
+     ============================================================ */
+  async function typeSearch(str, g){
+    const tok = ++edGen; // 复用粘贴代际防止竞态（此处仅为占位）
+    for (const ch of str){
+      if (g !== gen) return;
+      searchInput.value += ch;
+      applyFilter();
+      await sleep(85 + Math.random() * 60);
+    }
+  }
+
+  async function scene(){
+    const g = gen;
+    const ck = () => g === gen;
+    resetDemo();
+    await sleep(750);  if (!ck()) return false;
+    cursorShow(); placeCursor(880, 596);
+    await sleep(520);  if (!ck()) return false;
+
+    /* ① 在钉钉里复制 */
+    await moveCursor(806, 230, 1000); if (!ck()) return false;
+    bubble.classList.add('flash');
+    await sleep(320);  if (!ck()) return false;
+    await showKey('⌘ C', 848, 288, 780, g); if (!ck()) return false;
+    bubble.classList.remove('flash');
+
+    /* ② 滑向刘海，停留 */
+    await moveCursor(487, 13, 980, 'cubic-bezier(.4,.08,.3,1)'); if (!ck()) return false;
+    await sleep(260);  if (!ck()) return false;
+    playRing(520); camGlint();
+    await sleep(660);  if (!ck()) return false;
+    hideRing();
+
+    /* ③ 面板从刘海落下 */
+    openPanel();
+    cards[0].classList.add('fresh');     // 最新捕获置顶 + 紫色脉冲
+    await staggerIn(g); if (!ck()) return false;
+    await sleep(560);   if (!ck()) return false;
+
+    /* ④ 输入即搜 */
+    cursorDim();
+    if (FINE) searchInput.focus({ preventScroll: true });
+    await typeSearch('github', g); if (!ck()) return false;
+    await sleep(900);  if (!ck()) return false;
+
+    /* ⑤ 清空搜索 */
+    cursorShow();
+    await moveCursor(632, 62, 640); if (!ck()) return false;
+    searchInput.value = ''; applyFilter();
+    if (FINE) searchInput.focus({ preventScroll: true });
+    await sleep(520);  if (!ck()) return false;
+
+    /* ⑥ 键盘：↓ 选择，⏎ 写回剪贴板 */
+    cursorDim();
+    await showKey('↓', 208, 430, 640, g); if (!ck()) return false;
+    selectCard(visibleCards()[0]);
+    await sleep(240);  if (!ck()) return false;
+    await showKey('⏎', 208, 430, 720, g); if (!ck()) return false;
+    useCard(cards[0]);
+    await sleep(1600); if (!ck()) return false;
+
+    /* ⑦ 面板收起 */
+    hideToast(); closePanel();
+    await sleep(560);  if (!ck()) return false;
+
+    /* ⑧ 到编辑器 ⌘V 粘贴 */
+    cursorShow();
+    await moveCursor(64, 262, 820); if (!ck()) return false;
+    await sleep(220);  if (!ck()) return false;
+    await showKey('⌘ V', 116, 316, 780, g); if (!ck()) return false;
+    await pasteEditor(cards[0].dataset.paste); if (!ck()) return false;
+    await sleep(1150); if (!ck()) return false;
+
+    cursorFade();
+    await sleep(950);
+    return ck();
+  }
+
+  async function loop(){
+    for(;;){
+      const ok = await scene();
+      if (!ok || gen !== myGen) return;
+    }
+  }
+  let myGen = 0;
+
+  function startAutoplay(){
+    myGen = ++gen;
+    loop();
+  }
+
+  /* ============================================================
+     手动模式：滑刘海 / 点卡片 / 输入搜索 / 切标签
+     （复刻产品状态机：停留触发 + 离开 400ms 收起）
+     ============================================================ */
+  let manual = false, resumeTimer = null;
+  let overZone = false, overPanel = false, closeTimer = null, dwellTimer = null;
+
+  function toLocal(e){
+    const r = screenEl.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / S, y: (e.clientY - r.top) / S };
+  }
+  function placeLive(e){
+    const p = toLocal(e);
+    liveCursor.style.transform = 'translate(' + p.x + 'px,' + p.y + 'px)';
+  }
+
+  function enterManual(e){
+    if (manual){ if (e) placeLive(e); return; }
+    manual = true;
+    gen++; flushTimers();               // 取消自动播放
+    if (e) placeLive(e);                // 先定位再显示，避免从左上角飞入
+    screenEl.classList.add('manual');
+    resetDemo();
+    if (RM) staticReveal();
+  }
+  function exitManual(){
+    if (!manual) return;
+    manual = false;
+    clearTimeout(closeTimer); clearTimeout(dwellTimer);
+    overZone = overPanel = false;
+    screenEl.classList.remove('manual');
+    hideRing();
+    resetDemo();
+    if (RM) staticReveal(); else startAutoplay();
+  }
+
+  if (FINE){
+    screenEl.addEventListener('pointerenter', e => {
+      if (e.pointerType !== 'mouse') return;
+      clearTimeout(resumeTimer);
+      enterManual(e);
+    });
+    screenEl.addEventListener('pointerleave', e => {
+      if (e.pointerType !== 'mouse') return;
+      resumeTimer = setTimeout(exitManual, 1100);
+    });
+    screenEl.addEventListener('pointermove', e => {
+      if (!manual) return;
+      placeLive(e);
+    }, { passive: true });
+  }
+
+  /* 刘海热区：停留触发（手动模式 160ms，稍快于真机以便演示） */
+  notchZone.addEventListener('pointerenter', () => {
+    if (!manual) return;
+    overZone = true; disarmClose();
+    if (!panelOpen){
+      playRing(160); camGlint();
+      dwellTimer = setTimeout(()=>{ hideRing(); openPanel(); staggerIn(gen); if (FINE) searchInput.focus({preventScroll:true}); }, 175);
+    }
+  });
+  notchZone.addEventListener('pointerleave', () => {
+    if (!manual) return;
+    overZone = false;
+    if (!panelOpen){ clearTimeout(dwellTimer); hideRing(); }
+    armClose();
+  });
+  panel.addEventListener('pointerenter', () => { if (manual){ overPanel = true; disarmClose(); } });
+  panel.addEventListener('pointerleave', () => { if (manual){ overPanel = false; armClose(); } });
+
+  function armClose(){
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(()=>{ if (manual && !overZone && !overPanel) closePanel(); }, 400);
+  }
+  function disarmClose(){ clearTimeout(closeTimer); }
+
+  /* 卡片：点击 = 使用 */
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      if (!manual || !panelOpen) return;
+      useCard(card);
+      setTimeout(()=>{ closePanel(); pasteEditor(card.dataset.paste); }, 680);
+    });
+  });
+
+  /* 标签页 / 来源条 / 搜索 */
+  $$('#pTabs .pill').forEach(p => {
+    if (!p.dataset.kind) return;
+    p.addEventListener('click', () => {
+      if (!manual || !panelOpen) return;
+      kindFilter = p.dataset.kind;
+      $$('#pTabs .pill').forEach(x => x.classList.toggle('sel', x === p));
+      applyFilter();
+    });
+  });
+  $$('#pSources .schip').forEach(c => {
+    c.addEventListener('click', () => {
+      if (!manual || !panelOpen) return;
+      srcFilter = c.dataset.src || null;
+      $$('#pSources .schip').forEach(x => x.classList.toggle('sel', x === c));
+      applyFilter();
+    });
+  });
+  searchInput.addEventListener('input', applyFilter);
+  searchClear.addEventListener('click', () => { searchInput.value = ''; applyFilter(); searchInput.focus({preventScroll:true}); });
+
+  /* 键盘导航（手动模式，与产品一致） */
+  searchInput.addEventListener('keydown', e => {
+    if (!manual || !panelOpen) return;
+    const vis = visibleCards();
+    if (!vis.length) return;
+    let i = vis.findIndex(c => c.classList.contains('sel'));
+    if (e.key === 'ArrowDown'){ e.preventDefault(); selectCard(vis[Math.min(i + 1, vis.length - 1)] || vis[0]); }
+    else if (e.key === 'ArrowUp'){ e.preventDefault(); selectCard(vis[Math.max(i - 1, 0)]); }
+    else if (e.key === 'Enter'){
+      e.preventDefault();
+      const c = i >= 0 ? vis[i] : vis[0];
+      useCard(c);
+      setTimeout(()=>{ closePanel(); pasteEditor(c.dataset.paste); }, 680);
+    }
+    else if (e.key === 'Escape'){ closePanel(); }
+  });
+
+  /* ---------- 复制命令按钮 ---------- */
+  $$('.copybtn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(btn.dataset.copy); } catch(e){}
+      btn.classList.add('ok'); btn.textContent = '✓ 已复制';
+      setTimeout(()=>{ btn.classList.remove('ok'); btn.textContent = '复制命令'; }, 1400);
+    });
+  });
+
+  /* ---------- 滚动显现 ---------- */
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
+  }, { threshold: .12 });
+  $$('.rv').forEach(el => io.observe(el));
+
+  /* ---------- 减弱动态效果：静态展示面板（不跑循环动画） ---------- */
+  function staticReveal(){
+    panel.classList.add('open');
+    screenEl.classList.add('dims');
+    panelOpen = true;
+    cards.forEach(c => { c.classList.add('in'); c.classList.remove('off'); });
+    cards[0].classList.add('sel');
+  }
+
+  /* ---------- 启动 ---------- */
+  if (RM){
+    staticReveal();
+    stageNote.innerHTML = '<span class="nd">●</span>&nbsp; 已按系统偏好减弱动态效果 · 把鼠标滑到刘海或点击卡片仍可交互';
+  } else {
+    startAutoplay();
+  }
+})();
+</script>
+</body>
+</html>
