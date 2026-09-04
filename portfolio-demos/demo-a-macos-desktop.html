@@ -150,6 +150,14 @@
     color: #F6F2EA; text-shadow: 0 2px 30px rgba(0, 0, 0, 0.45);
     text-wrap: balance;
   }
+  /* 英文行弱化为导语小字，中文行做主视觉 */
+  .hero h1 .h1-eyebrow {
+    display: block;
+    font-size: 15px; font-weight: 500; letter-spacing: 0.12em;
+    color: rgba(246, 242, 234, 0.62);
+    margin-bottom: 12px;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
+  }
   .hero p {
     margin-top: 16px; font-size: 16px; line-height: 1.7;
     color: rgba(246, 242, 234, 0.82); text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
@@ -464,7 +472,7 @@
   <!-- 桌面 -->
   <main class="desktop">
     <section class="hero">
-      <h1>Hi, I'm Xiaofeng —<br>我做的macOS工具</h1>
+      <h1><span class="h1-eyebrow">Hi, I'm Xiaofeng</span>我做的 macOS 工具</h1>
       <p id="hero-cap"></p>
     </section>
 
