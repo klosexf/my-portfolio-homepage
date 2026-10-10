@@ -1,0 +1,125 @@
+/* Native CSS refinement: quiet surfaces and soft floating shadows.
+   Keep the approved fan geometry and the existing product branding. */
+body[data-fan-layout] {
+  --card-surface: #f7f8fa;
+  --card-surface-top: #fff;
+  --dock-panel: rgba(247, 248, 250, .94);
+  --dock-edge: #cbd2dc;
+  --dock-hover: #e9edf3;
+  --craft-shadow: 35, 47, 66;
+}
+body[data-fan-layout][data-theme="dark"] {
+  --card-surface: #1b1c20;
+  --card-surface-top: #202126;
+  --dock-panel: rgba(24, 25, 29, .94);
+  --dock-edge: #36373c;
+  --dock-hover: #28292f;
+  --craft-shadow: 0, 0, 0;
+}
+.overview[data-layout="fan"] .project {
+  border: 0;
+  border-radius: 14px;
+  background: var(--card-surface);
+  box-shadow: 0 4px 10px -4px rgba(var(--craft-shadow), .20), 0 20px 42px -20px rgba(var(--craft-shadow), .38);
+  transition: box-shadow .3s var(--ease), translate .3s var(--ease);
+}
+.overview[data-layout="fan"] .project[data-fan-active] {
+  box-shadow: 0 4px 12px -4px rgba(var(--craft-shadow), .24), 0 22px 44px -18px rgba(var(--craft-shadow), .40), 0 48px 80px -38px rgba(var(--craft-shadow), .52);
+}
+.overview[data-layout="fan"] .project[data-fan-active]:hover,
+.overview[data-layout="fan"] .project[data-highlight] {
+  box-shadow: 0 5px 14px -4px rgba(var(--craft-shadow), .24), 0 26px 50px -20px rgba(var(--craft-shadow), .44), 0 54px 86px -40px rgba(var(--craft-shadow), .54);
+}
+body[data-fan-layout] .window-flight { border: 0; }
+.overview[data-layout="fan"] .project .project-image { background: none; }
+.overview[data-layout="fan"] .project .window-chrome { display: none; }
+.overview[data-layout="fan"] .project .project-visual { padding: 8px; background: #222228; }
+.overview[data-layout="fan"] .project-readless .project-visual { background: #252d3c; }
+.overview[data-layout="fan"] .project-mindmap .project-visual { background: #f1ece3; }
+.overview[data-layout="fan"] .project-wtd .project-visual { background: #e9e6df; }
+.overview[data-layout="fan"] .project .project-visual img { border-radius: 7px; object-fit: contain; }
+/* Thumbnails frame the useful UI; opening a card shows the complete demo. */
+.overview[data-layout="fan"] .project-repaste .project-visual img { --thumbnail-scale: 1.16; transform: scale(var(--thumbnail-scale)); transform-origin: center top; }
+.overview[data-layout="fan"] .project-wtd .project-visual img { --thumbnail-scale: 1.38; padding: 0; transform: scale(var(--thumbnail-scale)); transform-origin: center top; }
+.overview[data-layout="fan"] .project .project-caption {
+  height: 74px;
+  min-height: 74px;
+  padding: 14px 22px;
+  gap: 18px;
+  border-top: 0;
+  background: linear-gradient(180deg, var(--card-surface-top), var(--card-surface));
+}
+.card-identity { display: flex; align-items: center; gap: 13px; min-width: 0; }
+.caption-copy { min-width: 0; }
+.overview[data-layout="fan"] .project-caption strong { display: block; font-size: 15px; font-weight: 560; line-height: 1.2; letter-spacing: -.025em; }
+.overview[data-layout="fan"] .project-caption small { margin: 5px 0 0; font-size: 11px; line-height: 1.3; }
+.card-symbol { display: grid; place-items: center; width: 34px; height: 34px; flex: none; color: var(--muted); }
+.brand-image { display: block; width: 100%; height: 100%; object-fit: contain; }
+.card-symbol .mindmap-icon, .dock-symbol .mindmap-icon { width: 100%; height: 100%; border-radius: 26%; box-shadow: none; }
+.card-symbol .mindmap-icon .brand-image, .dock-symbol .mindmap-icon .brand-image { width: 65%; height: 65%; }
+.arrow-glyph { display: block; background: currentColor; mask: var(--glyph) center / contain no-repeat; -webkit-mask: var(--glyph) center / contain no-repeat; }
+.overview[data-layout="fan"] .project .open-arrow { display: flex; align-items: center; gap: 10px; width: auto; height: auto; border: 0; border-radius: 0; color: var(--muted); opacity: 1; font-size: 11px; transform: none; white-space: nowrap; }
+.arrow-glyph { --glyph: url('assets/phosphor/arrow-right.svg'); width: 18px; height: 18px; flex: none; transition: transform .22s var(--ease); }
+.project[data-fan-active]:hover .open-arrow, .project:focus-visible .open-arrow { color: var(--ink); }
+.project[data-fan-active]:hover .arrow-glyph, .project:focus-visible .arrow-glyph { transform: translateX(2px); }
+body[data-fan-layout] .dock {
+  gap: 4px;
+  margin-top: 12px;
+  padding: 7px 8px;
+  border: 1px solid var(--dock-edge);
+  border-radius: 14px;
+  background: var(--dock-panel);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 12px 28px -18px rgba(var(--craft-shadow), .36);
+}
+.dock-overview { min-height: 42px; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; color: var(--muted); }
+.dock-overview:hover { background: var(--dock-hover); color: var(--ink); }
+.dock-divider { height: 24px; margin: 0 6px; background: var(--dock-edge); }
+.dock-item { flex-direction: row; gap: 8px; min-width: 0; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; color: var(--muted); transition: background .18s, color .18s; }
+.dock-item > span:last-child { white-space: nowrap; }
+.dock-symbol { display: grid; place-items: center; width: 32px; height: 32px; flex: none; transform: translateY(var(--dock-lift, 0px)) scale(var(--dock-scale, 1)); transform-origin: center; transition: transform .22s var(--ease); }
+.dock-item:hover, .dock-item:focus-visible, .dock-item[data-nearest] { background: var(--dock-hover); color: var(--ink); }
+.dock-item[aria-current="true"] { color: var(--ink); }
+.dock-item::before { bottom: 2px; left: calc(50% - 6px); width: 12px; height: 2px; border-radius: 2px; }
+.dock-item[data-related]:not([aria-current="true"])::before { opacity: 0; }
+.dock-item::after { bottom: calc(100% + 10px); border-radius: 6px; }
+@media (max-width: 900px) {
+  .dock-item { flex-direction: column; min-width: 65px; gap: 6px; padding: 7px 8px; font-size: 10px; }
+  .dock-symbol { width: 32px; height: 32px; }
+  .dock-overview { padding: 8px 10px; }
+  .dock-divider { margin: 0 4px; }
+}
+@media (max-width: 540px) {
+  .overview[data-layout="fan"] .project { border-radius: 11px; }
+  .overview[data-layout="fan"] .project .project-visual { padding: 6px; }
+  .overview[data-layout="fan"] .project .project-visual img { border-radius: 5px; }
+  .overview[data-layout="fan"] .project .project-caption { height: 50px; min-height: 50px; padding: 8px 11px; gap: 9px; }
+  .overview[data-layout="fan"] .project-caption strong { font-size: 12px; }
+  .overview[data-layout="fan"] .project-caption small { margin-top: 3px; font-size: 9px; }
+  .card-identity { gap: 8px; }
+  .card-symbol { width: 22px; height: 24px; }
+  .open-label { display: none; }
+  .overview[data-layout="fan"] .project .open-arrow { width: 18px; }
+  body[data-fan-layout] .dock { width: 100%; padding: 7px 6px; gap: 2px; margin-top: 11px; }
+  .dock-item { flex: 1; min-width: 0; padding: 6px 2px 8px; font-size: 9px; gap: 5px; }
+  .dock-symbol { width: 30px; height: 30px; }
+  .dock-overview { flex: none; min-height: 40px; padding: 6px 3px; font-size: 10px; }
+  .dock-divider { margin: 0 3px; height: 22px; }
+}
+@media (max-width: 360px) {
+  .dock-item { font-size: 8px; }
+  .dock-divider { margin: 0 2px; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .overview[data-layout="fan"] .project[data-fan-active]:hover { translate: 0 -3px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .overview[data-layout="fan"] .project,
+  .overview[data-layout="fan"] .project[data-fan-active]:hover { translate: none; transition: none; }
+  .dock-symbol { transform: none; transition: none; }
+  .arrow-glyph { transition: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  body[data-fan-layout] .dock { background: var(--card-surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}

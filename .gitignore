@@ -1,5 +1,4 @@
-# 不上传到 GitHub 的文件（仅根目录）
-/index.html
+# 正式首页使用根目录 index.html，随代码一同部署。
 
 # 系统文件
 .DS_Store

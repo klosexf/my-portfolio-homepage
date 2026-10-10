@@ -1,0 +1,104 @@
+/* Alternative shelf preview: native horizontal scrolling, fixed readable cards.
+   Graphite/violet tokens and original product images come from the current preview. */
+.overview[data-layout="carousel"] {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--slide-size, 540px);
+  grid-template-columns: none;
+  grid-template-rows: auto;
+  gap: 26px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+  margin: 14px auto 0;
+  padding: 14px var(--tail-space, 12px) 18px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline-start: 12px;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-x pan-y;
+}
+.overview[data-layout="carousel"]::-webkit-scrollbar { display: none; }
+.overview[data-layout="carousel"]:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 12px; }
+.overview[data-layout="carousel"] .project {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  margin: 0;
+  grid-column: auto;
+  grid-row: auto;
+  scroll-snap-align: start;
+  --tilt: 0deg;
+  touch-action: pan-x pan-y;
+}
+.overview[data-layout="carousel"] .project .project-image {
+  aspect-ratio: auto;
+  height: clamp(190px, calc(100dvh - 490px), 350px);
+  max-height: none;
+  border-radius: 14px;
+}
+.overview[data-layout="carousel"] .project-caption {
+  position: static;
+  min-height: 56px;
+  align-items: center;
+  padding: 14px 4px 0;
+}
+.overview[data-layout="carousel"] .project-caption strong { font-size: 16px; }
+.overview[data-layout="carousel"] .project-caption small { display: block; margin: 5px 0 0; font-size: 12px; }
+.overview[data-layout="carousel"] .project-placeholder .project-image { box-shadow: inset 0 0 0 1px var(--window-highlight); }
+.overview[data-layout="carousel"] .placeholder-number { font-size: clamp(72px, 7vw, 104px); }
+.overview[data-layout="carousel"] .placeholder-note { font-size: 12px; }
+.overview.is-carousel-dragging { cursor: grabbing; scroll-snap-type: none; }
+.overview.is-carousel-dragging .project { cursor: grabbing; pointer-events: none; transform: none; }
+.carousel-controls { display: flex; align-items: center; gap: 20px; max-width: 1280px; margin: 0 auto; padding: 0 12px; min-height: 40px; }
+.carousel-status { display: flex; align-items: center; gap: 12px; min-width: 165px; font-size: 12px; }
+#carousel-position { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#carousel-name { font-weight: 550; white-space: nowrap; }
+.carousel-pagination { display: flex; flex: 1; justify-content: center; align-items: center; }
+.carousel-pagination button { display: grid; place-items: center; width: 26px; height: 36px; padding: 0; background: none; }
+.carousel-pagination button::after { content: ''; width: 5px; height: 5px; border-radius: 5px; background: var(--faint); opacity: .45; transition: width .25s var(--ease), opacity .25s; }
+.carousel-pagination button[aria-current="true"]::after { width: 20px; background: var(--accent); opacity: 1; }
+.carousel-arrows { display: flex; gap: 8px; }
+.carousel-arrows button { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--control); font-size: 17px; transition: transform .2s var(--ease), background .2s, opacity .2s; }
+.carousel-arrows button:hover:not(:disabled) { background: var(--surface); transform: translateY(-2px); }
+.carousel-arrows button:active:not(:disabled) { transform: scale(.94); }
+.carousel-arrows button:disabled { opacity: .35; cursor: default; }
+.carousel-progress { display: none; flex: 1; height: 2px; overflow: hidden; background: var(--line); border-radius: 3px; }
+.carousel-progress i { display: block; width: 100%; height: 100%; background: var(--accent); transform-origin: left center; transition: transform .3s var(--ease); }
+.carousel-guidance { max-width: 1280px; margin: 4px auto 0; padding: 0 12px; font-size: 10px; color: var(--faint); }
+body[data-carousel-preview] .dock { margin-top: 14px; }
+body[data-carousel-preview] .explore-hint { font-size: 11px; }
+@media (min-width: 1051px) {
+  body[data-carousel-preview] #workspace { position: relative; }
+  body[data-carousel-preview] .layout-scenarios { position: absolute; top: 33px; right: 40px; margin-top: 0; }
+  body[data-carousel-preview] .explore-hint { display: none; }
+}
+@media (max-width: 1050px) {
+  .overview[data-layout="carousel"] { gap: 22px; }
+  .overview[data-layout="carousel"] .project-caption strong { font-size: 15px; }
+  .overview[data-layout="carousel"] .project-caption small { font-size: 11px; }
+  .carousel-status { min-width: 138px; font-size: 11px; gap: 8px; }
+}
+@media (max-width: 540px) {
+  .overview[data-layout="carousel"] { gap: 18px; padding-top: 12px; padding-bottom: 12px; margin-top: 10px; }
+  .overview[data-layout="carousel"] .project .project-image { height: clamp(180px, calc(100dvh - 475px), 280px); }
+  .overview[data-layout="carousel"] .project-caption { min-height: 53px; padding-top: 12px; }
+  .overview[data-layout="carousel"] .project-caption strong { font-size: 15px; }
+  .overview[data-layout="carousel"] .project-caption small { font-size: 11px; }
+  .overview[data-layout="carousel"] .placeholder-number { font-size: 76px; }
+  .overview[data-layout="carousel"] .window-chrome { height: 27px; font-size: 10px; padding: 0 11px; }
+  .overview[data-layout="carousel"] .window-dots { width: 36px; }
+  .overview[data-layout="carousel"] .window-action { width: 36px; }
+  .carousel-controls { gap: 14px; }
+  .carousel-status { min-width: 0; font-size: 11px; }
+  #carousel-name, .carousel-pagination { display: none; }
+  .carousel-progress { display: block; }
+  .carousel-guidance { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .overview[data-layout="carousel"] { scroll-behavior: auto; }
+}

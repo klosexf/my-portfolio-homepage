@@ -20,22 +20,8 @@ jobs:
       - uses: actions/configure-pages@v5
         with:
           enablement: true
-      - name: 以 demo-a-macos-desktop 作为站点首页（仓库中不保留 index.html）
-        run: |
-          cp portfolio-demos/demo-a-macos-desktop.html index.html
-          sed -i \
-            -e 's|\.\./index-notion\.html|index-notion.html|g' \
-            -e 's|\.\./index-readless\.html|index-readless.html|g' \
-            -e 's|\.\./index%20mindmap\.html|index%20mindmap.html|g' \
-            -e 's|\.\./landing-repaste\.html|landing-repaste.html|g' \
-            -e 's|\.\./icon_512x512\.png|icon_512x512.png|g' \
-            -e 's|"embed-readless\.html|"portfolio-demos/embed-readless.html|g' \
-            -e 's|"embed-repaste\.html|"portfolio-demos/embed-repaste.html|g' \
-            -e 's|"embed-wtd\.html|"portfolio-demos/embed-wtd.html|g' \
-            -e 's|"readless-app-icon\.png|"portfolio-demos/readless-app-icon.png|g' \
-            -e 's|"repaste-app-icon\.svg|"portfolio-demos/repaste-app-icon.svg|g' \
-            -e 's|"wtd-app-icon\.png|"portfolio-demos/wtd-app-icon.png|g' \
-            index.html
+      - name: 检查首页资源与旧入口同步
+        run: python3 scripts/sync-homepage.py --check
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .

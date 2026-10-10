@@ -31,6 +31,7 @@ html, body{
   font-family:var(--sans);
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
 }
+html[data-presentation="portfolio"], html[data-presentation="portfolio"] body { background:#272536; }
 ::selection{ background:rgba(139,107,255,.35); color:#fff; }
 button{ font-family:inherit; border:0; background:none; color:inherit; cursor:pointer; }
 
@@ -499,7 +500,10 @@ button{ font-family:inherit; border:0; background:none; color:inherit; cursor:po
   const ARC  = 131.9;
 
   /* ---------- 舞台自适应缩放：等比容纳整个视口，刘海贴顶 ---------- */
-  const DESIGN_W = 980, DESIGN_H = 640;
+  // The portfolio focuses the clipboard panel; other embeds keep the full desktop.
+  const portfolio = new URLSearchParams(location.search).get('presentation') === 'portfolio';
+  if (portfolio) document.documentElement.dataset.presentation = 'portfolio';
+  const DESIGN_W = portfolio ? 620 : 980, DESIGN_H = portfolio ? 600 : 640;
   let S = 1;
   function fit(){
     S = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);

@@ -1,0 +1,43 @@
+/* Preserve the approved fan; add a generated material backdrop and useful context. */
+body[data-fan-layout] { position: relative; isolation: isolate; background: var(--canvas); --section-glass: rgba(237, 241, 246, .94); --material-blur: 7px; --material-veil: rgba(237, 241, 246, .12); }
+body[data-fan-layout][data-theme="light"] { --muted: #455468; --faint: #4b596e; }
+body[data-fan-layout][data-theme="dark"] { --section-glass: rgba(17, 18, 20, .94); --material-veil: rgba(17, 18, 20, .28); }
+.site-backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; opacity: .12; }
+.site-backdrop img { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; transform: scale(1.025); }
+.site-backdrop::before { content: ''; position: absolute; inset: 0; z-index: 1; background: var(--material-veil); backdrop-filter: blur(var(--material-blur)) saturate(.92); -webkit-backdrop-filter: blur(var(--material-blur)) saturate(.92); }
+.site-backdrop::after { content: ''; position: absolute; inset: 0; z-index: 2; background: linear-gradient(180deg, rgba(9,10,12,.13), transparent 40%, rgba(9,10,12,.20)); }
+body[data-theme="dark"] .site-backdrop { opacity: .58; }
+body[data-fan-layout] .site-header { background: var(--header-glass); }
+body[data-fan-layout] .intro { padding-top: 24px; align-items: center; gap: 48px; }
+body[data-fan-layout] h1 { font-size: clamp(36px, 3.8vw, 54px); line-height: 1.2; }
+body[data-fan-layout] .intro-description { margin-top: 9px; font-size: 13px; line-height: 1.8; }
+.studio-about { display: grid; grid-template-columns: 1fr 1.1fr; gap: 72px; margin: 36px -40px 0; padding: 38px 40px 36px; border-block: 1px solid var(--line); background: var(--section-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); scroll-margin-top: 72px; }
+.section-label { margin: 0 0 12px; font-size: 11px; color: var(--faint); }
+.about-heading h2 { margin: 0; max-width: 520px; font-size: clamp(26px, 2.4vw, 35px); letter-spacing: -.04em; line-height: 1.3; font-weight: 650; text-wrap: balance; }
+.about-heading h2 span { white-space: nowrap; }
+.about-heading > p:last-child { margin: 15px 0 0; color: var(--muted); font-size: 13px; line-height: 1.9; }
+.about-principle + .about-principle { margin-top: 20px; }
+.about-principle h3 { margin: 0 0 6px; font-size: 13px; font-weight: 600; }
+.about-principle p { margin: 0; max-width: 53ch; color: var(--muted); font-size: 12px; line-height: 1.85; }
+body[data-fan-layout] .site-footer { margin-top: 0; padding-top: 20px; padding-bottom: 20px; }
+@media (max-width: 1050px) {
+  .studio-about { margin-inline: -32px; padding-inline: 32px; gap: 40px; }
+}
+@media (max-width: 760px) {
+  .site-backdrop img { object-position: 76% center; }
+  .studio-about { grid-template-columns: 1fr; gap: 28px; margin-inline: -24px; padding: 30px 24px; }
+}
+@media (max-width: 540px) {
+  body[data-fan-layout] { --material-blur: 5px; }
+  body[data-fan-layout] .intro { padding-top: 18px; }
+  body[data-fan-layout] h1 { font-size: clamp(27px, 8.8vw, 34px); line-height: 1.2; }
+  body[data-fan-layout] .intro-description { margin-top: 8px; font-size: 11px; line-height: 1.85; }
+  body[data-theme="dark"] .site-backdrop { opacity: .50; }
+  .site-backdrop::after { background: linear-gradient(90deg, rgba(9,10,12,.18), transparent 75%), linear-gradient(180deg, rgba(9,10,12,.20), transparent 35%, rgba(9,10,12,.15)); }
+  .studio-about { margin-top: 28px; }
+  .about-heading > p:last-child { font-size: 12px; }
+  .about-principle p { font-size: 12px; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .studio-about { background: var(--canvas); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}

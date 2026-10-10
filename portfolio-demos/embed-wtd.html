@@ -419,6 +419,14 @@
 
   .noanim, .noanim *{transition:none !important; animation-duration:0.01s !important}
 
+  /* The portfolio presents the widget itself, without the landing-page callouts. */
+  html[data-presentation="portfolio"],
+  html[data-presentation="portfolio"] body { background:#e9e6df; }
+  html[data-presentation="portfolio"] .anno,
+  html[data-presentation="portfolio"] .notion-chip,
+  html[data-presentation="portfolio"] .fly { display:none; }
+  html[data-presentation="portfolio"] .wg-float { animation:none; }
+
   @media (prefers-reduced-motion: reduce){
     *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
   }
@@ -585,7 +593,9 @@
 
   /* ---------- 舞台整体等比缩放：设计尺寸 700x600，居中填满视口 ---------- */
   var stage = $("stage");
-  var STAGE_W = 700, STAGE_H = 600;
+  var portfolio = new URLSearchParams(location.search).get('presentation') === 'portfolio';
+  if (portfolio) document.documentElement.dataset.presentation = 'portfolio';
+  var STAGE_W = portfolio ? 380 : 700, STAGE_H = portfolio ? 548 : 600;
   function fitStage(){
     var s = Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
     stage.style.setProperty("--stage-scale", s);

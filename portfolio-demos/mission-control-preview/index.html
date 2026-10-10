@@ -1,0 +1,122 @@
+<!doctype html>
+<!--
+独立设计预览，2026-10-10。
+假设：为喜欢 macOS 小工具的访客展示四款作品，先认识全貌，再进入一款。
+方向：Mission Control 式错落窗口、深色画布、可拖动的窗口与连续的空间转场。
+图像来自本项目已有 HTML 演示的浏览器截图，以及已有 MindMap 视频截帧。
+这些图像是界面演示，不是新采集的原生 App 截图。产品功能和链接沿用现有页面。
+本目录独立于正式首页与部署配置；只在访客主动点击播放时加载一个已有演示。
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Xiaofeng — 产品工作室 · 设计预览</title>
+  <link rel="stylesheet" href="style.css?v=8eccfc9d9a">
+  <script src="catalog.js?v=489bb847b4" defer></script>
+  <script src="motion.js?v=e8cecc7cd8" defer></script>
+  <script src="preview.js?v=5fffd3ce1c" defer></script>
+</head>
+<body data-theme="dark">
+  <header class="site-header">
+    <a class="wordmark" href="#" aria-label="Xiaofeng，回到作品总览">xiaofeng<span class="wordmark-period">.</span></a>
+    <nav class="header-nav" aria-label="页面导航">
+      <button class="nav-current" data-overview><span class="nav-dot" aria-hidden="true"></span>全部作品</button>
+      <a href="#about">关于我</a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="切换到浅色" aria-pressed="true">浅色</button>
+      <a class="original-link" href="../demo-a-macos-desktop.html" target="_blank" rel="noopener">原版 ↗</a>
+    </nav>
+  </header>
+
+  <main id="workspace">
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="hello">你好，我是 Xiaofeng · 独立开发者</p>
+        <h1 id="page-title">让日常，<span class="title-accent">顺手一点</span>。</h1>
+        <p class="intro-description">一些生活里的小麻烦，变成了眼前这些小工具。</p>
+      </div>
+      <p class="explore-hint">四个工具，四种顺手</p>
+    </section>
+
+    <section class="overview" aria-label="四款产品的窗口总览">
+      <button class="project project-repaste" data-open="repaste" aria-label="打开 Repaste 预览">
+        <span class="project-image">
+          <span class="window-chrome" aria-hidden="true"><span class="window-dots"><i></i><i></i><i></i></span><span class="window-title">Repaste</span><span class="window-action"><span class="window-index">01</span><span class="window-open">打开 ↗</span></span></span>
+          <span class="project-visual"><img src="assets/repaste.jpg" alt="Repaste 剪贴板面板的现有界面演示" width="980" height="640"></span>
+        </span>
+        <span class="project-caption"><span><strong>Repaste</strong><small>剪贴板，藏进刘海里</small></span><span class="open-arrow" aria-hidden="true">↗</span></span>
+      </button>
+      <button class="project project-readless" data-open="readless" aria-label="打开 Readless 预览">
+        <span class="project-image">
+          <span class="window-chrome" aria-hidden="true"><span class="window-dots"><i></i><i></i><i></i></span><span class="window-title">Readless</span><span class="window-action"><span class="window-index">02</span><span class="window-open">打开 ↗</span></span></span>
+          <span class="project-visual"><img src="assets/readless.jpg" alt="Readless 文档朗读与播放条的现有界面演示" width="1080" height="524"></span>
+        </span>
+        <span class="project-caption"><span><strong>Readless</strong><small>把长文，读给你听</small></span><span class="open-arrow" aria-hidden="true">↗</span></span>
+      </button>
+      <button class="project project-mindmap" data-open="mindmap" aria-label="打开 MindMap AI 预览">
+        <span class="project-image">
+          <span class="window-chrome" aria-hidden="true"><span class="window-dots"><i></i><i></i><i></i></span><span class="window-title">MindMap AI</span><span class="window-action"><span class="window-index">03</span><span class="window-open">打开 ↗</span></span></span>
+          <span class="project-visual"><img src="assets/mindmap-poster.jpg" alt="MindMap AI 已有产品视频中的思维导图界面" width="1280" height="640"></span>
+        </span>
+        <span class="project-caption"><span><strong>MindMap AI</strong><small>让文档，长成一张图</small></span><span class="open-arrow" aria-hidden="true">↗</span></span>
+      </button>
+      <button class="project project-wtd" data-open="wtd" aria-label="打开 WidgetToDo 预览">
+        <span class="project-image">
+          <span class="window-chrome" aria-hidden="true"><span class="window-dots"><i></i><i></i><i></i></span><span class="window-title">WidgetToDo</span><span class="window-action"><span class="window-index">04</span><span class="window-open">打开 ↗</span></span></span>
+          <span class="project-visual"><img src="assets/wtd.jpg" alt="WidgetToDo 桌面待办的现有界面演示" width="400" height="530"></span>
+        </span>
+        <span class="project-caption"><span><strong>WidgetToDo</strong><small>今日待办，留在眼前</small></span><span class="open-arrow" aria-hidden="true">↗</span></span>
+      </button>
+    </section>
+
+    <nav class="dock" aria-label="快速打开产品">
+      <button class="dock-overview" data-overview aria-label="回到全部作品">总览</button>
+      <span class="dock-divider" aria-hidden="true"></span>
+      <button class="dock-item" data-open="repaste" data-tip="剪贴板，藏进刘海里" aria-label="从 Dock 打开 Repaste"><img src="../repaste-app-icon.svg" alt="" width="42" height="42"><span>Repaste</span></button>
+      <button class="dock-item" data-open="readless" data-tip="把长文，读给你听" aria-label="从 Dock 打开 Readless"><img src="../readless-app-icon.png" alt="" width="42" height="42"><span>Readless</span></button>
+      <button class="dock-item" data-open="mindmap" data-tip="让文档，长成一张图" aria-label="从 Dock 打开 MindMap AI"><span class="mindmap-icon"><img src="assets/mindmap-mark.svg" alt="" width="27" height="27"></span><span>MindMap AI</span></button>
+      <button class="dock-item" data-open="wtd" data-tip="今日待办，留在眼前" aria-label="从 Dock 打开 WidgetToDo"><img src="../wtd-app-icon.png" alt="" width="42" height="42"><span>WidgetToDo</span></button>
+    </nav>
+  </main>
+
+  <footer class="site-footer" id="about">
+    <p>做小而称手的工具。<span>让每天重复的事情，顺利一点。</span></p>
+    <div class="footer-links"><span>© 2026 Xiaofeng</span><a href="https://github.com/klosexf" target="_blank" rel="noopener">GitHub ↗</a><a href="mailto:694755267@qq.com">联系我 ↗</a></div>
+  </footer>
+
+  <dialog class="product-dialog" id="product-dialog" aria-labelledby="detail-name">
+    <header class="detail-header">
+      <button class="back-button" id="close-detail">← <span>全部作品</span></button>
+      <nav class="detail-tabs" aria-label="切换正在查看的产品">
+        <button data-open="repaste" aria-pressed="false">Repaste</button>
+        <button data-open="readless" aria-pressed="false">Readless</button>
+        <button data-open="mindmap" aria-pressed="false">MindMap AI</button>
+        <button data-open="wtd" aria-pressed="false">WidgetToDo</button>
+      </nav>
+      <span class="escape-hint">← → 切换 · esc 返回</span>
+    </header>
+    <div class="detail-body">
+      <section class="detail-stage" aria-label="当前产品界面演示">
+        <div class="media-window">
+          <div class="window-chrome detail-chrome"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="window-title" id="detail-window-name"></span><span class="window-position" id="detail-position"></span></div>
+          <div class="detail-media" id="detail-media"></div>
+        </div>
+        <div class="stage-controls"><span id="stage-status" aria-live="polite">界面预览</span><button id="play-demo">播放演示 <span aria-hidden="true">▷</span></button></div>
+      </section>
+      <aside class="detail-info">
+        <div class="product-identity"><span class="detail-icon" id="detail-icon"></span><div><p id="detail-category"></p><h2 id="detail-name"></h2></div></div>
+        <h3 id="detail-headline"></h3>
+        <p class="detail-description" id="detail-description"></p>
+        <ul class="detail-facts" id="detail-facts"></ul>
+        <a class="product-cta" id="product-link" target="_blank" rel="noopener">访问产品页 <span aria-hidden="true">↗</span></a>
+        <p class="demo-note">画面沿用已有产品演示</p>
+        <nav class="product-pagination" aria-label="浏览其他作品">
+          <button id="previous-product"><span>← 上一款</span><strong id="previous-name"></strong></button>
+          <button id="next-product"><span>下一款 →</span><strong id="next-name"></strong></button>
+        </nav>
+      </aside>
+    </div>
+  </dialog>
+</body>
+</html>

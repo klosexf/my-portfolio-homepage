@@ -1,0 +1,87 @@
+[
+  {
+    "name": "exat",
+    "site": "https://exat.hottype.co/",
+    "images": [
+      "https://www.cssdesignawards.com/cdasites/2025/202503/20250317103414.jpg",
+      "https://www.cssdesignawards.com/cdasites/2025/202503/20250325052053.jpg",
+      "https://www.cssdesignawards.com/cdasites/2025/202503/20250325052102.jpg"
+    ],
+    "title": "Exat Typeface",
+    "year": 2025,
+    "award": "https://www.cssdesignawards.com/blog/2025-website-of-the-year-winners/430/",
+    "direction": "现代主义字排",
+    "observed": "标题用明确的大小与字重建立层级；控件贴着网格排齐。获奖首页的 Get Font 是轻量文字加箭头，字体测试区的滑杆、标签也没有厚重按钮外壳。",
+    "adaptation": "适合做利落的产品作品集。把导航改为清楚的文字入口，主操作用紧凑平面按钮；统一文字基线，拉开标题、正文与辅助信息的层级。",
+    "feedback_proposal": "建议的点击反馈：短下划线或箭头位移。中文重新校准字重与行距，借鉴排版节奏。",
+    "selected_image": "https://www.cssdesignawards.com/cdasites/2025/202503/20250325052102.jpg"
+  },
+  {
+    "name": "cartier",
+    "site": "https://www.cartier.com/en-fr/watchesandwonders",
+    "images": [
+      "https://www.cssdesignawards.com/cdasites/2024/202405/20240521091714.jpg",
+      "https://www.cssdesignawards.com/cdasites/2024/202405/20240603034656.jpg",
+      "https://www.cssdesignawards.com/cdasites/2024/202405/20240603034704.jpg"
+    ],
+    "title": "Cartier Watches and Wonders 2024",
+    "year": 2024,
+    "award": "https://www.cssdesignawards.com/blog/2024-website-of-the-year-winners/414/",
+    "direction": "安静的展陈感",
+    "observed": "收录画面使用轻字重的大标题、衬线说明与大量留白。Discover 是细线矩形入口，Close 以小字和关闭符号呈现，操作元素很克制。",
+    "adaptation": "适合更安静、精致的产品展示。导航减少填充背景；产品详情主操作用细线按钮，文案变短，标题和说明之间留下清楚的呼吸空间。",
+    "feedback_proposal": "建议的点击反馈：轻微填充变化与箭头移动。正文维持易读字号，借鉴展陈层级。",
+    "selected_image": "https://www.cssdesignawards.com/cdasites/2024/202405/20240603034656.jpg"
+  },
+  {
+    "name": "unseen",
+    "site": "https://unseen.co/",
+    "images": [
+      "https://www.cssdesignawards.com/cdasites/2023/202301/20230105133750.jpg",
+      "https://www.cssdesignawards.com/cdasites/2023/202301/20230113060944.jpg",
+      "https://www.cssdesignawards.com/cdasites/2023/202301/20230113060953.jpg"
+    ],
+    "title": "Unseen Studio®",
+    "year": 2023,
+    "award": "https://www.cssdesignawards.com/blog/2023-website-of-the-year-winners/394/",
+    "direction": "编辑式文字与轻按钮",
+    "observed": "Selected projects 用衬线斜体，与干净的无衬线项目名形成对比。顶部 Index / Projects / Contact 为文字导航；View project 是小而平的白色胶囊配箭头。",
+    "adaptation": "适合有设计感的独立开发者首页。保留大横向卡片，导航采用文字；只有“查看产品”等主要操作用平面按钮，说明文字不再像一组同权重控件。",
+    "feedback_proposal": "建议的点击反馈：按钮文字与箭头做短距离响应，按下有轻微收缩；状态变化集中在一个元素。",
+    "selected_image": "https://www.cssdesignawards.com/cdasites/2023/202301/20230113060944.jpg"
+  },
+  {
+    "name": "jimmy",
+    "site": "https://www.jimmynelson.com/",
+    "images": [
+      "https://www.cssdesignawards.com/cdasites/2022/202211/20221116101656.jpg",
+      "https://www.cssdesignawards.com/cdasites/2022/202211/20221122035334.jpg",
+      "https://www.cssdesignawards.com/cdasites/2022/202211/20221122035533.jpg"
+    ],
+    "title": "Jimmy Nelson",
+    "year": 2022,
+    "award": "https://www.cssdesignawards.com/blog/2022-website-of-the-year-winners/378/",
+    "direction": "深色画廊与书页字排",
+    "observed": "深色画面围绕作品组织；正文采用较窄的阅读宽度，衬线标题配小字标签。Explore / Cart 等入口与细小图形控件分布在画面边缘，视觉重量很低。",
+    "adaptation": "与目前的深色拨牌框架契合。让产品画面继续当主体，导航收为文字入口；卡片标题与说明拉开层级，用清楚的图形表示切换和状态。",
+    "feedback_proposal": "建议的点击反馈：作品切换配短过渡，文字入口用细下划线；保留明确的键盘焦点和足够的点击区域。",
+    "selected_image": "https://www.cssdesignawards.com/cdasites/2022/202211/20221122035533.jpg"
+  },
+  {
+    "name": "prometheus",
+    "site": "https://www.prometheusfuels.com/",
+    "images": [
+      "https://www.cssdesignawards.com/cdasites/2021/202104/20210415135835.jpg",
+      "https://www.cssdesignawards.com/cdasites/2021/202104/20210421072000.jpg",
+      "https://www.cssdesignawards.com/cdasites/2021/202104/20210421072008.jpg"
+    ],
+    "title": "Prometheus Fuels",
+    "year": 2021,
+    "award": "https://www.cssdesignawards.com/blog/2021-website-of-the-year-winners/362/",
+    "direction": "工业海报与工具感",
+    "observed": "场景中的标题、说明以粗无衬线文字成块排布，菜单收为细线图形。品牌字形与场景承担主要个性，界面没有普遍堆叠立体按钮。",
+    "adaptation": "适合强调 macOS 工具的效率和个性。标题短而有力度，辅助信息用规整的小字；主操作可采用短标签、方角或小圆角的平面按钮。",
+    "feedback_proposal": "建议的点击反馈：明确的按下与状态反转，少量颜色只用于当前操作。这个方向更有力量感，宜控制大标题的面积。",
+    "selected_image": "https://www.cssdesignawards.com/cdasites/2021/202104/20210421072008.jpg"
+  }
+]

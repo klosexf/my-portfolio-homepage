@@ -34,6 +34,8 @@ html,body{
   overflow:hidden;
 }
 
+html[data-presentation="portfolio"], html[data-presentation="portfolio"] body { background:#273346; }
+
 /* ============ 舞台（透明嵌入版） ============ */
 .stage-viewport{position:fixed;inset:0;overflow:hidden}
 .scene{
@@ -424,7 +426,10 @@ html,body{
   }
 
   /* 舞台等比缩放：按视口铺满（contain），居中，溢出裁切 */
-  const DESIGN_W = 1080, DESIGN_H = 524;
+  // Reduce unused side margins only when opened from the portfolio.
+  const portfolio = new URLSearchParams(location.search).get('presentation') === 'portfolio';
+  if (portfolio) document.documentElement.dataset.presentation = 'portfolio';
+  const DESIGN_W = portfolio ? 920 : 1080, DESIGN_H = 524;
   const vp = $('#viewport');
   function fit(){
     if (!vp || !scene) return;
