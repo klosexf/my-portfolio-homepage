@@ -4,6 +4,10 @@
 const workspaceMotion = (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+  const desktopMotion = matchMedia('(min-width: 901px)');
+  const desktopTiming = { open: 440, close: 300, dialog: 320, copy: 240, tab: 240, switch: 320, leave: 220, ease: 'cubic-bezier(.2,.76,.2,1)' };
+  const existingTiming = { open: 560, close: 380, dialog: 420, copy: 320, tab: 340, switch: 400, leave: 340, ease: 'cubic-bezier(.22,1,.36,1)' };
+  const timing = () => desktopMotion.matches ? desktopTiming : existingTiming;
   const overview = document.querySelector('.overview');
   const horizontal = overview.dataset.layout === 'carousel';
   const fan = overview.dataset.layout === 'fan';
@@ -240,7 +244,7 @@ const workspaceMotion = (() => {
     if (tabPosition && !reduced.matches) animate(indicator, [
       { transform: `translate(${tabPosition.x}px, ${next.y}px) scaleX(${tabPosition.width / next.width})` },
       { transform: `translate(${next.x}px, ${next.y}px) scaleX(1)` }
-    ], { duration: 340, easing: 'cubic-bezier(.22,1,.36,1)' });
+    ], { duration: timing().tab, easing: timing().ease });
     tabPosition = next;
   }
 
@@ -264,17 +268,25 @@ const workspaceMotion = (() => {
     const dx = from.left + from.width / 2 - to.left - to.width / 2;
     const dy = from.top + from.height / 2 - to.top - to.height / 2;
     const small = `translate(${dx}px, ${dy}px) scale(${from.width / to.width}, ${from.height / to.height})`;
-    const frames = [{ transform: small, opacity: 1 }, { transform: 'none', opacity: 1 }];
+    const frames = desktopMotion.matches
+      ? [{ transform: small, opacity: 1, borderRadius: '14px' }, { transform: 'none', opacity: 1, borderRadius: '10px' }]
+      : [{ transform: small, opacity: 1 }, { transform: 'none', opacity: 1 }];
     if (reverse) frames.reverse();
+    else if (desktopMotion.matches) {
+      // Give the already-playing demo the final part of the shared-image handoff.
+      frames[1].offset = .94;
+      frames.push({ transform: 'none', opacity: 0, borderRadius: '10px' });
+    }
     // Ease from the thumbnail crop into the complete product framing.
     const thumbnail = cards.find(card => card.dataset.open === name)?.querySelector('.project-visual img');
     const zoom = thumbnail ? getComputedStyle(thumbnail).getPropertyValue('--thumbnail-scale').trim() || '1' : '1';
     const cropFrames = [{ transform: `scale(${zoom})` }, { transform: 'scale(1)' }];
     if (reverse) cropFrames.reverse();
     img.style.transformOrigin = 'center top';
-    animate(img, cropFrames, { duration: reverse ? 380 : 560, easing: 'cubic-bezier(.22,1,.36,1)' });
+    const duration = reverse ? timing().close : timing().open;
+    animate(img, cropFrames, { duration, easing: timing().ease });
     media.classList.add('is-transferring');
-    return animate(ghost, frames, { duration: reverse ? 380 : 560, easing: 'cubic-bezier(.22,1,.36,1)' });
+    return animate(ghost, frames, { duration, easing: reverse && desktopMotion.matches ? 'cubic-bezier(.4,0,.8,1)' : timing().ease });
   }
 
   async function expand(name, product) {
@@ -288,9 +300,9 @@ const workspaceMotion = (() => {
     if (reduced.matches) return;
     const version = sceneVersion;
     flyImage(originalRects.get(name), media.getBoundingClientRect(), product.image, product.background, name);
-    animate(dialog, [{ opacity: 0, transform: 'translateY(16px) scale(.975)' }, { opacity: 1, transform: 'none' }], { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)' });
+    animate(dialog, [{ opacity: 0, transform: `translateY(${desktopMotion.matches ? 10 : 16}px) scale(${desktopMotion.matches ? .985 : .975})` }, { opacity: 1, transform: 'none' }], { duration: timing().dialog, easing: timing().ease });
     [...document.querySelector('.detail-info').children].forEach((child, index) => {
-      animate(child, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 320, delay: 110 + index * 28, easing: 'cubic-bezier(.22,1,.36,1)' });
+      animate(child, [{ opacity: 0, transform: `translateY(${desktopMotion.matches ? 6 : 10}px)` }, { opacity: 1, transform: 'none' }], { duration: timing().copy, delay: desktopMotion.matches ? 60 + index * 16 : 110 + index * 28, easing: timing().ease });
     });
     await Promise.allSettled([...sceneAnimations].map(animation => animation.finished));
     if (version === sceneVersion) cancelScene();
@@ -311,9 +323,10 @@ const workspaceMotion = (() => {
     if (previous === 'wtd') outgoing.style.padding = '8px';
     media.append(outgoing);
     transientNodes.add(outgoing);
-    animate(outgoing, [{ transform: 'none', opacity: 1 }, { transform: `translateX(${-direction * 48}px) scale(.98)`, opacity: 0 }], { duration: 340, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' });
-    animate(media.querySelector('video, iframe, img:not(.outgoing-snapshot)'), [{ transform: `translateX(${direction * 54}px) scale(1.015)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 400, easing: 'cubic-bezier(.22,1,.36,1)' });
-    animate(document.querySelector('.detail-info'), [{ opacity: 0, transform: `translateX(${direction * 10}px)` }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'ease-out' });
+    const travel = desktopMotion.matches ? 32 : 48;
+    animate(outgoing, [{ transform: 'none', opacity: 1 }, { transform: `translateX(${-direction * travel}px) scale(.98)`, opacity: 0 }], { duration: timing().leave, easing: timing().ease, fill: 'forwards' });
+    animate(media.querySelector('video, iframe, img:not(.outgoing-snapshot)'), [{ transform: `translateX(${direction * (desktopMotion.matches ? 36 : 54)}px) scale(${desktopMotion.matches ? 1.008 : 1.015})`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: timing().switch, easing: timing().ease });
+    animate(document.querySelector('.detail-info'), [{ opacity: 0, transform: `translateX(${direction * (desktopMotion.matches ? 6 : 10)}px)` }, { opacity: 1, transform: 'none' }], { duration: timing().copy, easing: desktopMotion.matches ? timing().ease : 'ease-out' });
     await Promise.allSettled([...sceneAnimations].map(animation => animation.finished));
     if (version === sceneVersion) cancelScene();
   }
@@ -327,16 +340,19 @@ const workspaceMotion = (() => {
       ? cards.find(card => card.dataset.open === name)?.querySelector('.project-visual').getBoundingClientRect()
       : originalRects.get(name);
     if (innerWidth === originalWidth) flyImage(returnRect, media.getBoundingClientRect(), product.image, product.background, name, true);
-    animate(dialog, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(12px) scale(.975)' }], { duration: 340, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
+    animate(dialog, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateY(${desktopMotion.matches ? 8 : 12}px) scale(${desktopMotion.matches ? .985 : .975})` }], { duration: desktopMotion.matches ? 260 : 340, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
     await Promise.allSettled([...sceneAnimations].map(animation => animation.finished));
     if (version === sceneVersion) cancelScene();
     tabPosition = null;
   }
 
   function returnTo(name) {
-    if (fan) return;
     const card = cards.find(item => item.dataset.open === name);
     if (!card || reduced.matches) return;
+    if (fan) {
+      if (desktopMotion.matches) animate(card, [{ scale: '.996' }, { scale: '1' }], { duration: 180, easing: timing().ease }, true);
+      return;
+    }
     const transform = getComputedStyle(card).transform;
     animate(card, [
       { transform: `scale(.985) ${transform === 'none' ? '' : transform}`, offset: 0 },

@@ -121,7 +121,6 @@ body[data-fan-layout] .dock-item[aria-current="true"] { background: var(--quiet-
 .detail-tabs button:hover { color: var(--ink); }
 .tab-indicator { background: none; border-radius: 0; box-shadow: none; }
 .tab-indicator::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 4px; height: 1px; background: var(--ink); }
-.escape-hint { font-size: 11px; letter-spacing: .015em; }
 .product-identity p { font-size: 12px; line-height: 1.5; }
 .product-identity h2 { font-family: var(--display-font); font-size: 23px; font-weight: 600; letter-spacing: -.025em; }
 .detail-info h3 { margin: 25px 0 16px; font-family: var(--display-font); font-size: 34px; font-weight: 600; line-height: 1.25; letter-spacing: -.04em; }

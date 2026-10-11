@@ -7,6 +7,15 @@ body[data-fan-layout][data-theme="dark"] { --section-glass: rgba(17, 18, 20, .94
 .site-backdrop::before { content: ''; position: absolute; inset: 0; z-index: 1; background: var(--material-veil); backdrop-filter: blur(var(--material-blur)) saturate(.92); -webkit-backdrop-filter: blur(var(--material-blur)) saturate(.92); }
 .site-backdrop::after { content: ''; position: absolute; inset: 0; z-index: 2; background: linear-gradient(180deg, rgba(9,10,12,.13), transparent 40%, rgba(9,10,12,.20)); }
 body[data-theme="dark"] .site-backdrop { opacity: .58; }
+/* Keep material light below the introductory text, across desktop window sizes. */
+@media (min-width: 901px) {
+  body[data-theme="dark"] .site-backdrop::after {
+    background:
+      linear-gradient(180deg, rgba(17,18,20,.70) 60px, rgba(17,18,20,.42) 180px, transparent 340px),
+      radial-gradient(ellipse 42% 24% at 76% 13%, rgba(17,18,20,.55), transparent 82%),
+      linear-gradient(180deg, transparent 40%, rgba(9,10,12,.20));
+  }
+}
 body[data-fan-layout] .site-header { background: var(--header-glass); }
 body[data-fan-layout] .intro { padding-top: 24px; align-items: center; gap: 48px; }
 body[data-fan-layout] h1 { font-size: clamp(36px, 3.8vw, 54px); line-height: 1.2; }

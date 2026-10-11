@@ -168,7 +168,6 @@ body.is-product-open .intro { opacity: .45; }
 .detail-tabs[data-extended="true"] button { flex: 0 0 auto; }
 .detail-tabs button[aria-pressed="true"] { color: var(--ink); font-weight: 650; }
 .tab-indicator { position: absolute; left: 0; top: 0; background: var(--glass); border-radius: 8px; box-shadow: 0 1px 4px rgba(26,40,61,.05); pointer-events: none; transform-origin: left center; }
-.escape-hint { font-size: 11px; color: var(--faint); white-space: nowrap; }
 .detail-body { display: grid; grid-template-columns: minmax(0, 1fr) 330px; padding: 24px; gap: 29px; }
 .detail-stage { min-width: 0; align-self: center; }
 .media-window { border: 0; border-radius: 10px; overflow: hidden; box-shadow: none; }
@@ -243,7 +242,6 @@ body.is-product-open .intro { opacity: .45; }
   .detail-body { grid-template-columns: minmax(0, 1fr) 270px; gap: 20px; padding: 20px; }
   .detail-info h3 { font-size: 30px; }
   .detail-header { grid-template-columns: max-content minmax(0, 1fr); gap: 12px; padding: 14px 20px; }
-  .escape-hint { display: none; }
   .detail-tabs { gap: 2px; }
   .detail-tabs button { padding: 8px 10px; font-size: 11px; }
 }

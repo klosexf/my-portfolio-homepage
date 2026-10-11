@@ -84,6 +84,39 @@ body[data-fan-layout] .dock {
 .dock-item::before { bottom: 2px; left: calc(50% - 6px); width: 12px; height: 2px; border-radius: 2px; }
 .dock-item[data-related]:not([aria-current="true"])::before { opacity: 0; }
 .dock-item::after { bottom: calc(100% + 10px); border-radius: 6px; }
+/* Desktop cards share a quiet seam and compact, directional contact shadow. */
+@media (min-width: 901px) {
+  body[data-fan-layout] .overview,
+  body[data-fan-layout] .intro { transition: opacity .32s ease; }
+  .overview[data-layout="fan"] .project {
+    box-shadow: 0 2px 5px -2px rgba(var(--craft-shadow), .24), 0 16px 32px -18px rgba(var(--craft-shadow), .40);
+    transition: box-shadow .24s var(--ease), translate .24s var(--ease);
+  }
+  .overview[data-layout="fan"] .project[data-fan-active] {
+    box-shadow: 0 3px 7px -2px rgba(var(--craft-shadow), .32), 0 16px 32px -16px rgba(var(--craft-shadow), .46), 0 36px 60px -30px rgba(var(--craft-shadow), .48);
+  }
+  .overview[data-layout="fan"] .project[data-fan-active]:hover,
+  .overview[data-layout="fan"] .project[data-highlight] {
+    box-shadow: 0 3px 8px -2px rgba(var(--craft-shadow), .32), 0 20px 36px -17px rgba(var(--craft-shadow), .48), 0 40px 64px -32px rgba(var(--craft-shadow), .48);
+  }
+  body[data-theme="dark"] .project-repaste { --card-surface-top: #26242c; }
+  body[data-theme="dark"] .project-readless { --card-surface-top: #252930; }
+  body[data-theme="dark"] .project-mindmap,
+  body[data-theme="dark"] .project-wtd { --card-surface-top: #2b2927; }
+  .overview[data-layout="fan"] .project .project-visual { position: relative; }
+  .overview[data-layout="fan"] .project .project-visual::after {
+    content: ''; position: absolute; inset: auto 0 0; height: 4px;
+    background: linear-gradient(180deg, rgba(10,11,13,0), rgba(10,11,13,.28));
+    pointer-events: none;
+  }
+  .overview[data-layout="fan"] .project .project-caption {
+    height: 70px; min-height: 70px; padding-inline: 20px;
+    background: linear-gradient(180deg, var(--card-surface-top), var(--card-surface) 26px);
+  }
+  .overview[data-layout="fan"] .project[data-fan-active]:hover { cursor: grab; }
+  .overview[data-layout="fan"] .project[data-fan-active] .open-arrow { cursor: pointer; }
+  .overview[data-layout="fan"].is-fan-dragging .project { translate: none; cursor: grabbing; }
+}
 @media (max-width: 900px) {
   .dock-item { flex-direction: column; min-width: 65px; gap: 6px; padding: 7px 8px; font-size: 10px; }
   .dock-symbol { width: 32px; height: 32px; }

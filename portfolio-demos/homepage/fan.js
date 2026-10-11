@@ -8,10 +8,12 @@
   const cards = [...stage.querySelectorAll('.project')];
   const count = cards.length;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const desktopMotion = matchMedia('(min-width: 901px)');
   let selected = Math.min(1, count - 1);
   let position = selected;
   let target = position;
   let velocity = 0;
+  let springVelocity = 0;
   let layout = null;
   let frame = 0;
   let lastTime = 0;
@@ -65,13 +67,27 @@
   }
 
   function settle(now) {
-    const dt = Math.min((now - (lastTime || now - 16.67)) / 16.67, 2);
+    const elapsed = now - (lastTime || now - 16.67);
     lastTime = now;
-    velocity = (velocity + (target - position) * .10 * dt) * Math.pow(.64, dt);
-    position += velocity * dt;
-    if (Math.abs(position - target) < .001 && Math.abs(velocity) < .001) {
+    if (desktopMotion.matches) {
+      // Exact critically damped spring: stable across refresh rates, no bounce.
+      const dt = Math.min(elapsed / 1000, .05);
+      const frequency = 20;
+      const displacement = position - target;
+      const coefficient = springVelocity + frequency * displacement;
+      const decay = Math.exp(-frequency * dt);
+      position = target + (displacement + coefficient * dt) * decay;
+      springVelocity = (springVelocity - frequency * coefficient * dt) * decay;
+    } else {
+      const dt = Math.min(elapsed / 16.67, 2);
+      velocity = (velocity + (target - position) * .10 * dt) * Math.pow(.64, dt);
+      position += velocity * dt;
+    }
+    const settled = desktopMotion.matches ? Math.abs(springVelocity) < .012 : Math.abs(velocity) < .001;
+    if (Math.abs(position - target) < .001 && settled) {
       position = target;
       velocity = 0;
+      springVelocity = 0;
       frame = 0;
       lastTime = 0;
       paint();
@@ -89,8 +105,14 @@
       lastTime = 0;
       position = target;
       velocity = 0;
+      springVelocity = 0;
       paint();
-    } else if (!frame) frame = requestAnimationFrame(settle);
+    } else {
+      // Carry the release gesture into the snap without a large-card overshoot.
+      const limit = Math.abs(target - position) * 16;
+      springVelocity = clamp(springVelocity, -limit, limit);
+      if (!frame) frame = requestAnimationFrame(settle);
+    }
   }
 
   function status() {
@@ -143,12 +165,22 @@
       frame = 0;
       lastTime = 0;
       velocity = 0;
+      springVelocity = 0;
+      gesture.origin = desktopMotion.matches ? position : gesture.start;
+      gesture.lastPosition = position;
+      gesture.lastTime = event.timeStamp;
       stage.classList.add('is-fan-dragging');
     }
     gesture.dx = dx;
     const delta = clamp(-dx / (layout.width * .65), -.95, .95);
-    const proposed = gesture.start + delta;
+    const proposed = gesture.origin + delta;
     position = proposed < 0 ? proposed * .16 : proposed > count - 1 ? count - 1 + (proposed - count + 1) * .16 : proposed;
+    if (desktopMotion.matches) {
+      const seconds = Math.max((event.timeStamp - gesture.lastTime) / 1000, .016);
+      springVelocity = clamp((position - gesture.lastPosition) / seconds, -4, 4);
+      gesture.lastPosition = position;
+      gesture.lastTime = event.timeStamp;
+    }
     paint();
   });
   function release(event, cancelled = false) {
@@ -185,6 +217,11 @@
     }
   }, true);
   new ResizeObserver(dimensions).observe(stage);
+  desktopMotion.addEventListener('change', () => {
+    velocity = 0;
+    springVelocity = 0;
+    lastTime = 0;
+  });
   reduced.addEventListener('change', () => {
     cards.forEach(card => card.getAnimations().forEach(animation => animation.cancel()));
     moveTo(selected, true);
