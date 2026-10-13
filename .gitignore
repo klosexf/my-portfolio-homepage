@@ -12,3 +12,17 @@ node_modules/
 # 开发验证截图（无页面引用，不上传）
 portfolio-demos/demo-*.png
 portfolio-demos/verify-*.png
+
+# 设计探索与验证产物（未上线的设计变体/参考图集/验证目录，无线上页面引用，本地保留不上传；
+# 若某个 preview 转正为线上产品页，再单独放开）
+portfolio-demos/card-edge-references/
+portfolio-demos/card-material-preview/
+portfolio-demos/card-material-references/
+portfolio-demos/card-style-round2/
+portfolio-demos/crumpled-paper-preview/
+portfolio-demos/dala-product-preview/
+portfolio-demos/dala-style-preview/
+portfolio-demos/dala-style-preview-round2/
+portfolio-demos/mirror-gallery-preview/
+portfolio-demos/nova-preview/
+portfolio-demos/prismatic-home-preview/

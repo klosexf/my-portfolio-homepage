@@ -108,15 +108,8 @@ const productOrder = Object.keys(products);
   overview.dataset.count = String(count);
   overview.setAttribute('aria-label', `${count}款作品的卡片总览`);
 
-  const overviewButton = element('button', 'dock-overview', '总览');
-  overviewButton.type = 'button';
-  overviewButton.dataset.overview = '';
-  overviewButton.setAttribute('aria-label', '回到全部作品');
-  const divider = element('span', 'dock-divider');
-  divider.setAttribute('aria-hidden', 'true');
   const featured = productOrder.filter(id => products[id].featured).slice(0, 4);
-  dock.replaceChildren(overviewButton);
-  if (featured.length) dock.append(divider);
+  dock.replaceChildren();
   featured.forEach(id => {
     const product = products[id];
     const button = element('button', 'dock-item');

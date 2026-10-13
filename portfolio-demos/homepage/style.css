@@ -135,8 +135,6 @@ h1 { margin: 0; font-size: clamp(34px, 3vw, 42px); letter-spacing: -.055em; line
 .project-wtd .project-image { aspect-ratio: 400 / 530; }
 .project-wtd .project-caption small { display: block; margin: 4px 0 0; }
 .dock { position: relative; display: flex; align-items: center; justify-content: center; width: max-content; max-width: 100%; margin: 12px auto 0; padding: 9px 16px; gap: 15px; border: 1px solid var(--line); border-radius: 20px; background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: inset 0 1px 0 var(--dock-highlight), 0 10px 24px -15px rgba(var(--shadow),.25); }
-.dock-overview { font-size: 12px; font-weight: 650; background: none; padding: 12px 8px; }
-.dock-divider { width: 1px; height: 33px; background: var(--line); margin-right: 3px; }
 .dock-item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 65px; padding: 0; background: none; font-size: 10px; color: var(--muted); }
 .dock-item::before { content: ''; position: absolute; bottom: -6px; left: calc(50% - 2px); width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: 0; transform: scale(.5); transition: transform .2s var(--ease), opacity .2s; }
 .dock-item[data-related]::before, .dock-item[aria-current="true"]::before { opacity: 1; transform: scale(1); }
@@ -155,13 +153,13 @@ h1 { margin: 0; font-size: clamp(34px, 3vw, 42px); letter-spacing: -.055em; line
 .site-footer p span { display: block; font-size: 11px; color: var(--faint); }
 .footer-links { display: flex; align-items: center; gap: 22px; font-size: 11px; color: var(--muted); }
 .footer-links a:hover { color: var(--ink); }
-.product-dialog { width: min(1320px, calc(100vw - 56px)); max-width: none; max-height: calc(100dvh - 56px); padding: 0; margin: auto; border: 1px solid var(--line); border-radius: 18px; color: var(--ink); background: var(--surface); box-shadow: 0 32px 100px rgba(var(--shadow),.25); overflow: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.product-dialog { width: min(1320px, calc(100vw - 56px)); max-width: none; max-height: calc(100dvh - 56px); padding: 0; margin: auto; border: 0; border-radius: 18px; color: var(--ink); background: var(--surface); box-shadow: 0 32px 100px rgba(var(--shadow),.25); overflow: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
 .product-dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 body:has(.product-dialog[open]) { overflow: hidden; }
 body.is-product-open .overview { opacity: .5; }
 body.is-product-open .intro { opacity: .45; }
 .overview, .intro { transition: opacity .5s ease; }
-.detail-header { display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content; align-items: center; gap: 20px; padding: 14px 24px; border-bottom: 1px solid var(--line); }
+.detail-header { display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content; align-items: center; gap: 20px; padding: 14px 24px; border-bottom: 0; }
 .back-button { display: inline-flex; align-items: center; gap: 8px; background: none; font-size: 12px; padding: 8px 0; white-space: nowrap; }
 .detail-tabs { display: flex; align-items: center; gap: 6px; position: relative; isolation: isolate; min-width: 0; max-width: 100%; justify-self: center; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
 .detail-tabs button { position: relative; background: none; padding: 8px 13px; color: var(--muted); border-radius: 8px; font-size: 12px; white-space: nowrap; }
@@ -305,11 +303,9 @@ body.is-product-open .intro { opacity: .45; }
   .header-nav .nav-current { white-space: nowrap; }
   .open-arrow { font-size: 15px; }
   .dock { width: 100%; gap: 5px; justify-content: space-around; padding: 11px 7px; border-radius: 19px; }
-  .dock-overview { padding: 10px 3px; font-size: 11px; }
   .dock-item { min-width: 51px; font-size: 9px; }
   .dock-item > img, .mindmap-icon { width: 34px; height: 34px; border-radius: 9px; }
   .mindmap-icon img { width: 23px; height: 23px; }
-  .dock-divider { margin: 0 2px; }
   .site-footer { align-items: flex-start; flex-direction: column; gap: 9px; padding-top: 14px; }
   .site-footer p span { display: inline; margin-left: 6px; font-size: 10px; }
   .footer-links { width: 100%; justify-content: space-between; gap: 14px; }
@@ -319,7 +315,6 @@ body.is-product-open .intro { opacity: .45; }
   .dock { gap: 2px; padding: 9px 5px; }
   .dock-item { min-width: 46px; font-size: 8.5px; }
   .dock-item > span:last-child { white-space: nowrap; }
-  .dock-overview { padding: 10px 2px; font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

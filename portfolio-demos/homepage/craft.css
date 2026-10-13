@@ -66,16 +66,13 @@ body[data-fan-layout] .dock {
   gap: 4px;
   margin-top: 12px;
   padding: 7px 8px;
-  border: 1px solid var(--dock-edge);
+  border: 0;
   border-radius: 14px;
   background: var(--dock-panel);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   box-shadow: 0 12px 28px -18px rgba(var(--craft-shadow), .36);
 }
-.dock-overview { min-height: 42px; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; color: var(--muted); }
-.dock-overview:hover { background: var(--dock-hover); color: var(--ink); }
-.dock-divider { height: 24px; margin: 0 6px; background: var(--dock-edge); }
 .dock-item { flex-direction: row; gap: 8px; min-width: 0; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; color: var(--muted); transition: background .18s, color .18s; }
 .dock-item > span:last-child { white-space: nowrap; }
 .dock-symbol { display: grid; place-items: center; width: 32px; height: 32px; flex: none; transform: translateY(var(--dock-lift, 0px)) scale(var(--dock-scale, 1)); transform-origin: center; transition: transform .22s var(--ease); }
@@ -120,8 +117,6 @@ body[data-fan-layout] .dock {
 @media (max-width: 900px) {
   .dock-item { flex-direction: column; min-width: 65px; gap: 6px; padding: 7px 8px; font-size: 10px; }
   .dock-symbol { width: 32px; height: 32px; }
-  .dock-overview { padding: 8px 10px; }
-  .dock-divider { margin: 0 4px; }
 }
 @media (max-width: 540px) {
   .overview[data-layout="fan"] .project { border-radius: 11px; }
@@ -137,12 +132,9 @@ body[data-fan-layout] .dock {
   body[data-fan-layout] .dock { width: 100%; padding: 7px 6px; gap: 2px; margin-top: 11px; }
   .dock-item { flex: 1; min-width: 0; padding: 6px 2px 8px; font-size: 9px; gap: 5px; }
   .dock-symbol { width: 30px; height: 30px; }
-  .dock-overview { flex: none; min-height: 40px; padding: 6px 3px; font-size: 10px; }
-  .dock-divider { margin: 0 3px; height: 22px; }
 }
 @media (max-width: 360px) {
   .dock-item { font-size: 8px; }
-  .dock-divider { margin: 0 2px; }
 }
 @media (hover: hover) and (pointer: fine) {
   .overview[data-layout="fan"] .project[data-fan-active]:hover { translate: 0 -3px; }

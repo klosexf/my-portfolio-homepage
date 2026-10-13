@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Portfolio Inter";
+  src: url("assets/InterVariable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 /* Native CSS interpretation of the approved references:
    Exat's type hierarchy, Unseen's flat actions, Jimmy Nelson's quiet contrast.
    The fan geometry, brand assets and product interactions remain in their owners. */
@@ -9,9 +17,11 @@ body[data-fan-layout] {
   --primary-text: #f1f3f6;
   --primary-hover: #3a4050;
   --quiet-fill: rgba(36, 40, 51, .055);
-  --text-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
-  --display-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif;
+  --text-font: "Portfolio Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --display-font: var(--text-font);
   font-family: var(--text-font);
+  font-weight: 400;
+  font-optical-sizing: auto;
   letter-spacing: 0;
 }
 body[data-fan-layout][data-theme="dark"] {
@@ -26,7 +36,8 @@ body[data-fan-layout][data-theme="dark"] {
 body[data-fan-layout] ::selection { color: var(--primary-text); background: var(--primary-fill); }
 
 /* Text navigation: the hit area stays generous while the visible mark is small. */
-body[data-fan-layout] .header-nav { gap: 26px; font-size: 13px; font-weight: 450; }
+body[data-fan-layout] .wordmark { font-family: var(--display-font); font-size: 28px; font-weight: 500; letter-spacing: -.045em; }
+body[data-fan-layout] .header-nav { gap: 28px; font-size: 14px; font-weight: 400; }
 body[data-fan-layout] .header-nav > a,
 body[data-fan-layout] .header-nav > button {
   position: relative;
@@ -67,23 +78,23 @@ body[data-fan-layout] .intro {
   grid-template-columns: minmax(0, 1.5fr) minmax(0, .9fr);
   align-items: end;
   gap: 48px;
-  padding-top: 28px;
+  padding-top: 32px;
   padding-bottom: 5px;
 }
-.intro .hello { margin-bottom: 9px; font-size: 12px; line-height: 1.5; letter-spacing: .01em; color: var(--faint); }
+.intro .hello { margin-bottom: 12px; font-size: 13px; line-height: 1.5; letter-spacing: .025em; color: var(--faint); }
 body[data-fan-layout] h1 {
   font-family: var(--display-font);
-  font-size: clamp(42px, 4.25vw, 60px);
-  font-weight: 600;
-  line-height: 1.16;
-  letter-spacing: -.045em;
+  font-size: clamp(44px, 4.5vw, 64px);
+  font-weight: 500;
+  line-height: 1.24;
+  letter-spacing: -.015em;
 }
-.title-accent { font-weight: 700; }
+.title-accent { font-weight: inherit; }
 .title-accent::after { content: none; }
-body[data-fan-layout] .intro-description { margin: 0 0 3px; max-width: 32em; font-size: 14px; line-height: 1.85; letter-spacing: .005em; }
+body[data-fan-layout] .intro-description { margin: 0 0 3px; max-width: 32em; font-size: 15px; line-height: 1.85; letter-spacing: .015em; text-wrap: pretty; }
 
 /* Only the selected card carries a filled action; the entire card is clickable. */
-.overview[data-layout="fan"] .project-caption strong { font-family: var(--display-font); font-size: 17px; font-weight: 600; letter-spacing: -.025em; }
+.overview[data-layout="fan"] .project-caption strong { font-family: var(--display-font); font-size: 18px; font-weight: 500; line-height: 1.25; letter-spacing: -.02em; }
 .overview[data-layout="fan"] .project-caption small { margin-top: 5px; font-size: 12px; line-height: 1.45; color: var(--muted); }
 .overview[data-layout="fan"] .project .open-arrow {
   min-height: 40px;
@@ -93,7 +104,7 @@ body[data-fan-layout] .intro-description { margin: 0 0 3px; max-width: 32em; fon
   border-radius: 999px;
   background: transparent;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 1;
   transition: background .18s ease, color .18s ease, scale .15s var(--ease);
@@ -106,26 +117,25 @@ body[data-fan-layout] .intro-description { margin: 0 0 3px; max-width: 32em; fon
 .overview[data-layout="fan"] .project:not([data-fan-active]) .open-arrow { padding-inline: 0; }
 
 /* Dock labels share the same typography and subdued surface vocabulary. */
-body[data-fan-layout] .dock-item { min-height: 48px; font-size: 12px; font-weight: 450; letter-spacing: -.015em; }
-body[data-fan-layout] .dock-overview { min-height: 44px; font-size: 12px; font-weight: 450; }
+body[data-fan-layout] .dock-item { min-height: 48px; font-size: 13px; font-weight: 400; letter-spacing: -.01em; }
 body[data-fan-layout] .dock-item:active { background: var(--quiet-fill); }
 body[data-fan-layout] .dock-item[aria-current="true"] { background: var(--quiet-fill); }
 
 /* Detail controls: a moving rule for tabs, text for secondary actions, one CTA. */
 .detail-header { padding-block: 10px; }
-.back-button { min-height: 44px; font-size: 13px; color: var(--muted); }
+.back-button { min-height: 44px; font-size: 14px; line-height: 1.5; color: var(--muted); }
 .back-button:hover { color: var(--ink); }
 .detail-tabs { gap: 8px; }
-.detail-tabs button { min-height: 44px; padding: 10px 12px; border-radius: 0; font-size: 13px; font-weight: 450; transition: color .18s ease; }
+.detail-tabs button { min-height: 44px; padding: 10px 12px; border-radius: 0; font-size: 14px; font-weight: 400; letter-spacing: -.01em; transition: color .18s ease; }
 .detail-tabs button[aria-pressed="true"] { font-weight: 500; }
 .detail-tabs button:hover { color: var(--ink); }
 .tab-indicator { background: none; border-radius: 0; box-shadow: none; }
 .tab-indicator::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 4px; height: 1px; background: var(--ink); }
-.product-identity p { font-size: 12px; line-height: 1.5; }
-.product-identity h2 { font-family: var(--display-font); font-size: 23px; font-weight: 600; letter-spacing: -.025em; }
-.detail-info h3 { margin: 25px 0 16px; font-family: var(--display-font); font-size: 34px; font-weight: 600; line-height: 1.25; letter-spacing: -.04em; }
-.detail-description { font-size: 14px; line-height: 1.85; }
-.detail-facts { margin: 20px 0 26px; font-size: 13px; line-height: 1.7; }
+.product-identity p { font-size: 13px; line-height: 1.5; }
+.product-identity h2 { font-family: var(--display-font); font-size: 24px; font-weight: 500; letter-spacing: -.025em; }
+.detail-info h3 { margin: 28px 0 18px; font-family: var(--display-font); font-size: clamp(34px, 3vw, 42px); font-weight: 500; line-height: 1.3; letter-spacing: -.02em; }
+.detail-description { font-size: 15px; line-height: 1.85; letter-spacing: .01em; text-wrap: balance; }
+.detail-facts { margin: 22px 0 28px; font-size: 14px; line-height: 1.8; }
 .detail-facts li { padding: 4px 0; border: 0; }
 .product-cta {
   align-self: flex-start;
@@ -140,7 +150,7 @@ body[data-fan-layout] .dock-item[aria-current="true"] { background: var(--quiet-
   color: var(--primary-text);
   background: var(--primary-fill);
   box-shadow: none;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 1.4;
   transition: background .18s ease, transform .15s var(--ease);
@@ -148,14 +158,14 @@ body[data-fan-layout] .dock-item[aria-current="true"] { background: var(--quiet-
 .product-cta:hover { transform: none; background: var(--primary-hover); }
 .product-cta:active { transform: scale(.97); }
 .product-cta:hover > .arrow-glyph { transform: translateX(2px); }
-.demo-note { margin-top: 14px; text-align: left; font-size: 11px; line-height: 1.5; }
+.demo-note { margin-top: 16px; text-align: left; font-size: 12px; line-height: 1.6; }
 
-/* Supporting copy follows a consistent reading rhythm, with no decorative font. */
+/* Chinese headings stay open; supporting copy uses regular text weights. */
 .section-label { font-size: 12px; letter-spacing: .015em; }
-.about-heading h2 { font-family: var(--display-font); font-size: clamp(30px, 3vw, 39px); font-weight: 600; letter-spacing: -.04em; }
-.about-heading > p:last-child { font-size: 14px; line-height: 1.9; }
-.about-principle h3 { margin-bottom: 8px; font-size: 15px; font-weight: 550; }
-.about-principle p { font-size: 14px; line-height: 1.9; }
+.about-heading h2 { font-family: var(--display-font); font-size: clamp(32px, 3.05vw, 44px); font-weight: 500; line-height: 1.35; letter-spacing: -.015em; }
+.about-heading > p:last-child { font-size: 15px; line-height: 1.9; }
+.about-principle h3 { margin-bottom: 10px; font-size: 16px; font-weight: 500; letter-spacing: 0; }
+.about-principle p { font-size: 15px; line-height: 1.9; text-wrap: pretty; }
 .about-principle + .about-principle { margin-top: 24px; }
 .site-footer p, .footer-links { font-size: 12px; }
 .footer-links a { display: inline-flex; align-items: center; min-height: 40px; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 5px; }
@@ -163,11 +173,11 @@ body[data-fan-layout] .dock-item[aria-current="true"] { background: var(--quiet-
 
 @media (max-width: 1050px) {
   body[data-fan-layout] .intro { display: block; padding-top: 22px; }
-  body[data-fan-layout] h1 { font-size: clamp(36px, 5.1vw, 48px); }
-  body[data-fan-layout] .intro-description { margin: 10px 0 0; font-size: 13px; line-height: 1.75; }
+  body[data-fan-layout] h1 { font-size: clamp(38px, 5.2vw, 52px); }
+  body[data-fan-layout] .intro-description { margin: 12px 0 0; font-size: 14px; line-height: 1.85; }
   .detail-tabs { gap: 2px; }
-  .detail-tabs button { padding-inline: 10px; font-size: 12px; }
-  .detail-info h3 { font-size: 30px; }
+  .detail-tabs button { padding-inline: 10px; font-size: 13px; }
+  .detail-info h3 { font-size: 32px; }
 }
 @media (max-width: 900px) {
   body[data-fan-layout] .dock-item { font-size: 11px; }
@@ -175,33 +185,34 @@ body[data-fan-layout] .dock-item[aria-current="true"] { background: var(--quiet-
 @media (max-width: 720px) {
   .detail-header { padding: 4px 14px 0; }
   .detail-tabs { margin-top: 0; }
-  .detail-tabs { gap: 0; }
-  .detail-tabs button { padding-inline: 5px; font-size: 11px; }
+  .detail-tabs { gap: 3px; }
+  .detail-tabs button { padding-inline: 5px; font-size: 12px; }
   .tab-indicator::after { left: 6px; right: 6px; }
   .detail-info h3 { font-size: 32px; }
 }
 @media (max-width: 540px) {
-  body[data-fan-layout] .header-nav { gap: 20px; font-size: 12px; }
+  body[data-fan-layout] .wordmark { font-size: 24px; }
+  body[data-fan-layout] .header-nav { gap: 20px; font-size: 13px; }
   body[data-fan-layout] .header-nav > a[href="#about"] { display: none; }
   body[data-fan-layout] .intro { padding-top: 20px; padding-bottom: 4px; }
-  .intro .hello { margin-bottom: 7px; font-size: 11px; }
-  body[data-fan-layout] h1 { font-size: clamp(27px, 8.5vw, 34px); letter-spacing: -.045em; }
-  body[data-fan-layout] .intro-description { margin-top: 10px; font-size: 12px; line-height: 1.8; }
-  .overview[data-layout="fan"] .project-caption strong { font-size: 13px; }
-  .overview[data-layout="fan"] .project-caption small { margin-top: 3px; font-size: 9px; line-height: 1.4; }
+  .intro .hello { margin-bottom: 9px; font-size: 12px; }
+  body[data-fan-layout] h1 { font-size: clamp(28px, 8.2vw, 42px); letter-spacing: -.01em; }
+  body[data-fan-layout] .intro-description { margin-top: 12px; font-size: 13px; line-height: 1.8; }
+  .overview[data-layout="fan"] .project-caption strong { font-size: 14px; }
+  .overview[data-layout="fan"] .project-caption small { margin-top: 3px; font-size: 10px; line-height: 1.4; }
   .overview[data-layout="fan"] .project .open-arrow { min-height: 28px; padding: 6px; gap: 0; width: 28px; height: 28px; }
   .overview[data-layout="fan"] .project .open-label { display: none; }
   .overview[data-layout="fan"] .arrow-glyph { width: 16px; height: 16px; }
-  body[data-fan-layout] .dock-item { font-size: 10px; letter-spacing: -.025em; }
-  body[data-fan-layout] .dock-overview { font-size: 10px; }
-  .about-heading > p:last-child, .about-principle p { font-size: 13px; }
+  body[data-fan-layout] .dock-item { font-size: 11px; letter-spacing: 0; }
+  .about-heading > p:last-child, .about-principle p { font-size: 14px; }
   .site-footer p, .footer-links { font-size: 11px; }
 }
 @media (max-width: 360px) {
   body[data-fan-layout] .header-nav { gap: 16px; }
   body[data-fan-layout] .dock { width: calc(100% + 24px); max-width: none; margin-inline: -12px; }
-  body[data-fan-layout] .dock-item { font-size: 9px; letter-spacing: -.03em; }
-  .detail-tabs button { padding-inline: 3px; }
+  body[data-fan-layout] .dock-item { font-size: 10px; letter-spacing: 0; }
+  .detail-tabs { gap: 2px; }
+  .detail-tabs button { padding-inline: 2px; }
   .tab-indicator::after { left: 4px; right: 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
