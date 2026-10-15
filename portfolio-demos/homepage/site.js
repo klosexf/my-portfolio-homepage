@@ -31,6 +31,7 @@ function renderProduct(name) {
   document.querySelector('#detail-headline').textContent = product.headline;
   document.querySelector('#detail-description').textContent = product.description;
   document.querySelector('#product-link').href = product.href;
+  document.querySelector('.demo-note').textContent = product.demoNote || '画面沿用已有产品演示';
   const facts = document.querySelector('#detail-facts');
   facts.replaceChildren(...product.facts.map(text => {
     const item = document.createElement('li');
@@ -126,7 +127,7 @@ function startDemo() {
     const demoURL = new URL(product.demo, document.baseURI);
     demoURL.searchParams.set('presentation', 'portfolio');
     frame.src = demoURL.href;
-    frame.title = `${product.name} 已有产品演示`;
+    frame.title = `${product.name} 产品操作演示`;
     frame.addEventListener('load', () => {
       if (!frame.isConnected) return;
       try {

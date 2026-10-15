@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>MindMap AI · 从长内容到自己的思路</title>
+  <link rel="stylesheet" href="mindmap-animation/product.css">
+  <link rel="stylesheet" href="mindmap-animation/demo.css">
+  <script defer src="mindmap-animation/demo.js"></script>
+</head>
+<body>
+  <main class="demo-player" aria-label="MindMap AI 产品操作演示">
+    <div class="demo-viewport" role="img" aria-label="粘贴文本，开始生成思维导图">
+      <div class="product-scenes" inert>
+        <section id="input-scene" class="product-scene input-scene">
+          <header class="home-navbar"><div class="home-navbar-inner">
+            <span class="brand-link"><span class="brand-mark">M</span><span class="brand-name">MindMap AI</span></span>
+            <span class="saved-files-trigger">▤ &nbsp; 已保存文件</span>
+          </div></header>
+          <div class="home-page"><div class="page">
+            <section class="hero-section">
+              <h1 class="hero-title">把任何长内容<br>变成<span class="hero-title-accent">思维导图<svg class="hero-inkline" viewBox="0 0 230 14" preserveAspectRatio="none"><path d="M4 9 C 62 3.5, 158 3.2, 226 7.5" pathLength="100"/></svg></span></h1>
+              <p class="hero-subtitle">粘贴文本、URL 或上传 PDF，AI 在几秒内梳理出清晰的知识结构</p>
+            </section>
+            <section class="home-input-block">
+              <div class="input-tabs"><span class="input-tabs-thumb"></span><button class="active" tabindex="-1">文本</button><button tabindex="-1">URL</button><button tabindex="-1">PDF</button></div>
+              <div class="input-shell">
+                <div class="text-input" id="sample-input"><span id="input-placeholder">粘贴文章、会议记录或课程笔记，让 AI 自动生成导图...</span><span id="input-text"></span><span class="type-caret" id="input-caret"></span></div>
+                <div class="input-actions"><span class="input-hint">建议输入关键段落，生成更稳定</span><button class="primary-button" id="generate-button" tabindex="-1">开始生成</button></div>
+              </div>
+            </section>
+          </div></div>
+        </section>
+        <section id="editor-scene" class="product-scene editor-scene">
+          <div class="page editor-shell">
+            <header class="editor-topbar">
+              <div class="editor-topbar-left"><span class="back-link">‹</span><span class="editor-divider"></span><h1>产品经理的工作系统</h1><span class="save-state" id="save-state"><i class="save-dot"></i><span id="save-label">已保存</span></span></div>
+              <span class="toolbar-divider"></span>
+              <div class="toolbar">
+                <span class="tool-btn"><span class="tool-glyph">⊢</span><span class="tool-label">左 → 右</span></span><span class="toolbar-divider"></span>
+                <span class="tool-btn history-tool">↶ <span class="tool-label">撤销</span></span><span class="tool-btn history-tool">↷ <span class="tool-label">重做</span></span>
+                <span class="toolbar-group ai-group"><span class="tool-btn">✧ <span class="tool-label">AI 优化</span></span><span class="tool-label optimize-label">AI 精简⌄</span></span>
+                <span class="tool-btn" id="add-topic-button">⊞ <span class="tool-label">细分主题</span></span>
+              </div>
+              <div class="toolbar-end"><span class="tool-btn present-tool">▷ <span class="tool-label">演示</span></span><span class="tool-btn" id="export-button">↥ <span class="export-label">导出⌄</span></span><span class="tool-btn primary" id="save-button">▣ <span>保存</span></span></div>
+            </header>
+            <div class="editor-workspace">
+              <div class="editor-canvas-area">
+                <div class="generation-banner" id="generation-banner"><span class="generation-dot"></span><span><strong>正在生成导图</strong><small id="generation-label">正在梳理内容结构…</small></span><span class="generation-count" id="generation-count"></span></div>
+                <svg id="map" class="mindmap-svg" viewBox="0 0 1060 560" aria-hidden="true"><g id="edges"></g><g id="nodes"></g><g id="drop-target"><rect width="210" height="58" rx="18"/><text x="105" y="-14" text-anchor="middle">移入「工作方法」</text></g></svg>
+                <div id="edit-input" class="inline-edit"></div>
+                <div id="keyboard-hint" class="keyboard-hint"><kbd>Tab</kbd><span>添加细分主题</span></div>
+                <div id="drag-hint" class="drag-hint">松开，移入「工作方法」</div>
+                <div class="canvas-navigation"><div class="canvas-control-bar"><span>−</span><span id="zoom-label">100%</span><span>＋</span><i></i><span>适应</span><span>?</span></div></div>
+              </div>
+              <aside class="editor-summary-panel" id="summary-panel"><div class="ai-summary-card"><header class="ai-summary-head"><span class="ai-summary-head-title"><b>✧</b> AI 摘要</span><span>↻</span></header><div class="ai-summary-body"><p>产品经理的工作系统</p><ul class="ai-summary-list"><li>责任大于职权，需要建立自己的工作系统。</li><li>用异步沟通和即时行动，减少重复协作。</li><li>保护专注时间，把经验变成可复用的方法。</li></ul></div><footer class="ai-summary-foot">来自输入内容</footer></div></aside>
+            </div>
+          </div>
+          <div class="export-dropdown" id="export-menu"><span id="markdown-option">▤ &nbsp; Markdown 文件</span><span>▧ &nbsp; PNG 图片</span></div>
+          <div class="export-result" id="export-result"><span class="file-icon">M↓</span><span><strong>产品经理的工作系统.md</strong><small>导出完成 · 示例文件</small></span><span class="file-check">✓</span></div>
+        </section>
+        <div class="demo-cursor" id="demo-cursor"><svg width="24" height="29" viewBox="0 0 24 29"><path d="M3 2v22l6-6 4 9 4-2-4-9h8Z" fill="#252522" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><i></i></div>
+      </div>
+      <span class="sample-badge">操作演示 · 示例内容</span>
+    </div>
+    <footer class="player-controls">
+      <div class="player-heading"><p id="step-description" role="status" aria-live="polite">把文章粘贴进来，从一段文字开始。</p><div class="playback-buttons"><button id="toggle-play" type="button" aria-label="暂停演示" title="暂停演示">Ⅱ</button><button id="replay" type="button" aria-label="重新播放演示" title="重新播放演示">↻</button></div></div>
+      <nav class="chapter-nav" aria-label="演示步骤"><button data-time="0">01 输入内容</button><button data-time="7.5">02 生成导图</button><button data-time="15">03 编辑节点</button><button data-time="21">04 添加主题</button><button data-time="26.5">05 拖动整理</button><button data-time="34">06 保存导出</button></nav>
+      <label class="timeline-label"><span class="sr-only">演示进度</span><input type="range" id="timeline" min="0" max="43.6" step="0.1" value="0" aria-label="演示进度"></label>
+    </footer>
+  </main>
+</body>
+</html>

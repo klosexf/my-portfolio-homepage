@@ -265,6 +265,7 @@ body.is-product-open .intro { opacity: .45; }
   .detail-media { height: auto; aspect-ratio: var(--poster-aspect, 1.6); }
   .detail-media[data-app="repaste"] { aspect-ratio: 620 / 600; }
   .detail-media[data-app="readless"] { aspect-ratio: 920 / 524; }
+  .detail-media[data-app="mindmap"] { height: clamp(390px, 62dvh, 490px); aspect-ratio: auto; }
   .detail-media[data-app="wtd"] { height: clamp(308px, 52dvh, 400px); aspect-ratio: auto; }
   .detail-info { padding: 6px 5px 9px; }
   .detail-info h3 { font-size: 34px; margin-top: 24px; }

@@ -26,8 +26,9 @@ const products = {
     category: 'AI · 文档与思维导图', headline: '让一份文档，\n长成一张图。',
     description: '粘贴文字、上传 PDF 或放入链接，让内容的结构逐渐展开，再继续编辑和整理自己的思路。',
     facts: ['把长内容整理为思维导图', '生成后，继续编辑与重组'],
-    image: 'portfolio-demos/homepage/assets/mindmap-poster.jpg', imageAlt: 'MindMap AI 已有产品视频中的思维导图界面', imageWidth: 1280, imageHeight: 640,
-    icon: 'portfolio-demos/homepage/assets/mindmap-mark.svg', video: 'mindmap-demo.mp4',
+    image: 'portfolio-demos/homepage/assets/mindmap-poster.jpg', imageAlt: 'MindMap AI 思维导图界面', imageWidth: 1280, imageHeight: 640,
+    icon: 'portfolio-demos/homepage/assets/mindmap-mark.svg', demo: 'portfolio-demos/embed-mindmap.html',
+    demoNote: '跟随演示，体验从输入到整理导图的完整流程',
     href: 'index%20mindmap.html', background: '#f8f1e5'
   },
   wtd: {

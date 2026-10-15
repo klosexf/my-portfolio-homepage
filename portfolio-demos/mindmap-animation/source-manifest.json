@@ -1,0 +1,37 @@
+{
+  "source_root": "/Users/chenxiaofeng/Documents/Tare code file/MindMap/mindmap-mvp",
+  "read_on": "2026-10-15",
+  "mode": "Local source adaptation; deterministic sample data; no generation API calls",
+  "files": [
+    {
+      "path": "app/page.tsx",
+      "sha256": "d4a0fd025b023f595a28456f8ce529981b57def52d0861c1d80f7b483e84795b"
+    },
+    {
+      "path": "app/globals.css",
+      "sha256": "e95c005080134467b919d818cfd2088bd7277d8e7b43e473642d89b41fa6f344"
+    },
+    {
+      "path": "components/generate-form.tsx",
+      "sha256": "4cf6005e42bd5fec58f64e674374a5f42655753b7817a925c568d81d6f4ad4e4"
+    },
+    {
+      "path": "components/editor-page.tsx",
+      "sha256": "9fd447bb51f685c9c3ef46aacf7bbbf2ef6f483915494402ae238540beca3074"
+    },
+    {
+      "path": "components/editor-toolbar.tsx",
+      "sha256": "c41fb76f8091c96815e024839b77fb38cf7d8997cb18c631cec98afe5419758f"
+    },
+    {
+      "path": "components/mindmap-editor.tsx",
+      "sha256": "4c1208e8cdd35c69903493ce503c01b22ca788f0dbb3ff06edfea8c64ce033eb"
+    },
+    {
+      "path": "lib/utils/g6.ts",
+      "sha256": "d5d54b2d086cf4b7e3fcaadb8dc6535fd3a0240dd896bca5b01ceaacdd95fa7d"
+    }
+  ],
+  "source_commit": "dfe2255a8e753600f116a5c4583d67629b66e272",
+  "source_worktree_clean": true
+}

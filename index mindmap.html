@@ -200,10 +200,13 @@
     display: flex;
     justify-content: center;
   }
-  .demo-video video {
+  .demo-video iframe {
     display: block;
     width: 100%;
     height: auto;
+    aspect-ratio: 16 / 10;
+    min-height: 390px;
+    border: 0;
     /* 标题栏 48px + hero 上下留白 + 提示文字，保证整个窗口在一屏内完整可见 */
     max-height: calc(100vh - 210px);
     object-fit: contain;
@@ -315,7 +318,7 @@
   body.embed-demo footer { display: none; }
   body.embed-demo .hero { min-height: 0; padding: 0; max-width: none; margin: 0; }
   body.embed-demo .demo-stage { margin-top: 0; }
-  body.embed-demo .demo-video video { max-height: none; }
+  body.embed-demo .demo-video iframe { max-height: none; }
   /* 硬阴影会被外层裁剪容器切掉，改为由外层提供柔和大投影 */
   body.embed-demo .demo-window { box-shadow: none; }
 
@@ -373,14 +376,14 @@
     <div class="demo-window">
       <div class="demo-titlebar">
         <div class="titlebar-dots"><span></span><span></span><span></span></div>
-        <div class="titlebar-title">MindMap AI — 产品经理是不公平的岗位.pdf</div>
-        <div class="titlebar-pill">● 实时演示</div>
+        <div class="titlebar-title">MindMap AI — 从长内容到自己的思路</div>
+        <div class="titlebar-pill">● 操作演示</div>
       </div>
       <div class="demo-video">
-        <video id="demoVideo" src="mindmap-demo.mp4" controls autoplay muted loop playsinline preload="metadata"></video>
+        <iframe id="mindmapDemo" src="portfolio-demos/embed-mindmap.html" title="MindMap AI 从输入到整理导图的完整操作演示"></iframe>
       </div>
     </div>
-    <div class="hero-hint" style="justify-content:center;"><span class="arrow">↓</span> 以上为产品真实录屏演示</div>
+    <div class="hero-hint" style="justify-content:center;"><span class="arrow">↓</span> 跟随演示，体验输入、生成、编辑与导出</div>
   </div>
 </header>
 
@@ -438,27 +441,20 @@
 </footer>
 
 <script>
-/* ============================================================
-   首屏演示：产品真实录屏视频
-   —— 进入视口自动播放，离开视口暂停
-   ============================================================ */
+/* Pause the code animation when its product-page window is off screen. */
 (function () {
-  const video = document.getElementById('demoVideo');
-
-  function playDemo() {
-    if (!video) return;
-    video.currentTime = 0;
-    video.play().catch(() => {});
+  const frame = document.getElementById('mindmapDemo');
+  let visible = true;
+  function command(action) {
+    frame.contentWindow?.postMessage({ type: 'mindmap-demo', action }, location.origin);
   }
-  window.startAnimation = playDemo;
-
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) playDemo();
-      else video.pause();
-    });
-  }, { threshold: 0.35 });
-  if (video) io.observe(video);
+  window.startAnimation = () => command('restart');
+  const observer = new IntersectionObserver(entries => {
+    visible = entries[0].isIntersecting;
+    command(visible ? 'play' : 'pause');
+  }, { threshold: 0.15 });
+  frame.addEventListener('load', () => command(visible ? 'play' : 'pause'));
+  observer.observe(frame);
 })();
 </script>
 </body>
