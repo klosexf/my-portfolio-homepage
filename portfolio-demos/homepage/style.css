@@ -77,7 +77,7 @@ img { display: block; max-width: 100%; }
 [hidden] { display: none !important; }
 .site-header, #workspace, .site-footer { max-width: 1440px; margin: 0 auto; padding-left: 40px; padding-right: 40px; }
 /* Layers: product windows 1–8, persistent navigation 20, native modal above both. */
-.site-header { position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; min-height: 56px; padding-top: 8px; padding-bottom: 8px; gap: 20px; background: var(--header-glass); border-bottom: 1px solid var(--line); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.site-header { position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; min-height: 56px; padding-top: 8px; padding-bottom: 8px; gap: 20px; background: var(--header-glass); border-bottom: 0; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 .wordmark { font-size: 25px; font-weight: 750; letter-spacing: -.055em; }
 .wordmark-period { color: var(--brand); }
 .header-nav { display: flex; align-items: center; gap: 20px; font-size: 12px; }

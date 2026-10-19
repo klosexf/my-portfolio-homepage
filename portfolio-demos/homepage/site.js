@@ -57,7 +57,7 @@ function renderProduct(name) {
   });
   showSnapshot();
   workspaceMotion.setActive(name);
-  history.replaceState(null, '', `#${name}`);
+  history.replaceState(null, '', `${location.pathname}${location.search}#${name}`);
 }
 
 function openProduct(name, trigger) {

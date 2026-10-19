@@ -20,7 +20,7 @@ body[data-fan-layout] .site-header { background: var(--header-glass); }
 body[data-fan-layout] .intro { padding-top: 24px; align-items: center; gap: 48px; }
 body[data-fan-layout] h1 { font-size: clamp(36px, 3.8vw, 54px); line-height: 1.2; }
 body[data-fan-layout] .intro-description { margin-top: 9px; font-size: 13px; line-height: 1.8; }
-.studio-about { display: grid; grid-template-columns: 1fr 1.1fr; gap: 72px; margin: 36px -40px 0; padding: 38px 40px 36px; border-block: 1px solid var(--line); background: var(--section-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); scroll-margin-top: 72px; }
+.studio-about { display: grid; grid-template-columns: 1fr 1.1fr; gap: 72px; margin: 36px -40px 0; padding: 38px 40px 36px; border-block: 0; background: var(--section-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); scroll-margin-top: 72px; }
 .section-label { margin: 0 0 12px; font-size: 11px; color: var(--faint); }
 .about-heading h2 { margin: 0; max-width: 520px; font-size: clamp(26px, 2.4vw, 35px); letter-spacing: -.04em; line-height: 1.3; font-weight: 650; text-wrap: balance; }
 .about-heading h2 span { white-space: nowrap; }

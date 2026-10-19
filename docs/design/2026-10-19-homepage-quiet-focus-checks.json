@@ -1,0 +1,149 @@
+{
+  "url": "http://127.0.0.1:5173/index.html",
+  "viewports": [
+    {
+      "background": "rgb(10, 11, 13)",
+      "bodyClass": "quiet-home",
+      "brokenImages": [],
+      "card": {
+        "bottom": 705.5390625,
+        "height": 465,
+        "top": 240.5390625,
+        "width": 800
+      },
+      "dock": {
+        "bottom": 823.5390625,
+        "height": 60,
+        "top": 763.5390625,
+        "width": 526.8125
+      },
+      "guide": {
+        "bottom": 857.1328125,
+        "height": 17.59375,
+        "top": 839.5390625,
+        "width": 1345
+      },
+      "heading": {
+        "bottom": 159.5390625,
+        "height": 75.5390625,
+        "top": 84,
+        "width": 1345
+      },
+      "labels": [
+        "查看演示",
+        "查看演示",
+        "查看演示",
+        "查看演示"
+      ],
+      "overflow": false,
+      "removedDescriptions": 0,
+      "specks": 24,
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "brokenImages": [],
+      "card": {
+        "bottom": 410.0078125,
+        "height": 196,
+        "top": 214.0078125,
+        "width": 337
+      },
+      "dock": {
+        "bottom": 552.125,
+        "height": 73,
+        "top": 479.125,
+        "width": 327
+      },
+      "guide": {
+        "bottom": 585.125,
+        "height": 16,
+        "top": 569.125,
+        "width": 327
+      },
+      "heading": {
+        "bottom": 129.0078125,
+        "height": 37.0078125,
+        "top": 92,
+        "width": 327
+      },
+      "overflow": false,
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "card": {
+        "bottom": 353.16375732421875,
+        "height": 158,
+        "top": 195.16375732421875,
+        "width": 272
+      },
+      "dock": {
+        "bottom": 484.8125,
+        "height": 73,
+        "top": 411.8125,
+        "width": 281
+      },
+      "guide": {
+        "bottom": 516.2109375,
+        "height": 14.3984375,
+        "top": 501.8125,
+        "width": 257
+      },
+      "heading": {
+        "bottom": 119.09375,
+        "height": 35.09375,
+        "top": 84,
+        "width": 257
+      },
+      "overflow": false,
+      "viewport": {
+        "height": 740,
+        "width": 320
+      }
+    }
+  ],
+  "products": [
+    {
+      "hash": "#readless",
+      "media": "http://127.0.0.1:5173/portfolio-demos/embed-readless.html?presentation=portfolio",
+      "name": "Readless",
+      "path": "/index.html"
+    },
+    {
+      "hash": "#repaste",
+      "media": "http://127.0.0.1:5173/portfolio-demos/embed-repaste.html?presentation=portfolio",
+      "name": "Repaste",
+      "path": "/index.html"
+    },
+    {
+      "hash": "#mindmap",
+      "media": "http://127.0.0.1:5173/portfolio-demos/embed-mindmap.html?presentation=portfolio",
+      "name": "MindMap AI",
+      "path": "/index.html"
+    },
+    {
+      "hash": "#wtd",
+      "media": "http://127.0.0.1:5173/portfolio-demos/embed-wtd.html?presentation=portfolio",
+      "name": "WidgetToDo",
+      "path": "/index.html"
+    }
+  ],
+  "verified": [
+    "Four embedded demonstrations loaded",
+    "Escape closed dialog and restored focus to selected WidgetToDo card",
+    "Old media nodes removed after close",
+    "Light and dark themes rendered; final dark preference restored",
+    "About navigation reached #about and overview returned to top",
+    "Legacy entry retained its own pathname when opening a product"
+  ],
+  "console": [],
+  "limitations": [
+    "Responsive browser checks only; no physical touch-device or cross-browser testing",
+    "This record captures local validation before publication; deployment is verified separately"
+  ]
+}
