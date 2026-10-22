@@ -1,0 +1,111 @@
+/* The exhibition is one continuous, horizontal wall in perspective. */
+.gallery{transform:none;background:#080808;transition:opacity 1.2s}
+.gallery::before{display:none}
+.gallery::after{z-index:1;box-shadow:inset 0 0 100px 8px #0007;background:linear-gradient(#0005,transparent 19%,transparent 81%,#0007)}
+.gallery-heading{z-index:3;pointer-events:none}
+.gallery-heading h2{font-size:19px;line-height:1.5;color:#b4aca1}
+.gallery-viewport{inset:0;perspective:1100px;perspective-origin:50% 48%;outline:none;touch-action:none;padding:0;overflow:hidden}
+.gallery-plane{position:absolute;left:50%;top:48%;width:0;height:0;margin:0;transform-style:preserve-3d;transform-origin:0 0;will-change:transform;display:block;gap:0}
+.room-wall,.room-floor,.room-ceiling{position:absolute;left:var(--room-left);width:var(--room-width);pointer-events:none;backface-visibility:visible}
+.room-wall{top:var(--room-top);height:var(--room-height);transform:translateZ(-175px);background-color:#171615;background-image:linear-gradient(90deg,transparent calc(100% - 3px),#0008 calc(100% - 2px),#ffffff0c 100%),linear-gradient(#090909,#1a1918 49%,#151413 90%,#090909);background-size:var(--bay-width) 100%,100% 100%;box-shadow:inset 0 -4px 4px #000;}
+.room-wall::after{content:"";position:absolute;inset:0;opacity:.025;background-size:160px 160px;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23g)' d='M0 0h160v160H0z'/%3E%3C/svg%3E")}
+/* Scale fixed surfaces instead of resizing and repainting them every frame.
+   The projected depth still follows the camera, keeping the near edge stable. */
+.room-floor{top:var(--floor-y);height:1000px;transform-origin:50% 0;transform:translateZ(-175px) rotateX(90deg) scaleY(var(--floor-scale,1.6));background:linear-gradient(#201e1b,#101010 25%,#080808 75%)}
+.room-ceiling{top:var(--room-top);height:1000px;transform-origin:50% 0;transform:translateZ(-175px) rotateX(90deg) scaleY(var(--floor-scale,1.6));background:linear-gradient(#080808,#030303)}
+/* Keep translucent card content in one 2D plane to avoid unstable depth
+   sorting during camera rotation. The room itself remains 3D. */
+.artwork{width:var(--work-width);left:var(--work-x);top:var(--work-top);transform:translateX(-50%);transform-style:flat;transition:none;overflow:visible;padding:0}
+.artwork:hover,.artwork:focus-visible{transform:translateX(-50%)}
+.artwork:focus-visible{outline:1px solid #e3d8c477;outline-offset:12px}
+.artwork-frame{padding:0;background:var(--image-bg);overflow:hidden;border:1px solid #ffffff32;box-shadow:0 24px 70px #000c,0 2px 0 #ffffff29,0 0 0 5px #11100f,0 0 0 6px #ffffff0b;opacity:calc(.24 + var(--illumination,1)*.76);transform:none;transition:border-color .3s,box-shadow .3s}
+.artwork:hover .artwork-frame,.artwork:focus-visible .artwork-frame{border-color:#ffffff80;box-shadow:0 24px 70px #000c,0 2px 0 #ffffff29,0 0 0 5px #11100f,0 0 0 6px #ffffff25}
+.artwork-image{width:100%;height:var(--image-height);object-fit:contain;background:var(--image-bg);pointer-events:none}
+/* A poster remains underneath the single live, flattened demo surface. */
+.artwork-frame{position:relative}
+.artwork-demo{position:absolute;inset:0;display:block;overflow:hidden;pointer-events:none;opacity:0;transition:opacity .32s ease;background:var(--image-bg);transform-style:flat;contain:layout paint}
+.artwork-demo.is-visible{opacity:1}
+.artwork-demo iframe{position:absolute;top:0;left:0;display:block;border:0;max-width:none;max-height:none;transform-origin:0 0;pointer-events:none;color-scheme:normal}
+.preview-toggle{position:absolute;top:133px;right:60px;z-index:3;min-height:36px;padding:8px 12px;border:1px solid #ffffff22;border-radius:20px;color:#c8bcaa;background:#131210d9;font-size:11px;letter-spacing:.02em;transition:opacity .3s,border-color .2s}
+.preview-toggle:hover,.preview-toggle:focus-visible{border-color:#c8bcaa88}
+.preview-toggle[aria-pressed="true"]::before{content:"";display:inline-block;width:5px;height:5px;margin:0 7px 2px 0;border-radius:50%;background:#d5ba91}
+.preview-toggle:disabled{opacity:.55;cursor:default}
+.gallery:not([data-phase="ready"]) .preview-toggle,.gallery[data-view="list"] .preview-toggle{visibility:hidden;opacity:0;pointer-events:none}
+.artwork-caption{padding-top:22px;opacity:0;transform:translateY(7px);transition:opacity .45s,transform .6s var(--ease);pointer-events:none}
+.artwork.is-current .artwork-caption{opacity:1;transform:none}
+.artwork-caption strong{font-size:17px;font-weight:500;color:#ece5d9}
+.artwork-caption small{font-size:12px;color:#9b9080;margin-top:8px;line-height:1.5}
+.artwork-caption .artwork-arrow{color:#d6c4a9;font-size:21px}
+.artwork-light{position:absolute;z-index:-1;left:-50%;width:200%;height:calc(var(--light-height) + var(--image-height)*1.6);top:calc(-1*var(--light-height));background:conic-gradient(from 180deg at 50% 0%,#fff9e012 0deg,#fff9e007 25deg,transparent 44deg,transparent 316deg,#fff9e007 335deg,#fff9e012 360deg);mask-image:linear-gradient(#0008,#000 35%,#0006 75%,transparent);opacity:var(--illumination,1);pointer-events:none}
+.artwork-light::after{content:"";position:absolute;top:0;left:calc(50% - 11px);width:22px;height:8px;border-radius:0 0 5px 5px;background:linear-gradient(#191817,#3c3830 60%,#e1d6b7 70%,#f7ebd0 85%,#423c31);box-shadow:0 3px 11px #fff8d840}
+.artwork-wires{position:absolute;left:18%;right:18%;top:calc(-1*var(--light-height));height:var(--light-height);border-left:1px solid #ffffff18;border-right:1px solid #ffffff18;opacity:var(--illumination,1);pointer-events:none}
+/* Keep the reflection just above the floor instead of sharing its depth. */
+.artwork-reflection{position:absolute;left:var(--work-x);top:calc(var(--floor-y) - 2px);width:var(--work-width);height:calc(var(--image-height)*1.05);transform-origin:50% 0;transform:translateX(-50%) rotateX(90deg);pointer-events:none;mask-image:linear-gradient(#000b,transparent 85%);filter:blur(3px)}
+.artwork-reflection img{width:100%;height:100%;object-fit:fill;transform:scaleY(-1);pointer-events:none}
+.gallery-bottom{z-index:3;align-items:end}
+.gallery-credit{min-width:200px;font-size:11px}
+.view-controls{height:45px;gap:12px;padding:5px 8px}
+.gallery-hint,.gallery[data-view="list"] .gallery-hint{font-size:10px;color:#afa394;min-width:104px;text-align:center}
+.gallery-hint::after,.gallery[data-view="list"] .gallery-hint::after{content:none}
+.hallway-arrow{height:32px;width:27px;display:grid;place-items:center;font-size:18px;color:#d6c7b3;padding:0}
+.hallway-arrow:hover{color:#fff}
+.hallway-arrow:disabled{opacity:.2;cursor:default}
+.hallway-position{width:200px;display:flex;align-items:center;justify-content:flex-end;gap:20px;padding-bottom:14px}
+.hallway-position p{font-size:10px;letter-spacing:.04em;color:#6d6257;white-space:nowrap}
+#hallway-current{color:#ddd0bc;font-size:14px}
+.position-divider{padding:0 8px;color:#51483e}
+#hallway-pagination{display:flex;gap:7px}
+#hallway-pagination button{position:relative;width:14px;height:20px;padding:0;border-radius:0}
+#hallway-pagination button::after{content:"";height:2px;background:#675a493d;position:absolute;inset:9px 0 auto;transition:background .3s}
+#hallway-pagination button[aria-current="true"]::after{background:#d5ba91;box-shadow:0 0 8px #d5ba9129}
+.door-left{transform-origin:0 50%;transition:transform 1.35s var(--ease),filter 1.2s}
+.door-right{transform-origin:100% 50%;transition:transform 1.35s var(--ease),filter 1.2s}
+body[data-scene="gallery"] .door-left{transform:perspective(1400px) rotateY(-105deg);filter:brightness(.4)}
+body[data-scene="gallery"] .door-right{transform:perspective(1400px) rotateY(105deg);filter:brightness(.4)}
+body[data-scene="gallery"] .entrance{transition:visibility 0s 1.45s}
+.gallery-heading,.gallery-bottom{transition:opacity .65s}
+.gallery[data-phase="entering"] .gallery-heading,.gallery[data-phase="entering"] .gallery-bottom{opacity:0;pointer-events:none}
+.gallery[data-phase="entering"] .gallery-bottom *{pointer-events:none}
+.gallery[data-phase="entering"] .artwork{pointer-events:none}
+.gallery[data-phase="entering"] .artwork-caption{opacity:0;transform:translateY(7px)}
+.gallery[data-phase="entering"] .gallery-viewport{cursor:default}
+.gallery[data-view="list"] .gallery-viewport{inset:125px 0 95px;perspective:none;padding:40px 8vw 70px;overflow:auto;touch-action:pan-y}
+.gallery[data-view="list"] .gallery-plane{width:min(1040px,100%);height:auto;position:relative;left:auto;top:auto;transform:none!important;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:54px 48px;transform-style:flat;margin:auto}
+.gallery[data-view="list"] .room-wall,.gallery[data-view="list"] .room-floor,.gallery[data-view="list"] .room-ceiling,.gallery[data-view="list"] .artwork-reflection,.gallery[data-view="list"] .artwork-light,.gallery[data-view="list"] .artwork-wires{display:none}
+.gallery[data-view="list"] .artwork{position:relative;left:auto;top:auto;width:100%;transform:none;grid-column:auto;margin:0}
+.gallery[data-view="list"] .artwork:last-of-type{width:100%;margin:0}
+.gallery[data-view="list"] .artwork-caption,.gallery[data-view="list"] .artwork-frame{opacity:1;transform:none}
+.gallery[data-view="list"] .artwork-image{height:260px}
+.gallery[data-view="list"] .hallway-position{visibility:hidden}
+.gallery[data-view="list"] .hallway-arrow{display:none}
+@media(max-width:1000px){.gallery-credit{min-width:130px}.hallway-position{width:130px;gap:10px}#hallway-pagination{gap:4px}#hallway-pagination button{width:10px}.gallery-heading h2{font-size:18px}}
+@media(max-width:700px){
+  .gallery-viewport{inset:0;padding:0;overflow:hidden;touch-action:none}
+  .gallery-plane{width:0;height:0;position:absolute;left:50%;top:48%;display:block;transform-style:preserve-3d;transform:rotateY(0) translate3d(0,0,0)!important}
+  /* Keep the camera transform under JavaScript control on touch screens too. */
+  .gallery:not([data-view="list"]) .gallery-plane{transform:var(--mobile-camera,translate3d(0,0,0))!important}
+  .gallery-heading{left:23px;top:99px}
+  .preview-toggle{top:91px;right:20px;min-height:36px;font-size:10px;padding:8px 10px}
+  .gallery-heading h2,.gallery[data-view="list"] .gallery-heading h2{display:none}
+  .artwork{position:absolute;width:var(--work-width);left:var(--work-x);top:var(--work-top);transform:translateX(-50%);border:0}
+  .artwork-image,.artwork[data-product="wtd"] .artwork-image{height:var(--image-height)}
+  .artwork-frame{padding:0}
+  .artwork-caption{padding-top:19px}
+  .artwork-caption strong{font-size:16px}
+  .artwork-caption small{font-size:11px}
+  .artwork-wires{border-color:#ffffff12}
+  .gallery-bottom{display:grid;grid-template-columns:1fr;gap:12px;justify-items:center;left:18px;right:18px;bottom:24px}
+  .view-controls{gap:6px;height:44px;padding:5px 7px}
+  .view-switch button{padding:8px 10px}
+  .gallery-hint,.gallery[data-view="list"] .gallery-hint{font-size:9px;min-width:94px}
+  .hallway-arrow{width:24px;font-size:17px}
+  .hallway-position{padding:0;width:auto;justify-content:center;gap:18px}
+  #hallway-pagination{gap:8px}
+  #hallway-pagination button{width:15px}
+  .gallery[data-view="list"] .gallery-viewport{inset:145px 0 110px;padding:20px 24px 60px}
+  .gallery[data-view="list"] .gallery-plane{display:grid;grid-template-columns:1fr;width:100%;height:auto;left:auto;top:auto;transform:none!important;gap:35px}
+  .gallery[data-view="list"] .artwork,.gallery[data-view="list"] .artwork:last-of-type{position:relative;left:auto;top:auto;width:100%;transform:none;margin:0;padding:0 0 20px}
+  .gallery[data-view="list"] .artwork-image{height:200px}
+  .gallery[data-view="list"] .artwork[data-product="wtd"] .artwork-image{height:260px}
+  .gallery[data-view="list"] .hallway-position{display:none}
+}

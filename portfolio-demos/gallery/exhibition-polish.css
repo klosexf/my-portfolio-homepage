@@ -1,0 +1,178 @@
+/* Quiet architectural surfaces keep attention on the products. The camera,
+   flattened artwork planes and shared playback illumination stay untouched. */
+.room-wall {
+  background-color: #141311;
+  background-image:
+    linear-gradient(90deg, transparent calc(100% - 2px), #0003 calc(100% - 1px), #ffffff04 100%),
+    linear-gradient(#090909, #171614 49%, #12110f 90%, #090909);
+  box-shadow: inset 0 -2px 3px #0008;
+}
+
+/* Retain the desktop controls' position after removing the credit copy. */
+.gallery-bottom::before {
+  content: "";
+  flex: 1 1 auto;
+  min-width: 130px;
+}
+
+.gallery[data-view="list"] .gallery-bottom::before {
+  display: none;
+}
+
+.product-dialog .media-caption {
+  justify-content: flex-end;
+}
+
+@media (max-width: 1100px) {
+  .gallery-bottom::before {
+    display: none;
+  }
+}
+
+.room-wall::after {
+  opacity: .012;
+}
+
+.room-floor {
+  background: linear-gradient(#171613, #0d0d0c 25%, #080808 75%);
+}
+
+.artwork-wires {
+  border-color: #ffffff0c;
+}
+
+.artwork-reflection {
+  mask-image: linear-gradient(#0003, transparent 55%);
+}
+
+.artwork-frame {
+  border-color: #ffffff27;
+  box-shadow: 0 20px 60px #000a, 0 1px 0 #ffffff16, 0 0 0 5px #11100f, 0 0 0 6px #ffffff08;
+}
+
+.gallery[data-view="wall"] .artwork.is-current .artwork-frame {
+  border-color: #d8c3a780;
+  box-shadow: 0 20px 60px #000a, 0 1px 0 #ddc9ab29, 0 0 0 5px #14120f, 0 0 0 6px #d8bc8d29;
+}
+
+.artwork:hover .artwork-frame,
+.artwork:focus-visible .artwork-frame {
+  border-color: #e5d4ba99;
+}
+
+/* The public exhibit label contains only the product name and category. */
+.artwork-caption {
+  padding-top: 14px;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.artwork-caption .exhibit-identity {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.artwork-caption strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 17px;
+  font-weight: 520;
+  line-height: 20px;
+  letter-spacing: -.025em;
+  color: #e5ded2;
+}
+
+.exhibit-category {
+  display: block;
+  align-self: center;
+  border: 1px solid #b5a38924;
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: #a89c8a;
+  background: #171510;
+  font-size: 8px;
+  font-weight: 400;
+  line-height: 13px;
+  letter-spacing: .035em;
+  white-space: nowrap;
+}
+
+.artwork-caption .artwork-demo-status {
+  grid-column: 1 / -1;
+  display: block;
+  min-height: 16px;
+  margin-top: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: 0;
+  color: #a69a87;
+}
+
+.artwork-caption .artwork-arrow {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 20px;
+  color: #b8a58a;
+  font-size: 17px;
+  line-height: 20px;
+}
+
+.gallery[data-view="list"] .exhibit-category {
+  background: #1c1915;
+}
+
+@media (max-width: 700px) {
+  .artwork-caption {
+    padding-top: 13px;
+    gap: 10px;
+  }
+
+  .artwork-caption strong {
+    font-size: 16px;
+    line-height: 19px;
+  }
+
+  .artwork-caption .exhibit-identity {
+    column-gap: 8px;
+  }
+
+  .artwork-caption .artwork-demo-status {
+    font-size: 10px;
+    margin-top: 5px;
+    min-height: 15px;
+    line-height: 15px;
+  }
+
+  .exhibit-category {
+    font-size: 8px;
+    padding: 1px 4px;
+  }
+}
+
+@media (max-height: 680px) {
+  .artwork-caption {
+    padding-top: 10px;
+  }
+
+  .artwork-caption strong {
+    font-size: 15px;
+    line-height: 18px;
+  }
+
+  .artwork-caption .artwork-demo-status {
+    min-height: 14px;
+    margin-top: 5px;
+    font-size: 10px;
+    line-height: 14px;
+  }
+}

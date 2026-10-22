@@ -1,158 +1,96 @@
 <!doctype html>
-<!-- Xiaofeng portfolio: approved focus fan, 2026-10-10.
-Existing product demonstrations start when their product detail is opened. -->
 <html lang="zh-CN">
 <head>
   <base href="../">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark light">
-  <title>Xiaofeng — 独立开发者 · 产品作品集</title>
-  <meta name="description" content="独立开发者 Xiaofeng 的产品作品集：Repaste、Readless、MindMap AI、WidgetToDo。做小而称手的工具，让日常顺手一点。">
+  <meta name="theme-color" content="#080808">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="独立开发者 Xiaofeng 的产品作品集：Repaste、Readless、MindMap AI、UIpicks、WidgetToDo。让日常顺手一点。">
   <meta property="og:title" content="Xiaofeng — 独立开发者 · 产品作品集">
-  <meta property="og:description" content="Repaste · Readless · MindMap AI · WidgetToDo，让日常顺手一点。">
+  <meta property="og:description" content="Repaste · Readless · MindMap AI · UIpicks · WidgetToDo，让日常顺手一点。">
   <meta property="og:type" content="website">
-  <meta name="theme-color" content="#0a0b0d">
-  <link rel="icon" type="image/png" href="icon_512x512.png">
+  <title>Xiaofeng — 独立开发者 · 产品作品集</title>
+  <link rel="icon" href="icon_512x512.png">
   <link rel="preload" href="portfolio-demos/homepage/assets/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="portfolio-demos/homepage/style.css?v=24c32dbe83">
-  <link rel="stylesheet" href="portfolio-demos/homepage/fan.css?v=4bb532fcf5">
-  <link rel="stylesheet" href="portfolio-demos/homepage/material.css?v=008b30f46f">
-  <link rel="stylesheet" href="portfolio-demos/homepage/craft.css?v=d6961ef3a1">
-  <link rel="stylesheet" href="portfolio-demos/homepage/editorial.css?v=9f499f7e29">
-  <link rel="stylesheet" href="portfolio-demos/homepage/quiet-focus.css?v=113af1c280">
-  <script src="portfolio-demos/homepage/catalog.js?v=b1fa49d586" defer></script>
-  <script src="portfolio-demos/homepage/fan.js?v=5955bbe5b8" defer></script>
-  <script src="portfolio-demos/homepage/motion.js?v=380e0f0ab8" defer></script>
-  <script src="portfolio-demos/homepage/site.js?v=0bc88ab289" defer></script>
-  <script src="portfolio-demos/homepage/quiet-focus.js?v=57c9f09e96" defer></script>
+  <link rel="stylesheet" href="portfolio-demos/gallery/style.css?v=b3f2b5ba1d">
+  <link rel="stylesheet" href="portfolio-demos/gallery/hallway.css?v=748bf92864">
+  <link rel="stylesheet" href="portfolio-demos/gallery/artwork-navigation.css?v=4fe28f2dc1">
+  <link rel="stylesheet" href="portfolio-demos/gallery/gallery-upgrades.css?v=76b186b20b">
+  <link rel="stylesheet" href="portfolio-demos/gallery/exhibition-polish.css?v=51215bad17">
+  <link rel="stylesheet" href="portfolio-demos/gallery/gallery-music.css?v=9996dbd92e">
+  <script src="portfolio-demos/gallery/products.js?v=12668fae95" defer></script>
+  <script src="portfolio-demos/gallery/hallway.js?v=0a53cbb6c1" defer></script>
+  <script src="portfolio-demos/gallery/demo-guide.js?v=be9c8cea72" defer></script>
+  <script src="portfolio-demos/gallery/card-previews.js?v=8dc6e5ed1e" defer></script>
+  <script src="portfolio-demos/gallery/gallery-music.js?v=e9e517a4f4" defer></script>
+  <script src="portfolio-demos/gallery/app.js?v=68447e6166" defer></script>
+  <script src="portfolio-demos/gallery/exhibit-labels.js?v=19bc7a5ac0" defer></script>
 </head>
-<body data-theme="dark" data-fan-layout="true" data-fan-mode="focus" class="quiet-home">
-  <div class="quiet-glow height-sparks" aria-hidden="true">
-    <i class="height-speck tone-gold" style="--x:4%;--y:13%;--angle:35deg;--length:7px;--strength:0.65"></i>
-    <i class="height-speck tone-cream" style="--x:12%;--y:6%;--angle:-35deg;--length:6px;--strength:0.52"></i>
-    <i class="height-speck tone-peach" style="--x:22%;--y:10%;--angle:70deg;--length:4px;--strength:0.46"></i>
-    <i class="height-speck tone-amber" style="--x:37%;--y:8%;--angle:-62deg;--length:5px;--strength:0.38"></i>
-    <i class="height-speck tone-cream" style="--x:69%;--y:7%;--angle:25deg;--length:5px;--strength:0.42"></i>
-    <i class="height-speck tone-gold" style="--x:84%;--y:5%;--angle:-28deg;--length:6px;--strength:0.58"></i>
-    <i class="height-speck tone-lilac" style="--x:95%;--y:14%;--angle:-43deg;--length:7px;--strength:0.42"></i>
-    <i class="height-speck tone-peach" style="--x:7%;--y:27%;--angle:58deg;--length:5px;--strength:0.47"></i>
-    <i class="height-speck tone-amber" style="--x:17%;--y:23%;--angle:-23deg;--length:4px;--strength:0.32"></i>
-    <i class="height-speck tone-cream" style="--x:87%;--y:26%;--angle:32deg;--length:6px;--strength:0.5"></i>
-    <i class="height-speck tone-gold" style="--x:98%;--y:35%;--angle:-40deg;--length:8px;--strength:0.62"></i>
-    <i class="height-speck tone-amber" style="--x:3%;--y:42%;--angle:-18deg;--length:5px;--strength:0.6"></i>
-    <i class="height-speck tone-cream" style="--x:10%;--y:53%;--angle:65deg;--length:6px;--strength:0.45"></i>
-    <i class="height-speck tone-amber" style="--x:91%;--y:48%;--angle:24deg;--length:5px;--strength:0.44"></i>
-    <i class="height-speck tone-cream" style="--x:97%;--y:63%;--angle:4deg;--length:8px;--strength:0.65"></i>
-    <i class="height-speck tone-lilac" style="--x:4%;--y:70%;--angle:48deg;--length:6px;--strength:0.4"></i>
-    <i class="height-speck tone-peach" style="--x:16%;--y:77%;--angle:-40deg;--length:5px;--strength:0.36"></i>
-    <i class="height-speck tone-peach" style="--x:85%;--y:74%;--angle:-52deg;--length:5px;--strength:0.43"></i>
-    <i class="height-speck tone-gold" style="--x:94%;--y:83%;--angle:33deg;--length:6px;--strength:0.57"></i>
-    <i class="height-speck tone-cream" style="--x:8%;--y:89%;--angle:-52deg;--length:8px;--strength:0.53"></i>
-    <i class="height-speck tone-amber" style="--x:26%;--y:91%;--angle:22deg;--length:4px;--strength:0.32"></i>
-    <i class="height-speck tone-gold" style="--x:44%;--y:94%;--angle:72deg;--length:4px;--strength:0.3"></i>
-    <i class="height-speck tone-cream" style="--x:68%;--y:92%;--angle:-31deg;--length:5px;--strength:0.34"></i>
-    <i class="height-speck tone-amber" style="--x:81%;--y:88%;--angle:40deg;--length:5px;--strength:0.41"></i>
-  </div>
-  <header class="site-header">
-    <a class="wordmark" href="#" aria-label="Xiaofeng，回到作品总览">xiaofeng<span class="wordmark-period">.</span></a>
-    <nav class="header-nav" aria-label="页面导航">
-      <button class="nav-current" data-overview>全部作品</button>
-      <a href="#about">关于我</a>
-      <button class="theme-toggle" id="theme-toggle" aria-label="切换到浅色" aria-pressed="true">浅色</button>
-    </nav>
+<body data-scene="entrance">
+  <a class="skip-link" href="#enter-gallery">进入作品展厅</a>
+  <header class="navigation-bar">
+    <a class="wordmark" href="#entrance" aria-label="Xiaofeng，回到入口">xiaofeng<span>.</span></a>
+    <span class="navigation-caption">独立开发者</span>
+    <button class="menu-button" id="open-menu" aria-label="打开导航菜单" aria-haspopup="dialog"><span></span><span></span></button>
   </header>
 
-  <main id="workspace">
-    <section class="intro" aria-labelledby="page-title">
-      <div class="intro-copy">
-        <h1 id="page-title">让日常，<span class="title-accent">顺手一点</span>。</h1>
+  <main>
+    <section class="gallery" id="gallery" aria-label="产品作品展厅" inert>
+      <div class="music-environment" id="music-environment" aria-hidden="true">
+        <div class="music-wall-mask" id="music-wall-mask"><div class="music-wall-glow" id="music-wall-glow"></div></div>
+        <div class="music-floor-glow" id="music-floor-glow"></div>
+        <div class="music-horizon" id="music-horizon"></div>
+      </div>
+      <div class="music-controls" id="music-controls" role="group" aria-label="背景音乐">
+        <button class="music-toggle" id="music-toggle" type="button" aria-pressed="false" aria-label="开启背景音乐"><span class="music-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="music-button-label">音乐 开</span></button>
+      </div>
+      <div class="gallery-viewport" id="gallery-viewport" tabindex="0" role="region" aria-roledescription="轮播" aria-label="横向作品展墙，滚轮或向左拖动浏览，也可使用左右方向键">
+        <div class="gallery-plane" id="gallery-plane"></div>
+      </div>
+      <div class="gallery-bottom">
+        <div class="view-controls" aria-label="作品展示方式">
+          <div class="view-switch"><button data-view="wall" aria-pressed="true">展厅</button><button data-view="list" aria-pressed="false">列表</button></div>
+          <span class="control-divider"></span>
+          <button class="hallway-arrow" id="hallway-previous" aria-label="浏览上一个作品">←</button>
+          <span class="gallery-hint">滚动或向左拖动</span>
+          <button class="hallway-arrow" id="hallway-next" aria-label="浏览下一个作品">→</button>
+        </div>
+        <div class="hallway-position"><p><span id="hallway-current">01</span><span class="position-divider">/</span><span>05</span></p><nav id="hallway-pagination" aria-label="跳转到指定作品"></nav></div>
       </div>
     </section>
 
-    <p class="fan-sr-only" id="fan-instructions">左右拖动拨牌，点两侧卡片选中，点中间卡片打开详情。键盘方向键逐张切换，Home 和 End 到达首尾。</p>
-    <section class="overview" id="fan-stage" data-layout="fan" tabindex="0" aria-describedby="fan-instructions" aria-label="四款产品的窗口总览">
-      <button class="project project-repaste" data-open="repaste" aria-label="打开 Repaste 预览">
-        <span class="project-image">
-          <span class="project-visual"><img src="portfolio-demos/homepage/assets/repaste.jpg" alt="Repaste 剪贴板面板的现有界面演示" width="980" height="640"></span>
-        </span>
-        <span class="project-caption"><span class="card-identity"><span class="card-symbol" aria-hidden="true"><img class="brand-image" src="portfolio-demos/repaste-app-icon.svg" alt="" width="34" height="34"></span><span class="caption-copy"><strong>Repaste</strong><small>剪贴板，藏进刘海里</small></span></span><span class="open-arrow" aria-hidden="true"><span class="open-label">查看演示</span><span class="arrow-glyph"></span></span></span>
-      </button>
-      <button class="project project-readless" data-open="readless" aria-label="打开 Readless 预览">
-        <span class="project-image">
-          <span class="project-visual"><img src="portfolio-demos/homepage/assets/readless.jpg" alt="Readless 文档朗读与播放条的现有界面演示" width="1080" height="524"></span>
-        </span>
-        <span class="project-caption"><span class="card-identity"><span class="card-symbol" aria-hidden="true"><img class="brand-image" src="portfolio-demos/readless-app-icon.png" alt="" width="34" height="34"></span><span class="caption-copy"><strong>Readless</strong><small>把长文，读给你听</small></span></span><span class="open-arrow" aria-hidden="true"><span class="open-label">查看演示</span><span class="arrow-glyph"></span></span></span>
-      </button>
-      <button class="project project-mindmap" data-open="mindmap" aria-label="打开 MindMap AI 预览">
-        <span class="project-image">
-          <span class="project-visual"><img src="portfolio-demos/homepage/assets/mindmap-poster.jpg" alt="MindMap AI 思维导图界面" width="1280" height="640"></span>
-        </span>
-        <span class="project-caption"><span class="card-identity"><span class="card-symbol" aria-hidden="true"><span class="mindmap-icon"><img class="brand-image" src="portfolio-demos/homepage/assets/mindmap-mark.svg" alt="" width="34" height="34"></span></span><span class="caption-copy"><strong>MindMap AI</strong><small>让文档，长成一张图</small></span></span><span class="open-arrow" aria-hidden="true"><span class="open-label">查看演示</span><span class="arrow-glyph"></span></span></span>
-      </button>
-      <button class="project project-wtd" data-open="wtd" aria-label="打开 WidgetToDo 预览">
-        <span class="project-image">
-          <span class="project-visual"><img src="portfolio-demos/homepage/assets/wtd.jpg" alt="WidgetToDo 桌面待办的现有界面演示" width="400" height="530"></span>
-        </span>
-        <span class="project-caption"><span class="card-identity"><span class="card-symbol" aria-hidden="true"><img class="brand-image" src="portfolio-demos/wtd-app-icon.png" alt="" width="34" height="34"></span><span class="caption-copy"><strong>WidgetToDo</strong><small>今日待办，留在眼前</small></span></span><span class="open-arrow" aria-hidden="true"><span class="open-label">查看演示</span><span class="arrow-glyph"></span></span></span>
-      </button>
-    </section>
-
-    <noscript><p class="no-script-links">查看产品：<a href="landing-repaste.html">Repaste ↗</a> · <a href="index-readless.html">Readless ↗</a> · <a href="index%20mindmap.html">MindMap AI ↗</a> · <a href="index-notion.html">WidgetToDo ↗</a></p></noscript>
-    <p class="fan-sr-only" id="fan-status" role="status" aria-live="polite" aria-atomic="true"></p>
-
-    <nav class="dock" aria-label="快速打开产品">
-      <button class="dock-item" data-open="repaste" data-tip="剪贴板，藏进刘海里" aria-label="从 Dock 打开 Repaste"><span class="dock-symbol" aria-hidden="true"><img class="brand-image" src="portfolio-demos/repaste-app-icon.svg" alt="" width="34" height="34"></span><span>Repaste</span></button>
-      <button class="dock-item" data-open="readless" data-tip="把长文，读给你听" aria-label="从 Dock 打开 Readless"><span class="dock-symbol" aria-hidden="true"><img class="brand-image" src="portfolio-demos/readless-app-icon.png" alt="" width="34" height="34"></span><span>Readless</span></button>
-      <button class="dock-item" data-open="mindmap" data-tip="让文档，长成一张图" aria-label="从 Dock 打开 MindMap AI"><span class="dock-symbol" aria-hidden="true"><span class="mindmap-icon"><img class="brand-image" src="portfolio-demos/homepage/assets/mindmap-mark.svg" alt="" width="34" height="34"></span></span><span>MindMap AI</span></button>
-      <button class="dock-item" data-open="wtd" data-tip="今日待办，留在眼前" aria-label="从 Dock 打开 WidgetToDo"><span class="dock-symbol" aria-hidden="true"><img class="brand-image" src="portfolio-demos/wtd-app-icon.png" alt="" width="34" height="34"></span><span>WidgetToDo</span></button>
-    </nav>
-
-    <p class="browse-guide"><span class="browse-guide-count" aria-hidden="true">02 / 04</span><span>左右拖动切换<span class="guide-separator">·</span>点击中央作品查看演示</span></p>
-
-    <section class="studio-about" id="about" aria-labelledby="about-title">
-      <div class="about-heading">
-        <p class="section-label">关于我</p>
-        <h2 id="about-title">做 Mac 小工具，<br>也做<span>网页应用。</span></h2>
-        <p>我是 Xiaofeng，一名独立开发者。<br>目前在做剪贴板、听读、思维导图和 Notion 桌面小组件。</p>
-      </div>
-      <div class="about-content">
-        <div class="about-principle"><h3>在 macOS 上，少切一次窗口</h3><p>Repaste 把复制记录放进刘海；Readless 用 ⌥R 朗读选中的文字；WidgetToDo 把 Notion 的待办和日记留在桌面。</p></div>
-        <div class="about-principle"><h3>面对长内容，先看清结构</h3><p>MindMap AI 把文字、PDF 和链接整理成思维导图。生成之后，还能继续编辑节点、调整层级。</p></div>
+    <section class="entrance" id="entrance" aria-labelledby="entrance-title">
+      <h1 class="sr-only" id="entrance-title">让日常，顺手一点。</h1>
+      <div class="door door-left" aria-hidden="true"><div class="door-face"><div class="entrance-copy"><p class="eyebrow">SMALL TOOLS. A BETTER EVERYDAY.</p><p class="entrance-headline">让日常，<br>顺手一点。</p><p class="headline-footnote">THOUGHTFULLY MADE BY XIAOFENG</p></div></div></div>
+      <div class="door door-right" aria-hidden="true"><div class="door-face"><div class="entrance-copy"><p class="eyebrow">SMALL TOOLS. A BETTER EVERYDAY.</p><p class="entrance-headline">让日常，<br>顺手一点。</p><p class="headline-footnote">THOUGHTFULLY MADE BY XIAOFENG</p></div></div></div>
+      <div class="door-light" aria-hidden="true"></div>
+      <div class="entrance-floor">
+        <div class="floor-line" aria-hidden="true"></div>
+        <button class="enter-button" id="enter-gallery"><span>走进作品展厅</span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 15 15 5M5 5h10v10" stroke="currentColor" stroke-width="1.5"/></svg></button>
+        <p class="entrance-description">我是 Xiaofeng，做 Mac 小工具，也做网页应用。<br>把每天的小麻烦，变成顺手的小事。</p>
+        <div class="entrance-footer"><span>INDEPENDENT DEVELOPER</span><span>5 款作品 <i></i> 用心做小事</span></div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <p>独立开发者 · 让日常顺手一点</p>
-    <div class="footer-links"><span>© 2026 Xiaofeng</span><a href="https://github.com/klosexf" target="_blank" rel="noopener">GitHub ↗</a></div>
-  </footer>
-
-  <dialog class="product-dialog" id="product-dialog" aria-labelledby="detail-name">
-    <header class="detail-header">
-      <button class="back-button" id="close-detail">← <span>全部作品</span></button>
-      <nav class="detail-tabs" aria-label="切换正在查看的产品">
-        <button data-open="repaste" aria-pressed="false">Repaste</button>
-        <button data-open="readless" aria-pressed="false">Readless</button>
-        <button data-open="mindmap" aria-pressed="false">MindMap AI</button>
-        <button data-open="wtd" aria-pressed="false">WidgetToDo</button>
-      </nav>
-    </header>
-    <div class="detail-body">
-      <section class="detail-stage" aria-label="当前产品界面演示">
-        <div class="media-window">
-          <div class="detail-media" id="detail-media"></div>
-        </div>
-      </section>
-      <aside class="detail-info">
-        <div class="product-identity"><span class="detail-icon" id="detail-icon"></span><div><p id="detail-category"></p><h2 id="detail-name"></h2></div></div>
-        <h3 id="detail-headline"></h3>
-        <p class="detail-description" id="detail-description"></p>
-        <ul class="detail-facts" id="detail-facts"></ul>
-        <a class="product-cta" id="product-link" target="_blank" rel="noopener">访问产品页 <span class="arrow-glyph" aria-hidden="true"></span></a>
-        <p class="demo-note">画面沿用已有产品演示</p>
-      </aside>
-    </div>
+  <dialog class="menu-dialog" id="menu-dialog" aria-labelledby="menu-title">
+    <div class="menu-top"><p class="wordmark" id="menu-title">xiaofeng<span>.</span></p><button class="close-icon" data-close-menu aria-label="关闭导航菜单">×</button></div>
+    <div class="menu-body"><p class="eyebrow">TAKE A LOOK AROUND</p><nav aria-label="主导航"><button id="menu-work"><span>01</span>全部作品<i>↗</i></button><button id="menu-about"><span>02</span>关于我<i>↗</i></button><a href="https://github.com/klosexf" target="_blank" rel="noopener"><span>03</span>GitHub<i>↗</i></a></nav></div>
+    <div class="menu-footer"><p>做小而称手的工具，<br>让日常顺手一点。</p><span>© 2026 XIAOFENG</span></div>
   </dialog>
+
+  <dialog class="about-dialog" id="about-dialog" aria-labelledby="about-title">
+    <header class="dialog-bar"><span>ABOUT / XIAOFENG</span><button class="text-close" data-close-about>关闭 <span>×</span></button></header>
+    <div class="about-body"><p class="eyebrow"><span class="live-dot"></span> 一个独立开发者的工作室</p><h2 id="about-title">从日常的小事，<br>做起。</h2><p class="about-intro">我是 Xiaofeng，一名独立开发者。<br>目前在做 Mac 小工具、思维导图，<br>以及 UI 设计参考导航。</p><div class="about-principles"><section><span>01 / macOS</span><h3>少切一次窗口</h3><p>把复制记录、朗读和今日待办留在手边，让工具贴近日常工作的节奏。</p></section><section><span>02 / THINKING</span><h3>先看清内容的结构</h3><p>把长文档整理成思维导图，再继续编辑节点、调整层级，理清自己的思路。</p></section><section><span>03 / DESIGN</span><h3>从好的参考开始</h3><p>把分散的 UI 网站、组件与动效资源收在一处，让寻找设计参考更顺手。</p></section></div><a class="about-github" href="https://github.com/klosexf" target="_blank" rel="noopener">在 GitHub 看看我 <span>↗</span></a></div>
+  </dialog>
+
+  <dialog class="product-dialog" id="product-dialog" aria-labelledby="product-title">
+    <header class="dialog-bar"><button class="text-close" id="close-product">← 返回展厅</button><span id="product-position">01 / 05</span><div class="product-step"><button class="detail-music-button" id="detail-music-toggle" type="button" aria-label="关闭背景音乐" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M8 6 5 8H2v4h3l3 2V6Zm4 1a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg><span class="music-button-label">音乐 开</span></button><button id="previous-product" aria-label="上一个产品">←</button><button id="next-product" aria-label="下一个产品">→</button></div></header>
+    <div class="product-layout"><section class="product-media"><div class="media-stage" id="media-stage"></div><div class="media-caption"><span id="media-label" hidden>产品演示</span><button id="play-demo" type="button">从头播放 ↻</button></div><nav class="demo-chapters" id="demo-chapters" aria-label="选择演示步骤"></nav><p class="demo-step-description" id="demo-step-description"></p></section><section class="product-information"><p class="eyebrow" id="product-category"></p><div class="product-brand"><img id="product-icon" alt="" width="44" height="44"><h2 id="product-title"></h2></div><h3 id="product-headline"></h3><p class="product-description" id="product-description"></p><ul id="product-facts"></ul><a class="product-link" id="product-link" target="_blank" rel="noopener">打开产品页面 <span>↗</span></a><p class="product-note">为每天都会遇到的小事而做。</p></section></div>
+  </dialog>
+  <audio id="gallery-music" src="portfolio-demos/gallery/assets/amnesia.mp3" preload="metadata" loop></audio>
+  <p class="sr-only" id="announcement" role="status" aria-live="polite"></p>
+  <noscript><div class="noscript-note">作品展厅需要 JavaScript。你也可以直接查看：<a href="landing-repaste.html">Repaste</a> · <a href="index-readless.html">Readless</a> · <a href="index%20mindmap.html">MindMap AI</a> · <a href="https://www.uipicks.top/">UIpicks</a> · <a href="index-notion.html">WidgetToDo</a></div></noscript>
 </body>
 </html>

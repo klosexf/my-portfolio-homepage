@@ -22,6 +22,16 @@ jobs:
           enablement: true
       - name: 检查首页资源与旧入口同步
         run: python3 scripts/sync-homepage.py --check
+      - name: 检查展厅资源完整性
+        run: python3 scripts/check-gallery-assets.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 检查展厅交互与音乐
+        run: |
+          node tests/gallery/check-motion.cjs
+          node tests/gallery/check-upgrade-lifecycle.cjs
+          node tests/gallery/check-music-lifecycle.cjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .

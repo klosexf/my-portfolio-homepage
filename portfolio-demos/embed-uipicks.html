@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>UIpicks · 找到适合的 UI 参考</title>
+  <link rel="stylesheet" href="uipicks-animation/demo.css">
+  <script defer src="uipicks-animation/data.js"></script>
+  <script defer src="uipicks-animation/demo.js"></script>
+</head>
+<body>
+  <main class="demo-player" aria-label="UIpicks 产品交互演示">
+    <div class="app-window">
+      <header class="topbar">
+        <a class="brand" href="https://www.uipicks.top/" target="_blank" rel="noopener"><img src="homepage/assets/uipicks-mark.svg" width="25" height="25" alt=""><span>UIpicks</span></a>
+        <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><span class="sr-only">搜索演示中的网站</span><input id="search" type="search" placeholder="搜索网站、组件或效果" autocomplete="off"><kbd>⌘ K</kbd></label>
+        <span class="demo-badge">交互演示</span>
+      </header>
+      <aside class="sidebar">
+        <p class="library-label">我的参考库</p>
+        <nav aria-label="参考库">
+          <button class="nav-row active" data-view="all" aria-pressed="true"><span aria-hidden="true">▦</span>全部网站</button>
+          <button class="nav-row" data-view="finder" aria-pressed="false"><span aria-hidden="true">⊞</span>按需求找参考</button>
+          <button class="nav-row" data-view="saved" aria-pressed="false"><span aria-hidden="true">♡</span>我的收藏 <span id="saved-count">0</span></button>
+        </nav>
+        <p class="library-label category-label">按当前需求找</p>
+        <nav class="category-nav" aria-label="素材分类">
+          <button data-category="网页布局">网页布局</button>
+          <button data-category="UI 组件库">UI 组件库</button>
+          <button data-category="App 界面">App 界面</button>
+          <button data-category="设计灵感">设计灵感</button>
+        </nav>
+        <a class="sidebar-link" href="https://www.uipicks.top/" target="_blank" rel="noopener">打开完整参考库 <span aria-hidden="true">↗</span></a>
+      </aside>
+      <section class="workspace" aria-labelledby="workspace-title">
+        <div class="page-intro"><p class="eyebrow">GOOD REFERENCES, WITHIN REACH.</p><h1 id="workspace-title">UI 设计资源与灵感导航</h1><p id="workspace-description">把分散的设计资源，收在一处。</p></div>
+        <div id="finder" class="finder" hidden>
+          <div class="finder-heading"><span>产品官网</span><small>选择想找的布局与风格</small></div>
+          <div class="facet-row" role="group" aria-label="页面布局"><span>布局</span><button data-facet="layout" data-value="all" aria-pressed="true">全部</button><button data-facet="layout" data-value="center" aria-pressed="false">居中布局</button><button data-facet="layout" data-value="split" aria-pressed="false">左右分栏</button></div>
+          <div class="facet-row" role="group" aria-label="页面风格"><span>风格</span><button data-facet="style" data-value="all" aria-pressed="true">全部</button><button data-facet="style" data-value="dark" aria-pressed="false">深色</button><button data-facet="style" data-value="minimal" aria-pressed="false">极简</button></div>
+        </div>
+        <div class="results-toolbar"><div id="resource-filters" class="filter-buttons" role="group" aria-label="资源能力"><button data-code="false" aria-pressed="true">全部</button><button data-code="true" aria-pressed="false">可提供代码</button></div><span id="result-count" role="status" aria-live="polite"></span><button id="reset" class="reset-button">重置筛选</button></div>
+        <div id="results" class="site-grid"></div>
+        <div id="empty" class="empty-state" hidden><p id="empty-message">还没有找到匹配的参考</p><button id="show-all">显示全部网站</button></div>
+        <p class="sample-note">演示精选 · 图片与案例来自 UIpicks 已收录内容</p>
+      </section>
+      <dialog id="preview" aria-labelledby="preview-title">
+        <header class="preview-head"><div><small id="preview-origin"></small><h2 id="preview-title"></h2></div><button id="close-preview" aria-label="关闭参考预览">×</button></header>
+        <div class="preview-image"><img id="preview-image" alt=""><p class="image-error" hidden>图片暂时无法显示，可前往原始页面查看。</p></div>
+        <footer class="preview-foot"><p id="preview-note"></p><div><button id="preview-save" aria-pressed="false">收藏这个参考</button><a id="preview-link" target="_blank" rel="noopener">查看原始参考 ↗</a></div></footer>
+      </dialog>
+      <div id="toast" class="toast" role="status" hidden></div>
+    </div>
+    <footer class="demo-controls">
+      <div class="chapter-list" role="group" aria-label="演示章节"><button data-chapter="0" aria-pressed="true"><span>01</span>发现资源</button><button data-chapter="1" aria-pressed="false"><span>02</span>按需筛选</button><button data-chapter="2" aria-pressed="false"><span>03</span>预览收藏</button></div>
+      <div class="playback"><button id="replay" aria-label="从头重播">↺</button><button id="play" aria-label="暂停自动演示" aria-pressed="true">暂停</button></div>
+    </footer>
+    <p id="demo-caption" class="demo-caption" role="status">从网站、组件到动效，按用途找到设计来源。</p>
+  </main>
+</body>
+</html>

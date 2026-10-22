@@ -21,7 +21,7 @@ def main():
         digest = hashlib.sha256((root / asset).read_bytes()).hexdigest()[:10]
         return f'{asset}?v={digest}'
 
-    updated = re.sub(r'(portfolio-demos/homepage/[^"?]+\.(?:css|js))\?v=[^"\s]+', version, original)
+    updated = re.sub(r'(portfolio-demos/(?:homepage|gallery)/[^"?]+\.(?:css|js))(?:\?v=[^"\s]+)?(?=")', version, original)
     if '<head>' not in updated or '<base ' in updated:
         raise SystemExit('index.html must contain <head> and use relative URLs without a base tag.')
     expected_legacy = updated.replace('<head>', '<head>\n  <base href="../">', 1)

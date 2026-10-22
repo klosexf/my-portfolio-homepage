@@ -1,0 +1,25 @@
+{
+  "repository": "https://github.com/klosexf/design-website",
+  "sourceCommit": "78ac9eae88b2e328322c3d9044fe0710f5e2ede4",
+  "sourceRoot": "outputs/ui-reference-prototype",
+  "files": {
+    "index.html": "938b628de5c1e08512ddb5d35149fc18485b4f58d0859a9afa48acd69252e6cc",
+    "styles.css": "08a95b11f71189fa0853f6be24ee4a952e87bfd601b1b3a72e7374da816ae85e",
+    "shelf-ui.css": "d13fa23a3b6200d39a26ceae585defdc1240001f390d4217d3558f6aace7b815",
+    "app.js": "0acf2d97498ddf10ce0cb7168c5ce75450eaf7f7b5d5627d85e4bec160a3cbb8",
+    "reference-finder.css": "6a0eff4f2f6f5525f2c447fe3cdbe0f0cb57914eec1ecc1984cd47a8b9d0772d",
+    "homepage-choice-data.js": "d303d63191252a11c61be474b9fb36543cde427c6c6b7bfd4920aee8fee9fb34",
+    "catalog.js": "8c19d16871ba73d61ae42697c5e63514ca5dda77a52b94a0132636dc70a053fd",
+    "assets/uipicks-mark.svg": "15672c3d84eafe473b634830c47a252731ffce472c88d7a8a95644e9ff27979f",
+    "assets/curated-1.webp": "1c4f93c7f3d5d40a627424ee78a602a7f9cb5dae5a34e54fad118aae40beff1f",
+    "assets/bookmark-godly-design.webp": "008cda54b6787f716dccb67b4b5c916124fefb959b39277bc3f3259da7ff72e1",
+    "assets/aceternity-1.webp": "bb7f21f886aacdb5ee76c60e64eba68695ca25fd97a012c2ca678a6c7d270cd1",
+    "assets/shadcn-1.png": "f3a339e3f495ed38d496e671b1405c64595908a066ca38f0a20df213d3f27a88",
+    "assets/mobbin-1.webp": "b027ba7bfab22336cb3ece76035b5e6ed5f08d4e5cc1a1433b509e07ec88a2e5",
+    "assets/60fps-1.webp": "3c8fa524f17bf6faa04abcdad15c89d172b62c5a7d143bc8ab4b8dd883c86fec",
+    "assets/homepage-complete/06e0f94f5b35d25b.jpg": "3b068900ce8daa011f22c426aaace1ab3a0f370f605ea5b4bab3ddb2be50a9fc",
+    "assets/homepage-complete/21cc083b8c40763f.jpg": "2a8259cae9082054b565f6ba36bdc9bb3782412cb5678edcd8bf81013be5f655",
+    "assets/homepage-complete/0e53a22e446d1180.jpg": "920ff1959568bda9669ac2fbe04d33f64b84d45bcc75b3ac0d42eb800d190c54",
+    "assets/homepage-complete/2cb2880c55259f78.jpg": "76cdde7b9a0d042bb8a0f87734301281c61dc092b8de966ef1fe8bea2b9b075c"
+  }
+}
