@@ -1,6 +1,6 @@
 'use strict';
 
-// Keep exhibit labels to the product name and catalog category only.
+// Keep exhibit labels to the name, category and a short product explanation.
 // No observer, animation loop, or geometry read is needed for exhibit labels.
 (() => {
   function labelExhibits() {
@@ -20,7 +20,11 @@
       identity.classList.add('exhibit-identity');
       identity.insertBefore(label, task);
       task?.remove();
-      card.setAttribute('aria-label', `查看 ${product.name}：${product.tagline}，${product.category}`);
+      const summary = document.createElement('span');
+      summary.className = 'exhibit-summary';
+      summary.textContent = product.summary;
+      identity.append(summary);
+      card.setAttribute('aria-label', `查看 ${product.name}：${product.summary} ${product.category}`);
       card.dataset.exhibitLabelled = 'true';
     });
   }

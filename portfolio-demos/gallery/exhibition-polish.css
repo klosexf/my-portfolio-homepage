@@ -60,7 +60,7 @@
   border-color: #e5d4ba99;
 }
 
-/* The public exhibit label contains only the product name and category. */
+/* Put the short product explanation below the name and category. */
 .artwork-caption {
   padding-top: 14px;
   gap: 12px;
@@ -103,17 +103,15 @@
   white-space: nowrap;
 }
 
-.artwork-caption .artwork-demo-status {
+.artwork-caption .exhibit-summary {
   grid-column: 1 / -1;
   display: block;
-  min-height: 16px;
   margin-top: 6px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 11px;
+  white-space: normal;
+  text-wrap: pretty;
+  font-size: 12px;
   font-weight: 400;
-  line-height: 16px;
+  line-height: 1.65;
   letter-spacing: 0;
   color: #a69a87;
 }
@@ -146,11 +144,9 @@
     column-gap: 8px;
   }
 
-  .artwork-caption .artwork-demo-status {
-    font-size: 10px;
+  .artwork-caption .exhibit-summary {
+    font-size: 11px;
     margin-top: 5px;
-    min-height: 15px;
-    line-height: 15px;
   }
 
   .exhibit-category {
@@ -169,10 +165,8 @@
     line-height: 18px;
   }
 
-  .artwork-caption .artwork-demo-status {
-    min-height: 14px;
+  .artwork-caption .exhibit-summary {
     margin-top: 5px;
-    font-size: 10px;
-    line-height: 14px;
+    font-size: 11px;
   }
 }
