@@ -4,7 +4,7 @@
 const productCatalog = {
   "repaste": {
     "name": "Repaste",
-    "summary": "藏在 Mac 刘海里的剪贴板管理工具。",
+    "summary": "藏在 Mac 刘海里的剪贴板管理工具",
     "tagline": "剪贴板，藏进刘海里",
     "featured": true,
     "category": "macOS · 剪贴板管理",
@@ -25,7 +25,7 @@ const productCatalog = {
   },
   "readless": {
     "name": "Readless",
-    "summary": "选中文字就能朗读的 Mac 听读工具。",
+    "summary": "选中文字就能朗读的 Mac 听读工具",
     "tagline": "把长文，读给你听",
     "featured": true,
     "category": "macOS · 桌面听读助手",
@@ -46,7 +46,7 @@ const productCatalog = {
   },
   "mindmap": {
     "name": "MindMap AI",
-    "summary": "把文字、PDF 和网页变成思维导图的 AI 工具。",
+    "summary": "把文字、PDF 和网页变成思维导图的 AI 工具",
     "tagline": "让文档，长成一张图",
     "featured": true,
     "category": "AI · 文档与思维导图",
@@ -68,7 +68,7 @@ const productCatalog = {
   },
   "uipicks": {
     "name": "UIpicks",
-    "summary": "查找 UI 网站、组件与动效的设计资源导航。",
+    "summary": "查找 UI 网站、组件与动效的设计资源导航",
     "tagline": "好设计，从好参考开始",
     "featured": false,
     "category": "Web · UI 设计资源导航",
@@ -90,7 +90,7 @@ const productCatalog = {
   },
   "wtd": {
     "name": "WidgetToDo",
-    "summary": "把 Notion 待办和日记放到 Mac 桌面的工具。",
+    "summary": "把 Notion 待办和日记放到 Mac 桌面的工具",
     "tagline": "今日待办，留在眼前",
     "featured": true,
     "category": "macOS · Notion 桌面小组件",
