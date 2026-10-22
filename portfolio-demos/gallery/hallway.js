@@ -177,6 +177,9 @@ class ProductHallway {
       this.turn = 0;
     }
     this.render();
+    // ResizeObserver runs after window resize listeners. Publish the completed
+    // layout even when the settled product/motion state has not changed.
+    this.gallery.dispatchEvent(new CustomEvent('hallway-layout'));
   }
 
   nearest(position) {

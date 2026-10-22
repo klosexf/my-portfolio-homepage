@@ -19,6 +19,7 @@ class GalleryCardPreviews {
     this.layer.inert = true;
     document.body.append(this.layer);
     this.onMotion = event => { this.motion = { ...event.detail }; this.sync(); };
+    this.onLayout = () => this.fit();
     this.onToggle = () => { this.enabled = !this.enabled; this.updateToggle(); this.sync(); };
     this.onPreference = () => { this.updateToggle(); this.sync(); };
     this.onVisibility = () => {
@@ -35,6 +36,7 @@ class GalleryCardPreviews {
     this.dialogs = new MutationObserver(() => this.sync());
     document.querySelectorAll('dialog').forEach(dialog => this.dialogs.observe(dialog, { attributes: true, attributeFilter: ['open'] }));
     hallway.gallery.addEventListener('hallway-motion', this.onMotion);
+    hallway.gallery.addEventListener('hallway-layout', this.onLayout);
     toggle?.addEventListener('click', this.onToggle);
     this.reduced.addEventListener('change', this.onPreference);
     document.addEventListener('visibilitychange', this.onVisibility);

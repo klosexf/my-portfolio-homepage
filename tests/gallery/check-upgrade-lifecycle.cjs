@@ -9,6 +9,7 @@ const vm = require('node:vm');
 
 const sourcePath = path.resolve(__dirname, '../../portfolio-demos/gallery/card-previews.js');
 const source = fs.readFileSync(sourcePath, 'utf8');
+const hallwayPath = path.resolve(__dirname, '../../portfolio-demos/gallery/hallway.js');
 
 function deferred() {
   let resolve, reject;
@@ -27,10 +28,13 @@ function element(tag = 'div') {
     classList: {
       add(...names) { names.forEach(name => classes.add(name)); },
       remove(...names) { names.forEach(name => classes.delete(name)); },
-      contains(name) { return classes.has(name); }
+      contains(name) { return classes.has(name); },
+      toggle(name, enabled) { if (enabled) classes.add(name); else classes.delete(name); }
     },
     setAttribute(name, value) { attributes.set(name, String(value)); },
     getAttribute(name) { return attributes.get(name) ?? null; },
+    removeAttribute(name) { attributes.delete(name); },
+    dispatchEvent(event) { (listeners.get(event.type) || []).forEach(fn => fn(event)); },
     append(...items) {
       items.forEach(item => { item.remove(); item.parentElement = this; this.children.push(item); });
     },
@@ -79,6 +83,7 @@ function environment({ enabled = true, reduced = false, mode = 'wall' } = {}) {
   preference.matches = reduced;
   const context = vm.createContext({
     console, document, window, URL, AbortController,
+    CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options?.detail; } },
     innerWidth: 1280, innerHeight: 720,
     matchMedia: () => preference,
     MutationObserver: class { observe() {} },
@@ -96,6 +101,7 @@ function environment({ enabled = true, reduced = false, mode = 'wall' } = {}) {
     }
   });
   vm.runInContext(source + '\nglobalThis.TestPreviews = GalleryCardPreviews;', context, { filename: sourcePath });
+  vm.runInContext(fs.readFileSync(hallwayPath, 'utf8') + '\nglobalThis.TestHallway = ProductHallway;', context, { filename: hallwayPath });
   const product = {
     name: 'Repaste', tagline: '剪贴板，藏进刘海里',
     image: 'poster.jpg', imageWidth: 980, imageHeight: 640,
@@ -124,7 +130,7 @@ function environment({ enabled = true, reduced = false, mode = 'wall' } = {}) {
   preview.enabled = enabled;
   preview.motion.settled = true;
   return {
-    preview, hallway, sourceFrame, media, window, document, timers, rafs, requests, attachCalls, reportedSteps,
+    preview, hallway, sourceFrame, media, window, document, timers, rafs, requests, attachCalls, reportedSteps, context,
     expire(id) { const timer = timers.get(id); assert.ok(timer, 'timer exists'); timers.delete(id); timer.fn(); },
     respond(request) { request.resolve({ ok: true, text: async () => '<html><head></head><body></body></html>' }); },
     countFrames() { return preview.layer.children.flatMap(surface => surface.children).filter(child => child.tagName === 'IFRAME').length; }
@@ -257,6 +263,46 @@ async function test(name, check) { await check(); passed.push(name); }
       assert.equal(env.countFrames(), 1, 'explicit play remains possible');
     });
   }
+
+  await test('a settled demo stays aligned when ResizeObserver updates the wall after window resize', async () => {
+    const env = environment();
+    const { preview, hallway } = env;
+    Object.setPrototypeOf(hallway, env.context.TestHallway.prototype);
+    Object.assign(hallway, {
+      viewport: element(), controls: element(), hint: element(), counter: element(),
+      pagination: element(), previous: element(), next: element(), markers: [element()],
+      products: { repaste: hallway.cards[0].product },
+      current: 0, target: 0, depth: 0, turn: 0, cameraY: 0,
+      journey: null, frame: 0, drag: null, wheelTimer: 0,
+      reducedMotion: { matches: false }, announce() {}
+    });
+    hallway.cards[0].reflection = element();
+    Object.assign(hallway.viewport, { clientWidth: 1100, clientHeight: 700 });
+    hallway.resize();
+    const record = preview.createFrame(0);
+    env.respond(env.requests[0]);
+    await flush();
+    record.ready = record.visible = true;
+    const iframe = record.frame;
+    const before = record.surface.style.transform;
+    const generation = preview.generation;
+
+    // Browser order: resize listeners run before ResizeObserver delivery.
+    Object.assign(hallway.viewport, { clientWidth: 2048, clientHeight: 950 });
+    await env.window.emit('resize');
+    hallway.resize();
+
+    assert.notEqual(record.surface.style.transform, before,
+      'the live demo must not retain its previous-window position');
+    assert.equal(record.surface.style.transform, preview.galleryTransform(record),
+      'the overlay must use the final wall geometry before the next paint');
+    assert.equal(preview.layer.style.perspective, `${hallway.perspective}px`);
+    assert.equal(preview.current, record);
+    assert.equal(preview.current.frame, iframe, 'resize must preserve playback');
+    assert.equal(env.countFrames(), 1);
+    assert.equal(env.requests.length, 1, 'alignment must not reload the demo');
+    assert.equal(preview.generation, generation, 'layout must not restart autoplay scheduling');
+  });
 
   await test('closing from list mode returns to the actual list card rectangle', async () => {
     const env = environment({ enabled: false, mode: 'list' });
