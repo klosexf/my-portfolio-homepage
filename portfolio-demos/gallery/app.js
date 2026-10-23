@@ -17,6 +17,8 @@
   let lastArtwork = null;
   let detailBusy = false;
   let closing = false;
+  let layoutMoving = false;
+  let layoutFinished = Promise.resolve();
   const siteRoot = new URL('../../', document.currentScript.src);
   const asset = path => /^(https?:|data:)/.test(path) ? path : new URL(path, siteRoot).href;
   const announce = message => { $('#announcement').textContent = message; };
@@ -47,6 +49,7 @@
       ...Array.from(document.querySelectorAll('.artwork-image,.hallway-product-icon'), image => image.decode())
     ]);
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    await layoutFinished;
     if (generation !== entryGeneration) return;
     preparingEntry = false;
     enterButton.removeAttribute('aria-busy');
@@ -72,11 +75,51 @@
     $('#enter-gallery').focus({ preventScroll: true });
   }
 
-  function setView(next) {
+  async function setView(next, animate = false) {
+    if (layoutMoving || hallway.journey || gallery.dataset.view === next) return;
+    const cards = hallway.cards.map(item => item.card);
+    const before = cards.map(card => card.getBoundingClientRect());
+    const focusedCard = cards.includes(document.activeElement) ? document.activeElement : null;
+    if (hallway.frame) cancelAnimationFrame(hallway.frame);
+    hallway.frame = 0;
+    gallery.dataset.layoutMoving = 'true';
+    layoutMoving = true;
+    previews.sync();
     gallery.dataset.view = next;
-    document.querySelectorAll('[data-view]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.view === next)));
     hallway.setMode(next);
-    announce(next === 'list' ? '已切换为作品列表。' : '已切换为横向展墙。');
+    hallway.resize();
+    hallway.renderNavigation(hallway.index);
+    viewport.setAttribute('aria-label', next === 'list' ? '全部五款作品，点击查看产品详情' : '横向作品展墙，滚轮或向左拖动浏览，也可使用左右方向键');
+    if (next === 'list') viewport.removeAttribute('aria-roledescription');
+    else viewport.setAttribute('aria-roledescription', '轮播');
+    const toggle = $('#overview-toggle');
+    toggle.setAttribute('aria-pressed', String(next === 'list'));
+    toggle.querySelector('span').textContent = next === 'list' ? '回到展厅' : '全部作品';
+    toggle.setAttribute('aria-label', next === 'list' ? '回到当前作品的展厅位置' : '查看全部五款作品');
+    const reduce = hallway.reducedMotion.matches;
+    if (animate && !reduce) {
+      const after = cards.map(card => card.getBoundingClientRect());
+      const animations = cards.map((card, index) => {
+        const from = before[index];
+        const to = after[index];
+        const matrix = new DOMMatrixReadOnly(getComputedStyle(card).transform);
+        const sx = from.width / Math.max(1, to.width);
+        const sy = from.height / Math.max(1, to.height);
+        card.style.transformOrigin = '0 0';
+        return card.animate([
+          { transform: `matrix(${sx},0,0,${sy},${matrix.e + from.left - to.left},${matrix.f + from.top - to.top})` },
+          { transform: matrix.toString() }
+        ], { duration: 560, easing: 'cubic-bezier(.22,1,.36,1)' });
+      });
+      layoutFinished = Promise.allSettled(animations.map(animation => animation.finished));
+      await layoutFinished;
+      cards.forEach(card => { card.style.transformOrigin = ''; });
+    }
+    delete gallery.dataset.layoutMoving;
+    layoutMoving = false;
+    previews.sync();
+    if (focusedCard && next === 'wall') hallway.cards[hallway.index].card.focus({ preventScroll: true });
+    announce(next === 'list' ? '已展开全部五款作品，点击作品查看详情。' : '已回到横向展厅，继续浏览当前作品。');
   }
 
   $('#enter-gallery').addEventListener('click', () => enterGallery());
@@ -86,7 +129,14 @@
   $('#menu-work').addEventListener('click', () => { menu.close(); enterGallery(); });
   $('#menu-about').addEventListener('click', () => { menu.close(); about.showModal(); });
   $('[data-close-about]').addEventListener('click', () => about.close());
-  document.querySelectorAll('.view-switch button').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
+  $('#overview-toggle').addEventListener('click', () => setView(gallery.dataset.view === 'list' ? 'wall' : 'list', true));
+  const dismissHint = () => { gallery.dataset.navigated = 'true'; };
+  $('#hallway-pagination').addEventListener('click', dismissHint);
+  $('#hallway-previous').addEventListener('click', dismissHint);
+  $('#hallway-next').addEventListener('click', dismissHint);
+  viewport.addEventListener('wheel', () => { if (hallway.phase === 'ready') dismissHint(); }, { passive: true });
+  viewport.addEventListener('pointermove', () => { if (hallway.drag?.distance) dismissHint(); }, { passive: true });
+  viewport.addEventListener('keydown', event => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) dismissHint(); });
   function fillProduct(index) {
     productIndex = (index + order.length) % order.length;
     const product = productCatalog[order[productIndex]];
@@ -135,9 +185,10 @@
   }
 
   async function showProduct(index) {
-    if (detailBusy) return;
+    if (detailBusy || layoutMoving) return;
     const wasOpen = detail.open;
     setDetailBusy(true);
+    $('#close-product').textContent = hallway.mode === 'list' ? '← 返回总览' : '← 返回展厅';
     fillProduct(index);
     detail.scrollTop = 0;
     if (wasOpen) {

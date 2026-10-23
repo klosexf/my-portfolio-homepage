@@ -322,6 +322,7 @@ class ProductHallway {
   }
 
   goTo(index, focus = false, immediate = false) {
+    if (this.gallery.dataset.layoutMoving === 'true' && !immediate) return;
     if (this.journey) return;
     this.index = Math.max(0, Math.min(this.order.length - 1, index));
     this.target = this.stops[this.index] || 0;
@@ -428,6 +429,7 @@ class ProductHallway {
 
   bindInput() {
     this.viewport.addEventListener('wheel', event => {
+      if (this.gallery.dataset.layoutMoving === 'true') { event.preventDefault(); return; }
       if (this.mode !== 'wall' || event.ctrlKey || document.querySelector('dialog[open]')) return;
       if (this.journey) { event.preventDefault(); return; }
       const delta = (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY) * (event.deltaMode === 1 ? 16 : 1);
@@ -447,6 +449,7 @@ class ProductHallway {
       }, 180);
     }, { passive: false });
     this.viewport.addEventListener('pointerdown', event => {
+      if (this.gallery.dataset.layoutMoving === 'true') return;
       if (this.mode !== 'wall' || this.journey || event.button !== 0) return;
       clearTimeout(this.wheelTimer);
       this.wheelTimer = 0;
@@ -485,6 +488,7 @@ class ProductHallway {
     window.addEventListener('pointerup', release);
     window.addEventListener('pointercancel', release);
     this.viewport.addEventListener('keydown', event => {
+      if (this.gallery.dataset.layoutMoving === 'true') { event.preventDefault(); return; }
       if (this.journey) {
         if (['ArrowRight', 'ArrowLeft', 'Home', 'End', 'Enter', ' '].includes(event.key)) event.preventDefault();
         return;

@@ -334,21 +334,6 @@ test('the music-only control enables room light despite a legacy off preference,
   assert.equal(f.frames.size, 0);
 });
 
-test('stronger floor stays bounded while the wall wash follows energy slowly', async () => {
-  const f = setup(); await f.start(); f.energy(0, 128);
-  f.frame(); const quiet = Number(f.floor.style.opacity), quietWall = Number(f.backdrop.style.opacity);
-  f.energy(230, 200);
-  f.frame(); const firstWall = Number(f.backdrop.style.opacity);
-  assert.ok(firstWall - quietWall < .015, 'wall energy must ease in rather than flash on the beat');
-  for (let i = 0; i < 28; i++) f.frame();
-  assert.ok(Number(f.floor.style.opacity) > quiet + .14, 'the floor must make the music more visible than the former narrow range');
-  assert.ok(Number(f.floor.style.opacity) <= .48);
-  assert.ok(Number(f.rail.style.opacity) <= .66);
-  assert.ok(Number(f.backdrop.style.opacity) > quietWall);
-  assert.ok(Number(f.backdrop.style.opacity) <= .295);
-  f.dialog(true); assert.equal(f.backdrop.style.opacity, '0');
-});
-
 test('room light excludes artwork and labels, with no repeated layout reads between stops', async () => {
   const f = setup(); await f.start(); f.frame();
   const cutout = f.wallMask.style.clipPath;
@@ -453,12 +438,156 @@ test('without Web Audio, music still plays while unavailable reactivity is disab
   assert.equal(f.frames.size, 0);
 });
 
+// Synthetic levels verify response timing and state; real audio and rendering
+// remain covered by the browser checks.
+const variable = (fixture, name) => Number(fixture.music.hallway.gallery.style[name]);
+
+async function hit() {
+  const f = setup();
+  await f.start();
+  f.energy(0, 128); f.frame(1000);
+  assert.equal(f.music.beats, 0);
+  f.energy(210, 160); f.frame(1017);
+  return f;
+}
+
+function assertReset(f) {
+  assert.equal(variable(f, '--music-drive'), 0, 'brand intensity returns to its static baseline');
+  assert.equal(variable(f, '--music-beat'), 0, 'brand expansion returns to its static baseline');
+  assert.equal(f.music.pulse, 0, 'the transient is cleared');
+  assert.equal(f.music.lightPulse, 0, 'the smoothed visual transient is cleared');
+  for (const surface of [f.floor, f.rail, f.backdrop]) assert.equal(Number(surface.style.opacity), 0);
+}
+
+test('a bass onset starts a soft response in the same frame across all room layers', async () => {
+  const f = await hit();
+  assert.equal(f.music.beats, 1);
+  assert.equal(f.music.pulse, 1, 'the raw detected onset remains accurate');
+  assert.ok(f.music.lightPulse > .1 && f.music.lightPulse < .3, 'the displayed onset begins softly instead of jumping to full brightness');
+  assert.ok(Math.abs(variable(f, '--music-beat') - f.music.lightPulse) < .001);
+  assert.ok(variable(f, '--music-drive') > .03 && variable(f, '--music-drive') < .1);
+  assert.ok(Number(f.floor.style.opacity) > .02);
+  assert.ok(Number(f.rail.style.opacity) > .04);
+  assert.ok(Number(f.backdrop.style.opacity) > .02);
+  for (let time = 1034; time <= 1600; time += 17) {
+    f.frame(time);
+    assert.ok(variable(f, '--music-drive') <= .23, 'visible energy stays within the subdued ceiling');
+    for (const surface of [f.floor, f.rail, f.backdrop]) {
+      assert.ok(Number(surface.style.opacity) < .35, 'all room layers remain subdued');
+    }
+  }
+});
+
+test('light rises smoothly then settles after the beat without dimming the audio', async () => {
+  const f = await hit();
+  const onset = variable(f, '--music-drive');
+  let peak = onset;
+  for (let time = 1034; time <= 1204; time += 17) {
+    const previous = variable(f, '--music-drive');
+    f.frame(time);
+    const current = variable(f, '--music-drive');
+    assert.ok(Math.abs(current - previous) < .05, 'neighboring frames do not create a sharp flash');
+    peak = Math.max(peak, current);
+  }
+  assert.ok(peak > onset * 1.5, 'a real onset still has a visible rise');
+  for (let time = 1221; time <= 1612; time += 17) f.frame(time);
+  assert.ok(variable(f, '--music-drive') < peak * .9, 'the softer light settles gradually within 600 ms');
+  for (let time = 1629; time <= 2224; time += 17) f.frame(time);
+  assert.ok(variable(f, '--music-drive') < peak * .65, 'by 1.2 seconds the light is near its quiet level');
+  assert.equal(f.music.gain.gain.value, .26, 'only light intensity changes');
+});
+
+test('sustained loudness does not invent repeated beats', async () => {
+  const f = await hit();
+  for (let time = 1034; time <= 3017; time += 17) f.frame(time);
+  assert.equal(f.music.beats, 1);
+  assert.ok(variable(f, '--music-drive') < .23, 'continuous energy cannot occupy the transient peak range');
+});
+
+test('a second low-frequency onset 500 ms later starts another soft rise', async () => {
+  const f = await hit();
+  f.energy(0, 128);
+  for (let time = 1037; time < 1517; time += 20) f.frame(time);
+  const before = variable(f, '--music-drive');
+  f.energy(210, 160); f.frame(1517);
+  assert.equal(f.music.beats, 2);
+  assert.equal(f.music.pulse, 1);
+  assert.ok(f.music.lightPulse > 0 && f.music.lightPulse < 1);
+  assert.ok(variable(f, '--music-drive') > before);
+  assert.ok(variable(f, '--music-drive') <= .23);
+});
+
+test('a nearby spike 300 ms later does not produce another flash', async () => {
+  const f = await hit();
+  f.energy(0, 128);
+  for (let time = 1037; time < 1317; time += 20) f.frame(time);
+  f.energy(230, 170); f.frame(1317);
+  assert.equal(f.music.beats, 1);
+  assert.ok(f.music.pulse < 1);
+});
+
+test('silence and a slow sustained fade-in do not create bass transients', async () => {
+  const f = setup(); await f.start();
+  f.energy(220, 128); f.frame(1000);
+  assert.equal(f.music.beats, 0, 'the RMS silence gate rejects a spectrum-only rise');
+  f.energy(0, 128); f.frame(1017);
+  // Rise by one byte per 17 ms: slower than the onset threshold.
+  for (let i = 1; i <= 210; i++) { f.energy(i, 150); f.frame(1017 + i * 17); }
+  assert.equal(f.music.beats, 0);
+});
+
+test('layout transitions defer artwork cutouts until final geometry', async () => {
+  const f = await hit();
+  const gallery = f.music.hallway.gallery;
+  gallery.dataset.layoutMoving = 'true';
+  // The fixture flushes registered attribute observers through dialog().
+  f.dialog(false);
+  assertReset(f);
+  const reads = f.stats.layoutReads;
+  f.frame(1034);
+  assert.equal(f.stats.layoutReads, reads, 'never cache intermediate FLIP bounds');
+  delete gallery.dataset.layoutMoving;
+  f.dialog(false); f.frame(1051);
+  assert.equal(f.stats.layoutReads, reads + 3, 'read final geometry once');
+  f.frame(1068);
+  assert.equal(f.stats.layoutReads, reads + 3);
+});
+
+test('a completed hallway resize invalidates the cached light cutout', async () => {
+  const f = await hit();
+  const reads = f.stats.layoutReads;
+  f.music.hallway.gallery.emit('hallway-layout');
+  f.frame(1034);
+  assert.equal(f.stats.layoutReads, reads + 3);
+  f.frame(1051);
+  assert.equal(f.stats.layoutReads, reads + 3);
+});
+
+const resetCases = [
+  ['music off', f => f.toggle.emit('click')],
+  ['reactivity off', f => f.reactiveToggle.emit('click')],
+  ['a product dialog opens', f => f.dialog(true)],
+  ['overview opens', f => f.motion({ mode: 'list', settled: false })],
+  ['camera travel begins', f => f.motion({ settled: false })],
+  ['the tab becomes hidden', f => f.hidden(true)],
+  ['reduced motion becomes enabled', f => f.reduce(true)],
+  ['the gallery is left', f => f.music.leave()]
+];
+for (const [name, action] of resetCases) {
+  test(`${name} clears both brand-light variables immediately`, async () => {
+    const f = await hit();
+    assert.ok(variable(f, '--music-drive') > 0, 'light must be active before testing its reset');
+    action(f); assertReset(f);
+    f.frame(1051); assertReset(f);
+  });
+}
+
 (async () => {
   let failures = 0;
   for (const { name, run } of tests) {
     try { await run(); console.log('PASS ' + name); }
     catch (error) { failures++; console.error('FAIL ' + name + '\n  ' + error.message); }
   }
-  console.log(`${tests.length - failures}/${tests.length} music lifecycle checks passed`);
+  console.log(`${tests.length - failures}/${tests.length} music lifecycle and light-response checks passed`);
   if (failures) process.exitCode = 1;
 })();

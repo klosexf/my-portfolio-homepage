@@ -56,7 +56,7 @@ class GalleryCardPreviews {
   }
 
   allowed() {
-    return this.enabled && !this.reduced.matches && !document.hidden && this.motion.phase === 'ready' &&
+    return this.enabled && !this.reduced.matches && !document.hidden && this.hallway.gallery.dataset.layoutMoving !== 'true' && this.motion.phase === 'ready' &&
       this.motion.mode === 'wall' && document.body.dataset.scene === 'gallery' && !document.querySelector('dialog[open]');
   }
 

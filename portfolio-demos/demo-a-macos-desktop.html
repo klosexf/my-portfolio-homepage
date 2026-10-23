@@ -20,12 +20,15 @@
   <link rel="stylesheet" href="portfolio-demos/gallery/exhibition-polish.css?v=5ba1741206">
   <link rel="stylesheet" href="portfolio-demos/gallery/gallery-music.css?v=9996dbd92e">
   <script src="portfolio-demos/gallery/products.js?v=f77d983413" defer></script>
-  <script src="portfolio-demos/gallery/hallway.js?v=ac2c64f6ef" defer></script>
+  <script src="portfolio-demos/gallery/hallway.js?v=ec863aeb3f" defer></script>
   <script src="portfolio-demos/gallery/demo-guide.js?v=be9c8cea72" defer></script>
-  <script src="portfolio-demos/gallery/card-previews.js?v=711cefa1d5" defer></script>
-  <script src="portfolio-demos/gallery/gallery-music.js?v=e9e517a4f4" defer></script>
-  <script src="portfolio-demos/gallery/app.js?v=68447e6166" defer></script>
+  <script src="portfolio-demos/gallery/card-previews.js?v=28ca6b8464" defer></script>
+  <script src="portfolio-demos/gallery/gallery-music.js?v=b5e18ed2ab" defer></script>
+  <script src="portfolio-demos/gallery/app.js?v=5785d98135" defer></script>
   <script src="portfolio-demos/gallery/exhibit-labels.js?v=64f468369d" defer></script>
+  <link rel="stylesheet" href="portfolio-demos/gallery/navigation.css?v=716437dfd4">
+  <link rel="stylesheet" href="portfolio-demos/gallery/lighting.css?v=b0b247dacd">
+  <script src="portfolio-demos/gallery/lighting.js?v=63f4f8d0c5" defer></script>
 </head>
 <body data-scene="entrance">
   <a class="skip-link" href="#enter-gallery">进入作品展厅</a>
@@ -47,15 +50,18 @@
       <div class="gallery-viewport" id="gallery-viewport" tabindex="0" role="region" aria-roledescription="轮播" aria-label="横向作品展墙，滚轮或向左拖动浏览，也可使用左右方向键">
         <div class="gallery-plane" id="gallery-plane"></div>
       </div>
+      <div class="overview-heading"><p>THE COLLECTION / 05</p><h2>五款作品，都在这里。</h2><span>点击一件作品，看看它如何工作</span></div>
       <div class="gallery-bottom">
-        <div class="view-controls" aria-label="作品展示方式">
-          <div class="view-switch"><button data-view="wall" aria-pressed="true">展厅</button><button data-view="list" aria-pressed="false">列表</button></div>
-          <span class="control-divider"></span>
+        <p class="gallery-hint" id="gallery-hint">滚动或向左拖动</p>
+        <div class="view-controls preview-dock" role="group" aria-label="作品导航">
           <button class="hallway-arrow" id="hallway-previous" aria-label="浏览上一个作品">←</button>
-          <span class="gallery-hint">滚动或向左拖动</span>
+          <nav id="hallway-pagination" aria-label="跳转到指定作品"></nav>
           <button class="hallway-arrow" id="hallway-next" aria-label="浏览下一个作品">→</button>
+          <span class="dock-divider" aria-hidden="true"></span>
+          <p class="dock-position" aria-label="当前作品"><span id="hallway-current">01</span><span class="dock-total"> / 05</span></p>
+          <span class="overview-dock-label">全部作品 <span>05</span></span>
+          <button class="overview-toggle" id="overview-toggle" type="button" aria-pressed="false" aria-controls="gallery-viewport"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="3" width="5" height="5" rx=".8"/><rect x="12" y="3" width="5" height="5" rx=".8"/><rect x="3" y="12" width="5" height="5" rx=".8"/><rect x="12" y="12" width="5" height="5" rx=".8"/></svg><span>全部作品</span></button>
         </div>
-        <div class="hallway-position"><p><span id="hallway-current">01</span><span class="position-divider">/</span><span>05</span></p><nav id="hallway-pagination" aria-label="跳转到指定作品"></nav></div>
       </div>
     </section>
 

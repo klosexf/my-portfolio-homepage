@@ -15,10 +15,12 @@ class GalleryMusic {
     this.context = this.source = this.gain = this.analyser = null;
     this.version = 0;
     this.frame = this.pauseTimer = 0;
-    this.lastSample = this.lastBeat = this.lastAudit = 0;
+    this.lastSample = this.lastAudit = 0;
+    this.lastBeat = -Infinity;
     this.bassFloor = .15;
     this.lastBass = this.envelope = this.pulse = 0;
-    this.ambience = this.drift = 0;
+    this.lightPulse = 0;
+    this.drift = 0;
     this.cutoutsDirty = true;
     this.beats = 0;
     this.bars = [...panel.querySelectorAll('.music-meter i')];
@@ -69,6 +71,12 @@ class GalleryMusic {
       }
       if (!this.visualsAllowed()) this.resetVisuals();
     });
+    hallway.gallery.addEventListener('hallway-layout', () => { this.cutoutsDirty = true; });
+    this.layout = new MutationObserver(() => {
+      this.cutoutsDirty = true;
+      if (!this.visualsAllowed()) this.resetVisuals();
+    });
+    this.layout.observe(hallway.gallery, { attributes: true, attributeFilter: ['data-layout-moving'] });
     this.dialogs = new MutationObserver(() => {
       if (!this.visualsAllowed()) this.resetVisuals();
     });
@@ -100,7 +108,7 @@ class GalleryMusic {
     this.source = this.context.createMediaElementSource(this.audio);
     this.analyser = this.context.createAnalyser();
     this.analyser.fftSize = 1024;
-    this.analyser.smoothingTimeConstant = .68;
+    this.analyser.smoothingTimeConstant = .18;
     this.analyser.minDecibels = -85;
     this.analyser.maxDecibels = -18;
     this.gain = this.context.createGain();
@@ -238,6 +246,7 @@ class GalleryMusic {
 
   visualsAllowed() {
     return this.wanted() && this.status === 'on' && this.reactive && !this.reduced.matches && !this.noAnalyser &&
+      this.hallway.gallery.dataset.layoutMoving !== 'true' &&
       this.motion.phase === 'ready' && this.motion.mode === 'wall' && this.motion.settled && !document.querySelector('dialog[open]');
   }
 
@@ -279,8 +288,8 @@ class GalleryMusic {
     this.frame = 0;
     if (!this.wanted() || this.audio.paused || !this.analyser || !this.reactive || this.reduced.matches) return;
     this.frame = requestAnimationFrame(next => this.tick(next));
-    if (this.lastSample && time - this.lastSample < 32) return;
-    const dt = this.lastSample ? Math.min(.15, (time - this.lastSample) / 1000) : 1 / 30;
+    if (this.lastSample && time - this.lastSample < 15) return;
+    const dt = this.lastSample ? Math.min(.15, (time - this.lastSample) / 1000) : 1 / 60;
     this.lastSample = time;
     this.analyser.getByteFrequencyData(this.spectrum);
     this.analyser.getByteTimeDomainData(this.waveform);
@@ -294,29 +303,54 @@ class GalleryMusic {
     for (const sample of this.waveform) power += ((sample - 128) / 128) ** 2;
     const rms = Math.sqrt(power / this.waveform.length);
     const bass = bands[0];
-    const flux = Math.max(0, bass - this.lastBass);
-    this.bassFloor += (bass - this.bassFloor) * (1 - Math.exp(-dt / 1.8));
-    const beat = rms > .015 && bass > Math.max(.12, this.bassFloor * 1.08) && flux > .025 && time - this.lastBeat > 400;
-    if (beat) { this.pulse = 1; this.lastBeat = time; this.beats++; }
-    this.lastBass = bass;
-    this.pulse *= Math.exp(-dt / .38);
-    const target = Math.min(1, rms * 3.8 + bass * .2);
-    this.envelope += (target - this.envelope) * (1 - Math.exp(-dt / (target > this.envelope ? .11 : .55)));
-    const ambienceTarget = Math.min(1, rms * 1.8 + bands[1] * .25);
-    this.ambience += (ambienceTarget - this.ambience) * (1 - Math.exp(-dt / 1.6));
-    this.drift += (bands[2] - bass - this.drift) * (1 - Math.exp(-dt / 2.4));
+    const low = bass * .78 + bands[1] * .22;
+    // Detect a rising low-frequency transient, not a loud sustained note.
+    // Normalize the rise to 30 Hz so display refresh rate does not change sensitivity.
+    const flux = Math.max(0, low - this.lastBass) / (dt * 30);
+    this.bassFloor += (low - this.bassFloor) * (1 - Math.exp(-dt / 1.8));
     const active = this.visualsAllowed();
+    const beat = active && rms > .012 && low > Math.max(.1, this.bassFloor * 1.02) && flux > .055 && time - this.lastBeat > 420;
+    if (beat) { this.pulse = 1; this.lastBeat = time; this.beats++; }
+    else this.pulse *= Math.exp(-dt / .45);
+    // Keep the detected onset, but soften its visible attack and release.
+    this.lightPulse += (this.pulse - this.lightPulse) * (1 - Math.exp(-dt / (this.pulse > this.lightPulse ? .12 : .25)));
+    if (!active) this.pulse = this.lightPulse = 0;
+    this.lastBass = low;
+    // Continuous energy and softened beats stay within a restrained light range.
+    const target = Math.min(1, rms * 1.65 + bass * .1);
+    this.envelope += (target - this.envelope) * (1 - Math.exp(-dt / (target > this.envelope ? .025 : .18)));
+    this.drift += (bands[2] - bass - this.drift) * (1 - Math.exp(-dt / 2.4));
     // Fixed gradients are rasterized once; only their opacity/transform changes.
     if (active) {
       if (this.cutoutsDirty) this.protectArtwork();
-      const energy = this.envelope * .55 + this.pulse * .45;
-      this.floor.style.opacity = (.06 + energy * .42).toFixed(3);
-      this.floor.style.transform = `scale3d(${(.88 + energy * .25).toFixed(3)},${(.94 + energy * .15).toFixed(3)},1)`;
-      this.rail.style.opacity = (.16 + energy * .5).toFixed(3);
-      this.rail.style.transform = `scaleX(${(.76 + energy * .32).toFixed(3)})`;
+      const energy = this.envelope * .12 + this.lightPulse * .11;
+      this.hallway.gallery.style.setProperty('--music-drive', energy.toFixed(3));
+      this.hallway.gallery.style.setProperty('--music-beat', this.lightPulse.toFixed(3));
+      this.floor.style.opacity = (.02 + energy * .83).toFixed(3);
+      this.floor.style.transform = `scale3d(${(.88 + energy * .32).toFixed(3)},${(.94 + energy * .2).toFixed(3)},1)`;
+      this.rail.style.opacity = (.04 + energy * .9).toFixed(3);
+      this.rail.style.transform = `scaleX(${(.72 + energy * .4).toFixed(3)})`;
       if (this.backdrop) {
-        this.backdrop.style.opacity = (.055 + this.ambience * .24).toFixed(3);
-        this.backdrop.style.transform = `translate3d(${(this.drift * 24).toFixed(2)}px,0,0) scale(${(1.02 + this.ambience * .04).toFixed(3)})`;
+        this.backdrop.style.opacity = (.02 + energy * .7).toFixed(3);
+        this.backdrop.style.transform = `translate3d(${(this.drift * 24).toFixed(2)}px,0,0) scale(${(1.02 + this.lightPulse * .025).toFixed(3)})`;
+      }
+    }
+    if (this.audit) {
+      // Opt-in diagnostics for the gallery; no audio samples are stored.
+      this.panel.dataset.beats = String(this.beats);
+      this.panel.dataset.pulse = this.pulse.toFixed(3);
+      this.panel.dataset.rms = rms.toFixed(3);
+      this.panel.dataset.position = this.audio.currentTime.toFixed(3);
+      const window = this.auditWindow ||= { from: this.audio.currentTime, min: 1, max: 0, beats: [] };
+      if (active) {
+        const drive = this.envelope * .12 + this.lightPulse * .11;
+        window.min = Math.min(window.min, drive);
+        window.max = Math.max(window.max, drive);
+        if (beat) window.beats.push(Number(this.audio.currentTime.toFixed(3)));
+      }
+      if (this.audio.currentTime - window.from >= 2) {
+        this.panel.dataset.lightWindow = JSON.stringify({ ...window, to: this.audio.currentTime });
+        this.auditWindow = null;
       }
     }
     const meterAllowed = this.reactive && !this.reduced.matches && this.status === 'on';
@@ -333,6 +367,9 @@ class GalleryMusic {
   }
 
   resetVisuals() {
+    this.pulse = this.lightPulse = 0;
+    this.hallway.gallery.style.setProperty('--music-drive', '0');
+    this.hallway.gallery.style.setProperty('--music-beat', '0');
     this.floor.style.opacity = '0'; this.floor.style.transform = 'scale3d(.88,.94,1)';
     this.rail.style.opacity = '0'; this.rail.style.transform = 'scaleX(.76)';
     if (this.backdrop) { this.backdrop.style.opacity = '0'; this.backdrop.style.transform = 'translate3d(0,0,0) scale(1.02)'; }
