@@ -79,7 +79,17 @@ class ProductHallway {
     identity.append(title, tagline);
     const arrow = document.createElement('span');
     arrow.className = 'artwork-arrow';
-    arrow.textContent = '↗';
+    const arrowIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    arrowIcon.setAttribute('viewBox', '0 0 24 24');
+    arrowIcon.setAttribute('fill', 'none');
+    const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    arrowPath.setAttribute('d', 'M4 12h15m-6-6 6 6-6 6');
+    arrowPath.setAttribute('stroke', 'currentColor');
+    arrowPath.setAttribute('stroke-width', '1.7');
+    arrowPath.setAttribute('stroke-linecap', 'round');
+    arrowPath.setAttribute('stroke-linejoin', 'round');
+    arrowIcon.append(arrowPath);
+    arrow.append(arrowIcon);
     arrow.setAttribute('aria-hidden', 'true');
     caption.append(identity, arrow);
     card.append(light, wires, frame, caption);
