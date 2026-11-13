@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Timeglow 是一款 Mac 应用与网站用时工具。用一枚贴边书签，看见时间去向，在合适的时候停一下。"><title>Timeglow · 看见时间去向</title><link rel="icon" href="assets/timeglow.png?v=678111dea9"><link rel="stylesheet" href="site.css?v=6"><link rel="stylesheet" href="laptop-and-reminders.css?v=6"><link rel="stylesheet" href="complete-statistics.css?v=6"><script defer src="statistics-demo.js?v=38b3bf0b5f"></script><script defer src="reminder-walkthrough.js?v=c1711ec009"></script><script defer src="demo.js?v=07583ec828"></script></head>
+<body class="site site-a" data-theme="light">
+<header class="site-nav wrap"><a class="brand" href="#" aria-label="Timeglow 首页"><img src="assets/timeglow.png?v=678111dea9" alt="">Timeglow</a><nav class="nav-links" aria-label="主导航"><a href="#experience">产品演示</a><a href="#features">功能介绍</a><a href="#faq">常见问题</a></nav><div class="nav-actions"><button class="theme-toggle" data-theme-toggle aria-label="切换深色外观">◑</button><button class="btn primary small" data-availability>获取 Mac 版 <span aria-hidden="true">↗</span></button></div></header>
+<main>
+<section class="a-hero wrap" aria-labelledby="hero-title"><h1 id="hero-title">看见时间去向，<br><span>找回一天的分寸。</span></h1><p class="intro">应用与网站用时，自动记录。<br>一枚贴边书签，在你需要的时候，轻轻提醒。</p><div class="actions"><button class="btn primary" data-availability>获取 Timeglow <span aria-hidden="true">↗</span></button><button class="btn secondary" data-show-demo="main-demo"><span aria-hidden="true">▷</span> 试试核心交互</button></div><div class="a-demo-shell" id="experience"><div class="demo-mount" id="main-demo" data-demo data-laptop-demo></div></div></section>
+<div class="wrap"><section class="a-benefits" aria-label="Timeglow 的三个特点"><div><span class="benefit-symbol" aria-hidden="true">◒</span><div><h3>轻轻一瞥，就有数</h3><p>用时比例和状态，留在屏幕边缘。</p></div></div><div><span class="benefit-symbol" aria-hidden="true">⌁</span><div><h3>想起之前，已经记好</h3><p>记录应用与网站，支持排除闲置时间。</p></div></div><div><span class="benefit-symbol" aria-hidden="true">◷</span><div><h3>想说的话，到时提醒</h3><p>设置节点，点开通知，读给自己的话。</p></div></div></section>
+<section class="a-scope" id="features"><div><h2>只把你在意的时间，<br>放进每日限额。</h2><p class="section-copy">设计、聊天，还是刷视频？<br>选择想留意的应用与网站，把它们的用时合并计算。其余应用继续记录，方便回顾。</p><p class="scope-foot micro">拨动右侧开关，看看每日合计如何变化。</p></div><div class="scope-playground" data-scopes><h3>哪些时间，算入每日合计？</h3><label class="scope-row"><span><img src="assets/wechat.png" alt=""><span>微信<small>沟通 · 27 分钟</small></span></span><input type="checkbox" checked value="27" aria-label="将微信用时计入每日合计"></label><label class="scope-row"><span><img src="assets/chrome.png" alt=""><span>bilibili.com<small>只选择这个网站 · 30 分钟</small></span></span><input type="checkbox" checked value="30" aria-label="将 bilibili.com 用时计入每日合计"></label><label class="scope-row"><span><img src="assets/figma.png" alt=""><span>Figma<small>创作 · 1 小时 20 分钟</small></span></span><input type="checkbox" value="80" aria-label="将 Figma 用时计入每日合计"></label><div class="scope-total"><span>所选范围的合计用时</span><strong data-scope-total aria-live="polite">57 分</strong></div><p class="scope-note">示例数据。选择整个浏览器会包含全部网站；重叠时间只计算一次。</p></div></section>
+<section class="reminder-feature reminder-customizer" id="reminder-feature" data-reminder-editor>
+  <div class="reminder-feature-copy">
+    <h2>到了那个时刻，<br>想对自己说点什么？</h2>
+    <p class="section-copy">提醒的时机，你来选。提醒的话，你来写。<br>收到通知后，点开就是你留给自己的那句话。</p>
+    <div class="reminder-editor" aria-label="自定义提醒体验">
+      <fieldset class="reminder-node-picker">
+        <legend>先选一个节点，看看提醒的样子</legend>
+        <div class="reminder-node-options">
+          <label><input type="radio" name="preview-reminder-node" value="50"><span><strong>50<span>%</span></strong><small>用到一半</small></span></label>
+          <label><input type="radio" name="preview-reminder-node" value="75" checked><span><strong>75<span>%</span></strong><small>接近限额</small></span></label>
+          <label><input type="radio" name="preview-reminder-node" value="100"><span><strong>100<span>%</span></strong><small>达到限额</small></span></label>
+        </div>
+        <p class="reminder-node-hint">以每日限额 2 小时为例，<output data-reminder-time aria-live="polite">用到 1 小时 30 分钟时提醒</output>。</p>
+      </fieldset>
+      <label class="reminder-message-label" for="preview-reminder-message">写给那时的自己</label>
+      <textarea id="preview-reminder-message" data-reminder-message rows="5" placeholder="比如：把这一点时间，留给今天真正想做的事。" aria-describedby="reminder-editor-note"></textarea>
+      <div class="reminder-editor-actions"><button class="btn primary" data-preview-reminder>演示这条提醒 <span aria-hidden="true">↗</span></button><button class="reminder-reset" data-reset-reminder>恢复示例</button></div>
+      <p class="reminder-editor-note" id="reminder-editor-note">自动演示选择、填写和提醒的全过程。点击输入框即可接管，仅在本页体验。</p>
+    </div>
+  </div>
+  <div class="reminder-feature-demo" id="reminder-feature-demo" data-reminder-feature></div>
+</section>
+<section class="a-detail"><h2>一眼了解今天，<br>也能看清这一周。</h2><p class="section-copy">从随手展开的概览，到更完整的使用统计。<br>知道时间花在哪里，下一次选择就更清楚。</p><div class="a-detail-grid"><div class="statistics-standalone" data-statistics-demo></div><div class="a-detail-aside"><div><h3>从应用，看到网站</h3><p>查看应用排行，展开浏览器的网站明细。网站统计支持 Safari 和 Google Chrome。</p></div><div><h3>从今天，回顾更久</h3><p>切换今日、每周与累计统计，查看趋势和类别分布，也可导出 CSV。</p></div><div><h3>从通知，读到给自己的提醒</h3><p>到达节点先收到通知，点开后弹出提醒窗口：已用比例、完整提醒文案，以及「我可以做到」「我不听」两个回应。</p><button class="plain" style="padding:12px 0 0;color:var(--accent);font-size:11px" data-show-demo="main-demo" data-show-step="2">回到首屏，看看提醒动画 ↗</button></div><p class="micro" style="margin-top:20px">按原生统计界面绘制，全部为示例数据。可切换周期、展开网站、点击日期。</p></div></div></section>
+<section class="a-faq" id="faq"><div><h2>多了解一点，<br>用起来更安心。</h2><p class="section-copy" style="font-size:13px;margin-top:17px">关于记录、提醒和你的数据。</p></div><div class="faq"><details><summary>Timeglow 会记录哪些内容？</summary><p>记录前台应用与使用时长。开启网站统计并授权后，记录 Safari 和 Google Chrome 中访问的域名；不保存网页正文、完整路径、查询参数或窗口标题。</p></details><details><summary>每日限额和全部用时有什么区别？</summary><p>每日限额只用于所选应用与网站的合计用时。未选项目仍可正常记录，但不加入每日合计。网站已包含在浏览器时长里，同一段用时只计算一次。</p></details><details><summary>提醒会阻止我继续使用吗？</summary><p>当前产品通过用时状态和提醒帮助你留意时间。点击通知会打开「给自己的提醒」弹框，显示已用比例与完整提醒文案。选择「我可以做到」或「我不听」均可收起弹框，不会暂停记录。</p></details><details><summary>现在可以下载吗？</summary><p>Timeglow 当前为原生 macOS 开发版。本页是官网 HTML 初稿，展示的交互使用示例数据。正式安装包、系统要求和发布日期将在发布时说明。</p></details></div></section>
+<section class="a-final"><div><h2>让每一段时间，心里有数。</h2><p>Timeglow，为你的 Mac 留一盏时间的微光。</p></div><div class="actions"><button class="btn primary" data-availability>了解 Mac 版 <span aria-hidden="true">↗</span></button></div></section>
+<footer class="site-footer"><a class="brand" href="#"><img src="assets/timeglow.png?v=678111dea9" alt="">Timeglow</a><div><span>原生 macOS · 记录保存在本机</span><span>© 2026 Timeglow</span></div></footer></div>
+</main>
+<dialog class="availability" aria-labelledby="availability-title"><button class="dialog-close" data-close-dialog aria-label="关闭">×</button><img src="assets/timeglow.png?v=678111dea9" alt=""><h2 id="availability-title">时间的微光，正在靠近。</h2><p>Timeglow 目前是原生 macOS 开发版。<br>本页是官网设计初稿，正式安装包和发布信息尚未接入。你可以先体验页面里的书签、概览和用时提醒。</p><button class="btn primary" data-close-dialog>继续体验页面</button></dialog>
+</body></html>

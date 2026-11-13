@@ -9,7 +9,9 @@
   const about = $('#about-dialog');
   const detail = $('#product-dialog');
   const media = $('#media-stage');
-  const order = ['repaste', 'readless', 'mindmap', 'uipicks', 'wtd'];
+  const order = Object.keys(productCatalog);
+  const total = String(order.length).padStart(2, '0');
+  gallery.style.setProperty('--product-count', order.length);
   let entered = false;
   let preparingEntry = false;
   let entryGeneration = 0;
@@ -89,13 +91,13 @@
     hallway.setMode(next);
     hallway.resize();
     hallway.renderNavigation(hallway.index);
-    viewport.setAttribute('aria-label', next === 'list' ? '全部五款作品，点击查看产品详情' : '横向作品展墙，滚轮或向左拖动浏览，也可使用左右方向键');
+    viewport.setAttribute('aria-label', next === 'list' ? `全部 ${order.length} 款作品，点击查看产品详情` : '横向作品展墙，滚轮或向左拖动浏览，也可使用左右方向键');
     if (next === 'list') viewport.removeAttribute('aria-roledescription');
     else viewport.setAttribute('aria-roledescription', '轮播');
     const toggle = $('#overview-toggle');
     toggle.setAttribute('aria-pressed', String(next === 'list'));
     toggle.querySelector('span').textContent = next === 'list' ? '回到展厅' : '全部作品';
-    toggle.setAttribute('aria-label', next === 'list' ? '回到当前作品的展厅位置' : '查看全部五款作品');
+    toggle.setAttribute('aria-label', next === 'list' ? '回到当前作品的展厅位置' : `查看全部 ${order.length} 款作品`);
     const reduce = hallway.reducedMotion.matches;
     if (animate && !reduce) {
       const after = cards.map(card => card.getBoundingClientRect());
@@ -119,7 +121,7 @@
     layoutMoving = false;
     previews.sync();
     if (focusedCard && next === 'wall') hallway.cards[hallway.index].card.focus({ preventScroll: true });
-    announce(next === 'list' ? '已展开全部五款作品，点击作品查看详情。' : '已回到横向展厅，继续浏览当前作品。');
+    announce(next === 'list' ? `已展开全部 ${order.length} 款作品，点击作品查看详情。` : '已回到横向展厅，继续浏览当前作品。');
   }
 
   $('#enter-gallery').addEventListener('click', () => enterGallery());
@@ -140,7 +142,7 @@
   function fillProduct(index) {
     productIndex = (index + order.length) % order.length;
     const product = productCatalog[order[productIndex]];
-    $('#product-position').textContent = `${String(productIndex + 1).padStart(2, '0')} / 05`;
+    $('#product-position').textContent = `${String(productIndex + 1).padStart(2, '0')} / ${total}`;
     $('#product-category').textContent = product.category;
     $('#product-title').textContent = product.name;
     $('#product-headline').textContent = product.headline;

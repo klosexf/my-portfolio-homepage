@@ -23,6 +23,49 @@ const productCatalog = {
     "href": "landing-repaste.html",
     "background": "#272536"
   },
+  "wtd": {
+    "name": "WidgetToDo",
+    "summary": "把 Notion 待办和日记放到 Mac 桌面的工具",
+    "tagline": "今日待办，留在眼前",
+    "featured": true,
+    "category": "macOS · Notion 桌面小组件",
+    "headline": "让今日待办，\n留在眼前。",
+    "description": "把 Notion 待办与日记放在桌面。今天要做的事，和想记下的一句话，都有自己的位置。",
+    "facts": [
+      "待办与日记，随时切换",
+      "改动同步回 Notion"
+    ],
+    "image": "portfolio-demos/homepage/assets/wtd.jpg",
+    "imageAlt": "WidgetToDo 桌面待办的现有界面演示",
+    "imageWidth": 400,
+    "imageHeight": 530,
+    "icon": "portfolio-demos/wtd-app-icon.png",
+    "demo": "portfolio-demos/embed-wtd.html",
+    "href": "index-notion.html",
+    "background": "#efece5"
+  },
+  "timeglow": {
+    "name": "Timeglow",
+    "summary": "自动记录 Mac 应用与网站用时，在屏幕边缘看见每日进度",
+    "tagline": "看见时间去向，找回一天的分寸",
+    "featured": true,
+    "category": "macOS · 应用与网站用时",
+    "headline": "看见时间去向，\n找回一天的分寸。",
+    "description": "自动记录应用与网站用时，用一枚贴边书签查看今日进度。选择计入每日限额的范围，在设定的节点，收到写给自己的提醒。",
+    "facts": [
+      "贴边书签，一键展开今日用时概览",
+      "自定义提醒文案，按节点收到通知",
+      "按今日、每周与累计回顾使用统计"
+    ],
+    "image": "products/timeglow/assets/portfolio-preview.png",
+    "imageAlt": "Timeglow 贴边书签与今日应用、网站用时概览，使用示例数据",
+    "imageWidth": 1040,
+    "imageHeight": 650,
+    "icon": "products/timeglow/assets/timeglow.png?v=678111dea9",
+    "demo": "products/timeglow/demo.html",
+    "href": "products/timeglow/index.html",
+    "background": "#e7e4dd"
+  },
   "readless": {
     "name": "Readless",
     "summary": "选中文字就能朗读的 Mac 听读工具",
@@ -87,26 +130,5 @@ const productCatalog = {
     "demoNote": "精选内容交互演示 · 可手动筛选、预览与收藏",
     "href": "https://www.uipicks.top/",
     "background": "#f0efed"
-  },
-  "wtd": {
-    "name": "WidgetToDo",
-    "summary": "把 Notion 待办和日记放到 Mac 桌面的工具",
-    "tagline": "今日待办，留在眼前",
-    "featured": true,
-    "category": "macOS · Notion 桌面小组件",
-    "headline": "让今日待办，\n留在眼前。",
-    "description": "把 Notion 待办与日记放在桌面。今天要做的事，和想记下的一句话，都有自己的位置。",
-    "facts": [
-      "待办与日记，随时切换",
-      "改动同步回 Notion"
-    ],
-    "image": "portfolio-demos/homepage/assets/wtd.jpg",
-    "imageAlt": "WidgetToDo 桌面待办的现有界面演示",
-    "imageWidth": 400,
-    "imageHeight": 530,
-    "icon": "portfolio-demos/wtd-app-icon.png",
-    "demo": "portfolio-demos/embed-wtd.html",
-    "href": "index-notion.html",
-    "background": "#efece5"
   }
 };

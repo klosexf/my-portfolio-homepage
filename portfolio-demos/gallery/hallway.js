@@ -435,6 +435,9 @@ class ProductHallway {
       button.setAttribute('aria-current', String(i === shown));
       button.dataset.destination = String(i === destination && destination !== shown);
     });
+    if (this.mode === 'wall' && this.pagination.scrollWidth > this.pagination.clientWidth) {
+      this.markers[shown]?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
+    }
   }
 
   bindInput() {

@@ -24,6 +24,12 @@
       { label: '按需筛选', caption: '选择布局和风格，逐步缩小参考范围。' },
       { label: '预览与收藏', caption: '打开具体案例，把中意的参考收进收藏。' }
     ],
+    timeglow: [
+      { label: '贴边书签', caption: '书签留在屏幕边缘，随时看见已用比例。' },
+      { label: '今日概览', caption: '点击书签，展开应用与网站用时概览。' },
+      { label: '到点提醒', caption: '达到设定的节点，点击通知阅读写给自己的提醒。' },
+      { label: '回顾用时', caption: '按今日、每周和累计查看完整统计，数据为演示样例。' }
+    ],
     wtd: [
       { label: '完成待办', caption: '在桌面勾选待办，完成状态同步回 Notion。' },
       { label: '记录与新建', caption: '切到日记记录想法，再把下一件事写进待办。' },
@@ -220,7 +226,8 @@
     const has = (selector, className) => !!doc.querySelector(selector)?.classList.contains(className);
     function activeStep() {
       const explicit = doc.body.dataset.portfolioStep;
-      if (explicit !== undefined) return Math.max(0, Math.min(2, Number(explicit) || 0));
+      if (explicit !== undefined) return Math.max(0, Math.min(list.length - 1, Number(explicit) || 0));
+      if (id === 'timeglow') return Number(doc.querySelector('.demo-canvas')?.dataset.step) || 0;
       if (id === 'mindmap') { const time = Number(doc.body.dataset.time) || 0; return time < 7.5 ? 0 : time < 26.5 ? 1 : 2; }
       if (id === 'uipicks') return Number(doc.querySelector('[data-chapter][aria-pressed="true"]')?.dataset.chapter) || 0;
       if (id === 'repaste') return has('#edLine', 'on') || has('#toast', 'show') ? 2 : has('#panel', 'open') ? 1 : 0;
@@ -236,22 +243,24 @@
     observer.observe(doc.body, { attributes: true, attributeFilter: ['data-portfolio-step', 'data-time'] });
     const selectors = {
       repaste: '#panel,#edLine,#toast', readless: '#scene,#player',
-      mindmap: '', uipicks: '[data-chapter]', wtd: '#widget,#ntf,#pomo,#pomoNtf'
+      mindmap: '', uipicks: '[data-chapter]', wtd: '#widget,#ntf,#pomo,#pomoNtf', timeglow: '.demo-canvas'
     };
-    if (selectors[id]) doc.querySelectorAll(selectors[id]).forEach(node => observer.observe(node, { attributes: true, attributeFilter: ['class', 'aria-pressed'] }));
+    if (selectors[id]) doc.querySelectorAll(selectors[id]).forEach(node => observer.observe(node, { attributes: true, attributeFilter: ['class', 'aria-pressed', 'data-step'] }));
     function play() {
       if (id === 'mindmap') {
         const toggle = doc.querySelector('#toggle-play');
         if (toggle?.getAttribute('aria-label') === '播放演示') toggle.click();
         win.postMessage({ type: 'mindmap-demo', action: 'play' }, location.origin);
       } else if (id === 'uipicks' && doc.querySelector('#play')?.getAttribute('aria-pressed') !== 'true') doc.querySelector('#play').click();
+      else if (id === 'timeglow' && doc.querySelector('[data-play]')?.textContent === '播放') doc.querySelector('[data-play]').click();
     }
     function seek(index) {
       if (destroyed) return false;
-      index = Math.max(0, Math.min(2, Number(index) || 0));
+      index = Math.max(0, Math.min(list.length - 1, Number(index) || 0));
       if (win.portfolioDemo?.seek) win.portfolioDemo.seek(index);
       else if (id === 'mindmap') { doc.querySelector(`[data-time="${list[index].time}"]`)?.click(); play(); }
       else if (id === 'uipicks') { doc.querySelector(`[data-chapter="${index}"]`)?.click(); play(); }
+      else if (id === 'timeglow') { doc.querySelector(`[data-go="${index}"]`)?.click(); play(); }
       else return false;
       report();
       return true;

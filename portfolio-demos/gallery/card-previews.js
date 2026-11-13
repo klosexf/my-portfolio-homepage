@@ -147,7 +147,7 @@ class GalleryCardPreviews {
     if (record !== this.current || record.frame !== frame) return;
     try {
       const doc = record.frame.contentDocument;
-      const roots = { repaste: '#screen', readless: '#scene', wtd: '#stage', mindmap: '.demo-player', uipicks: '.demo-player' };
+      const roots = { repaste: '#screen', readless: '#scene', wtd: '#stage', mindmap: '.demo-player', uipicks: '.demo-player', timeglow: '.demo-canvas' };
       if (!doc?.querySelector(roots[record.id])) throw new Error('Incomplete demo');
       if (record.id === 'wtd') {
         const style = doc.createElement('style');

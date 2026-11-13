@@ -12,7 +12,8 @@
     readless: '113, 154, 219',
     mindmap: '220, 194, 142',
     uipicks: '131, 183, 179',
-    wtd: '218, 157, 126'
+    wtd: '218, 157, 126',
+    timeglow: '164, 181, 143'
   };
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)');

@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080808">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="独立开发者 Xiaofeng 的产品作品集：Repaste、Readless、MindMap AI、UIpicks、WidgetToDo。让日常顺手一点。">
+  <meta name="description" content="独立开发者 Xiaofeng 的产品作品集：Repaste、Readless、MindMap AI、UIpicks、WidgetToDo、Timeglow。让日常顺手一点。">
   <meta property="og:title" content="Xiaofeng — 独立开发者 · 产品作品集">
-  <meta property="og:description" content="Repaste · Readless · MindMap AI · UIpicks · WidgetToDo，让日常顺手一点。">
+  <meta property="og:description" content="Repaste · Readless · MindMap AI · UIpicks · WidgetToDo · Timeglow，让日常顺手一点。">
   <meta property="og:type" content="website">
   <title>Xiaofeng — 独立开发者 · 产品作品集</title>
   <link rel="icon" href="icon_512x512.png">
@@ -16,19 +16,19 @@
   <link rel="stylesheet" href="portfolio-demos/gallery/style.css?v=317e2e2053">
   <link rel="stylesheet" href="portfolio-demos/gallery/hallway.css?v=748bf92864">
   <link rel="stylesheet" href="portfolio-demos/gallery/artwork-navigation.css?v=4fe28f2dc1">
-  <link rel="stylesheet" href="portfolio-demos/gallery/gallery-upgrades.css?v=76b186b20b">
+  <link rel="stylesheet" href="portfolio-demos/gallery/gallery-upgrades.css?v=3433ddfbf8">
   <link rel="stylesheet" href="portfolio-demos/gallery/exhibition-polish.css?v=5ba1741206">
   <link rel="stylesheet" href="portfolio-demos/gallery/gallery-music.css?v=9996dbd92e">
-  <script src="portfolio-demos/gallery/products.js?v=f77d983413" defer></script>
-  <script src="portfolio-demos/gallery/hallway.js?v=adef22e040" defer></script>
-  <script src="portfolio-demos/gallery/demo-guide.js?v=be9c8cea72" defer></script>
-  <script src="portfolio-demos/gallery/card-previews.js?v=28ca6b8464" defer></script>
+  <script src="portfolio-demos/gallery/products.js?v=ef25132d86" defer></script>
+  <script src="portfolio-demos/gallery/hallway.js?v=7084f9b9be" defer></script>
+  <script src="portfolio-demos/gallery/demo-guide.js?v=ca83d199f1" defer></script>
+  <script src="portfolio-demos/gallery/card-previews.js?v=a9190f742a" defer></script>
   <script src="portfolio-demos/gallery/gallery-music.js?v=b5e18ed2ab" defer></script>
-  <script src="portfolio-demos/gallery/app.js?v=5785d98135" defer></script>
+  <script src="portfolio-demos/gallery/app.js?v=6c0c820ce6" defer></script>
   <script src="portfolio-demos/gallery/exhibit-labels.js?v=64f468369d" defer></script>
-  <link rel="stylesheet" href="portfolio-demos/gallery/navigation.css?v=716437dfd4">
+  <link rel="stylesheet" href="portfolio-demos/gallery/navigation.css?v=00842bc4e7">
   <link rel="stylesheet" href="portfolio-demos/gallery/lighting.css?v=b0b247dacd">
-  <script src="portfolio-demos/gallery/lighting.js?v=63f4f8d0c5" defer></script>
+  <script src="portfolio-demos/gallery/lighting.js?v=267e60f193" defer></script>
 </head>
 <body data-scene="entrance">
   <a class="skip-link" href="#enter-gallery">进入作品展厅</a>
@@ -50,7 +50,7 @@
       <div class="gallery-viewport" id="gallery-viewport" tabindex="0" role="region" aria-roledescription="轮播" aria-label="横向作品展墙，滚轮或向左拖动浏览，也可使用左右方向键">
         <div class="gallery-plane" id="gallery-plane"></div>
       </div>
-      <div class="overview-heading"><p>THE COLLECTION / 05</p><h2>五款作品，都在这里。</h2><span>点击一件作品，看看它如何工作</span></div>
+      <div class="overview-heading"><p>THE COLLECTION / 06</p><h2>六款作品，都在这里。</h2><span>点击一件作品，看看它如何工作</span></div>
       <div class="gallery-bottom">
         <p class="gallery-hint" id="gallery-hint">滚动或向左拖动</p>
         <div class="view-controls preview-dock" role="group" aria-label="作品导航">
@@ -58,8 +58,8 @@
           <nav id="hallway-pagination" aria-label="跳转到指定作品"></nav>
           <button class="hallway-arrow" id="hallway-next" aria-label="浏览下一个作品">→</button>
           <span class="dock-divider" aria-hidden="true"></span>
-          <p class="dock-position" aria-label="当前作品"><span id="hallway-current">01</span><span class="dock-total"> / 05</span></p>
-          <span class="overview-dock-label">全部作品 <span>05</span></span>
+          <p class="dock-position" aria-label="当前作品"><span id="hallway-current">01</span><span class="dock-total"> / 06</span></p>
+          <span class="overview-dock-label">全部作品 <span>06</span></span>
           <button class="overview-toggle" id="overview-toggle" type="button" aria-pressed="false" aria-controls="gallery-viewport"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="3" width="5" height="5" rx=".8"/><rect x="12" y="3" width="5" height="5" rx=".8"/><rect x="3" y="12" width="5" height="5" rx=".8"/><rect x="12" y="12" width="5" height="5" rx=".8"/></svg><span>全部作品</span></button>
         </div>
       </div>
@@ -74,7 +74,7 @@
         <div class="floor-line" aria-hidden="true"></div>
         <button class="enter-button" id="enter-gallery"><span>走进作品展厅</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <p class="entrance-description">我是 Xiaofeng，做 Mac 小工具，也做网页应用。<br>把每天的小麻烦，变成顺手的小事。</p>
-        <div class="entrance-footer"><span>INDEPENDENT DEVELOPER</span><span>5 款作品 <i></i> 用心做小事</span></div>
+        <div class="entrance-footer"><span>INDEPENDENT DEVELOPER</span><span>6 款作品 <i></i> 用心做小事</span></div>
       </div>
     </section>
   </main>
@@ -91,11 +91,11 @@
   </dialog>
 
   <dialog class="product-dialog" id="product-dialog" aria-labelledby="product-title">
-    <header class="dialog-bar"><button class="text-close" id="close-product">← 返回展厅</button><span id="product-position">01 / 05</span><div class="product-step"><button class="detail-music-button" id="detail-music-toggle" type="button" aria-label="关闭背景音乐" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M8 6 5 8H2v4h3l3 2V6Zm4 1a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg><span class="music-button-label">音乐 开</span></button><button id="previous-product" aria-label="上一个产品">←</button><button id="next-product" aria-label="下一个产品">→</button></div></header>
+    <header class="dialog-bar"><button class="text-close" id="close-product">← 返回展厅</button><span id="product-position">01 / 06</span><div class="product-step"><button class="detail-music-button" id="detail-music-toggle" type="button" aria-label="关闭背景音乐" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M8 6 5 8H2v4h3l3 2V6Zm4 1a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg><span class="music-button-label">音乐 开</span></button><button id="previous-product" aria-label="上一个产品">←</button><button id="next-product" aria-label="下一个产品">→</button></div></header>
     <div class="product-layout"><section class="product-media"><div class="media-stage" id="media-stage"></div><div class="media-caption"><span id="media-label" hidden>产品演示</span><button id="play-demo" type="button">从头播放 ↻</button></div><nav class="demo-chapters" id="demo-chapters" aria-label="选择演示步骤"></nav><p class="demo-step-description" id="demo-step-description"></p></section><section class="product-information"><p class="eyebrow" id="product-category"></p><div class="product-brand"><img id="product-icon" alt="" width="44" height="44"><h2 id="product-title"></h2></div><h3 id="product-headline"></h3><p class="product-description" id="product-description"></p><ul id="product-facts"></ul><a class="product-link" id="product-link" target="_blank" rel="noopener">打开产品页面 <span class="product-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a><p class="product-note">为每天都会遇到的小事而做。</p></section></div>
   </dialog>
   <audio id="gallery-music" src="portfolio-demos/gallery/assets/amnesia.mp3" preload="metadata" loop></audio>
   <p class="sr-only" id="announcement" role="status" aria-live="polite"></p>
-  <noscript><div class="noscript-note">作品展厅需要 JavaScript。你也可以直接查看：<a href="landing-repaste.html">Repaste</a> · <a href="index-readless.html">Readless</a> · <a href="index%20mindmap.html">MindMap AI</a> · <a href="https://www.uipicks.top/">UIpicks</a> · <a href="index-notion.html">WidgetToDo</a></div></noscript>
+  <noscript><div class="noscript-note">作品展厅需要 JavaScript。你也可以直接查看：<a href="landing-repaste.html">Repaste</a> · <a href="index-readless.html">Readless</a> · <a href="index%20mindmap.html">MindMap AI</a> · <a href="https://www.uipicks.top/">UIpicks</a> · <a href="index-notion.html">WidgetToDo</a> · <a href="products/timeglow/index.html">Timeglow</a></div></noscript>
 </body>
 </html>
